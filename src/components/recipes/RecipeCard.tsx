@@ -3,12 +3,10 @@ import type { Recipe } from '@/types/recipe';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Beer, Palette, Percent, Thermometer, AlertTriangle, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Beer, Palette, Percent, Thermometer, AlertTriangle } from 'lucide-react';
 
 interface RecipeCardProps {
   recipe: Recipe;
-  onDelete: (slug: string, recipeName: string) => Promise<void>;
 }
 
 const StatItem: React.FC<{ icon: React.ElementType; label: string; value?: string | number | null }> = ({ icon: Icon, label, value }) => {
@@ -22,19 +20,10 @@ const StatItem: React.FC<{ icon: React.ElementType; label: string; value?: strin
   );
 };
 
-export function RecipeCard({ recipe, onDelete }: RecipeCardProps) {
-  const handleDelete = async (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete the recipe "${recipe.metadata.name}"?`)) {
-      await onDelete(recipe.slug, recipe.metadata.name);
-    }
-  };
-
+export function RecipeCard({ recipe }: RecipeCardProps) {
   const formatValueUnit = (vu?: { value: number; unit: string }) => vu ? `${vu.value} ${vu.unit}` : '-';
   const formatOptionalNumber = (val?: string | number) => (val !== undefined && val !== null ? String(val) : '-');
   const formatGravity = (val?: string | number) => (typeof val === 'number' ? val.toFixed(3) : formatOptionalNumber(val));
-
 
   return (
     <Card className="h-full flex flex-col overflow-hidden bg-card hover:border-primary transition-all duration-200 ease-in-out transform hover:-translate-y-1 relative group">
@@ -60,17 +49,8 @@ export function RecipeCard({ recipe, onDelete }: RecipeCardProps) {
           </div>
         </CardContent>
       </Link>
-      <CardFooter className="justify-between items-center pt-4">
+      <CardFooter className="justify-start items-center pt-4">
         <Badge variant="outline">View Recipe</Badge>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-destructive opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
-          onClick={handleDelete}
-          aria-label={`Delete recipe ${recipe.metadata.name}`}
-        >
-          <Trash2 size={18} />
-        </Button>
       </CardFooter>
     </Card>
   );
