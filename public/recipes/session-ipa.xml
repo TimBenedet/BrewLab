@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<recipe>
+    <metadata>
+        <name>Sunset Session IPA</name>
+        <author>Brew Crafter</author>
+        <style>Session IPA</style>
+        <batchSize unit="L">20</batchSize>
+        <boilTime unit="min">60</boilTime>
+        <efficiency unit="%">70</efficiency>
+    </metadata>
+    <fermentables>
+        <fermentable>
+            <name>Pale Ale Malt</name>
+            <amount unit="kg">3.5</amount>
+            <type>Grain</type>
+        </fermentable>
+        <fermentable>
+            <name>Munich Malt</name>
+            <amount unit="kg">0.5</amount>
+            <type>Grain</type>
+        </fermentable>
+        <fermentable>
+            <name>Carapils</name>
+            <amount unit="kg">0.3</amount>
+            <type>Grain</type>
+        </fermentable>
+    </fermentables>
+    <hops>
+        <hop>
+            <name>Centennial</name>
+            <amount unit="g">15</amount>
+            <use>Boil</use>
+            <time unit="min">60</time>
+            <alpha unit="%">10.0</alpha>
+        </hop>
+        <hop>
+            <name>Citra</name>
+            <amount unit="g">20</amount>
+            <use>Boil</use>
+            <time unit="min">10</time>
+            <alpha unit="%">12.0</alpha>
+        </hop>
+        <hop>
+            <name>Mosaic</name>
+            <amount unit="g">20</amount>
+            <use>Whirlpool</use>
+            <time unit="min">20</time> <!-- Time for whirlpool @ temp -->
+            <alpha unit="%">12.5</alpha>
+        </hop>
+        <hop>
+            <name>Citra</name>
+            <amount unit="g">30</amount>
+            <use>Dry Hop</use>
+            <time unit="days">5</time>
+            <alpha unit="%">12.0</alpha>
+        </hop>
+        <hop>
+            <name>Mosaic</name>
+            <amount unit="g">30</amount>
+            <use>Dry Hop</use>
+            <time unit="days">5</time>
+            <alpha unit="%">12.5</alpha>
+        </hop>
+    </hops>
+    <yeasts>
+        <yeast>
+            <name>Verdant IPA</name>
+            <type>Ale</type>
+            <form>Dry</form>
+            <attenuation unit="%">76</attenuation>
+        </yeast>
+    </yeasts>
+    <mash>
+        <name>Single Infusion, Light Body</name>
+        <mashSteps>
+            <mashStep>
+                <name>Mash In</name>
+                <type>Infusion</type>
+                <stepTemp unit="C">65</stepTemp>
+                <stepTime unit="min">60</stepTime>
+            </mashStep>
+        </mashSteps>
+    </mash>
+    <notes>
+        A hoppy and refreshing Session IPA, perfect for a sunny afternoon.
+        Dry hop after primary fermentation has subsided.
+        Target whirlpool temperature around 80°C (176°F).
+    </notes>
+    <stats>
+        <og>1.045</og>
+        <fg>1.010</fg>
+        <abv>4.6%</abv>
+        <ibu>40</ibu>
+        <colorSrm>6</colorSrm>
+    </stats>
+</recipe>

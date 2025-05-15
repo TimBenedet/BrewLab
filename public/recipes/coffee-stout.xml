@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<recipe>
+    <metadata>
+        <name>Morning Kick Coffee Stout</name>
+        <author>The Alchemist Brewer</author>
+        <style>Coffee Stout</style>
+        <batchSize unit="L">19</batchSize>
+        <boilTime unit="min">75</boilTime>
+        <efficiency unit="%">68</efficiency>
+    </metadata>
+    <fermentables>
+        <fermentable>
+            <name>Maris Otter</name>
+            <amount unit="kg">4.0</amount>
+            <type>Grain</type>
+        </fermentable>
+        <fermentable>
+            <name>Roasted Barley</name>
+            <amount unit="kg">0.5</amount>
+            <type>Grain</type>
+        </fermentable>
+        <fermentable>
+            <name>Chocolate Malt</name>
+            <amount unit="kg">0.3</amount>
+            <type>Grain</type>
+        </fermentable>
+        <fermentable>
+            <name>Flaked Oats</name>
+            <amount unit="kg">0.4</amount>
+            <type>Adjunct</type>
+        </fermentable>
+        <fermentable>
+            <name>Crystal Malt - 120L</name>
+            <amount unit="kg">0.2</amount>
+            <type>Grain</type>
+        </fermentable>
+    </fermentables>
+    <hops>
+        <hop>
+            <name>East Kent Goldings</name>
+            <amount unit="g">40</amount>
+            <use>Boil</use>
+            <time unit="min">60</time>
+            <alpha unit="%">5.0</alpha>
+        </hop>
+        <hop>
+            <name>Fuggles</name>
+            <amount unit="g">20</amount>
+            <use>Boil</use>
+            <time unit="min">15</time>
+            <alpha unit="%">4.5</alpha>
+        </hop>
+    </hops>
+    <yeasts>
+        <yeast>
+            <name>Wyeast 1084 Irish Ale</name>
+            <type>Ale</type>
+            <form>Liquid</form>
+            <attenuation unit="%">74</attenuation>
+        </yeast>
+    </yeasts>
+    <miscs>
+        <misc>
+            <name>Cold Brew Coffee Concentrate</name>
+            <amount unit="ml">250</amount>
+            <use>Bottling</use> <!-- Or secondary, or kegging -->
+            <time unit="days">0</time>
+        </misc>
+         <misc>
+            <name>Whirlfloc Tablet</name>
+            <amount unit="item">1</amount>
+            <use>Boil</use>
+            <time unit="min">10</time>
+        </misc>
+    </miscs>
+    <mash>
+        <name>Full Bodied Mash</name>
+        <mashSteps>
+            <mashStep>
+                <name>Saccharification</name>
+                <type>Infusion</type>
+                <stepTemp unit="C">68</stepTemp>
+                <stepTime unit="min">75</stepTime>
+            </mashStep>
+        </mashSteps>
+    </mash>
+    <notes>
+        A rich, dark stout infused with bold coffee flavors.
+        Add coffee concentrate at packaging or late in fermentation for best aroma.
+        Ensure coffee is high quality and cold brewed to reduce acidity.
+    </notes>
+    <stats>
+        <og>1.060</og>
+        <fg>1.016</fg>
+        <abv>5.8%</abv>
+        <ibu>30</ibu>
+        <colorSrm>40</colorSrm>
+    </stats>
+</recipe>
