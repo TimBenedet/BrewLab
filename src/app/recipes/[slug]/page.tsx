@@ -2,9 +2,11 @@
 import { getRecipeData, getAllRecipeSlugs } from '@/lib/recipes';
 import type { Recipe, ValueUnit, Fermentable, Hop, Yeast, Misc, MashStep } from '@/types/recipe';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
+import { SrmColorSwatch } from '@/components/recipes/SrmColorSwatch';
 
 import {
   BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, ThermometerSnowflake, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon
@@ -43,7 +45,7 @@ const DetailItem: React.FC<{ label: string; value?: string | number | ValueUnit;
   );
 };
 
-const StatGaugeItem: React.FC<{ label: string; valueText: string; progressValue: number; icon?: React.ReactNode }> = ({ label, valueText, progressValue, icon: IconComponent }) => (
+const StatGaugeItem: React.FC<{ label: string; valueText: string; progressValue: number; icon?: React.ElementType }> = ({ label, valueText, progressValue, icon: IconComponent }) => (
   <div className="mb-3">
     <div className="flex justify-between items-center mb-1">
       <span className="text-sm text-muted-foreground flex items-center">
@@ -113,8 +115,19 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
   return (
     <div className="space-y-8">
       <Card className="shadow-lg overflow-hidden">
-        <CardHeader className="bg-muted p-6">
-          <div>
+        <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
+          <Image 
+            src="https://placehold.co/40x60.png" 
+            alt="Beer glass" 
+            width={40} 
+            height={60} 
+            className="rounded"
+            data-ai-hint="beer glass" 
+          />
+          {recipe.stats.colorSrm !== undefined && ( // Conditionally render if SRM exists
+            <SrmColorSwatch srm={recipe.stats.colorSrm} />
+          )}
+          <div className="flex-1">
             <CardTitle className="text-3xl font-bold text-primary">{recipe.metadata.name}</CardTitle>
             <CardDescription className="text-lg text-muted-foreground">{recipe.metadata.style}</CardDescription>
             {recipe.metadata.author && <p className="text-sm text-muted-foreground italic">By: {recipe.metadata.author}</p>}
@@ -233,5 +246,3 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
     </div>
   );
 }
-
-    
