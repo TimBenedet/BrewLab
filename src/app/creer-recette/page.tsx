@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Beer, Info, Wheat, PlusCircle, Trash2, Leaf, Spices, Beaker } from "lucide-react";
+import { Beer, Info, Wheat, PlusCircle, Trash2, Leaf, Blend, Beaker } from "lucide-react";
 
 interface IndicatorProps {
   label: string;
@@ -328,7 +328,7 @@ export default function CreateRecipePage() {
       <Card className="shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center text-xl">
-            <Spices size={22} className="mr-2 text-primary" />
+            <Blend size={22} className="mr-2 text-primary" />
             Autres Ingrédients
           </CardTitle>
           <Button variant="outline" size="sm">
