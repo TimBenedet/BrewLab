@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { BookOpen, Thermometer, Percent, Leaf, Beaker, Info, CalendarDays, Scale, Clock, Palette, ThermometerSnowflake } from 'lucide-react';
+import { BookOpen, Thermometer, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, ThermometerSnowflake, Hop as HopIcon, Wheat, FlaskConical, BarChart } from 'lucide-react';
 
 export async function generateStaticParams() {
   const slugs = getAllRecipeSlugs();
@@ -104,7 +104,7 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl text-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-beer"><path d="M17 11.5V8a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v3.5A1.5 1.5 0 0 0 8.5 13h7a1.5 1.5 0 0 0 1.5-1.5Z"/><path d="M10 9.5A1.5 1.5 0 1 1 8.5 8"/><path d="M15.5 8A1.5 1.5 0 1 1 14 9.5"/><path d="M12 13v8"/><path d="M9 21h6"/></svg>
+                <BarChart size={20} />
                 Target Stats
               </CardTitle>
             </CardHeader>
@@ -119,7 +119,7 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
 
           <IngredientTable
             title="Fermentables"
-            icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-wheat"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11c1.9.95 2.28 3.08 1 5L3.47 12.53ZM8 22l-2-2c-1.28 1.28-3.38.9-5-1l-2.53-2.53C4.92 13.72 7.05 13.33 8 11l4 4-6 6Z"/><path d="M16 8c-1.9.95-2.28 3.08-1 5l-2.53-2.53C13.42 8.72 15.55 8.33 16.43 6.07L18 4.5l2.53 2.53c1.28 1.28.9 3.38-1 5l-2 2Z"/></svg>}
+            icon={<Wheat size={20} />}
             items={recipe.fermentables}
             columns={[
               { key: 'name', header: 'Name' },
@@ -130,7 +130,7 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
 
           <IngredientTable
             title="Hops"
-            icon={<Leaf size={20} />}
+            icon={<HopIcon size={20} />}
             items={recipe.hops}
             columns={[
               { key: 'name', header: 'Name' },
@@ -143,7 +143,7 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
 
           <IngredientTable
             title="Yeast"
-            icon={<Beaker size={20} />}
+            icon={<FlaskConical size={20} />}
             items={recipe.yeasts}
             columns={[
               { key: 'name', header: 'Name' },
