@@ -1,18 +1,19 @@
 import type { Metadata } from 'next';
-import { Geist_Sans } from 'next/font/google';
-import { Geist_Mono } from 'next/font/google';
+import { Inter, Roboto_Mono } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Toaster } from "@/components/ui/toaster";
 
-const geistSans = Geist_Sans({
-  variable: '--font-geist-sans',
+const inter = Inter({
+  variable: '--font-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const roboto_mono = Roboto_Mono({
+  variable: '--font-mono',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -26,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${roboto_mono.variable}`}>
       <body className="antialiased min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow container mx-auto px-4 py-8">
