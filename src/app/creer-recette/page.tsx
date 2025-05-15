@@ -194,16 +194,16 @@ export default function CreateRecipePage() {
           <Button variant="outline" size="sm" onClick={() => handleAddItem(setCereales, { nom: "", poids: "0" })}><PlusCircle size={16} className="mr-2" />Add Grain</Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-[1fr_auto_auto] items-end gap-x-3 mb-2">
-            <Label className="text-sm font-medium text-muted-foreground">Name</Label>
-            <Label className="text-sm font-medium text-muted-foreground">Weight (kg)</Label>
-            <div className="w-8"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] items-end gap-x-3 mb-2">
+            <Label className="text-sm font-medium text-muted-foreground col-span-1 sm:col-span-1">Name</Label>
+            <Label className="text-sm font-medium text-muted-foreground mt-2 sm:mt-0 col-span-1 sm:col-span-1">Weight (kg)</Label>
+            <div className="w-8 hidden sm:block"></div> {/* Spacer for larger screens */}
           </div>
           {cereales.map((item) => (
-            <div key={item.id} className="grid grid-cols-[1fr_auto_auto] items-center gap-x-3">
+            <div key={item.id} className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] items-center gap-x-3 gap-y-2 sm:gap-y-0 mb-2">
               <Input value={item.nom} onChange={(e) => handleItemChange(setCereales, item.id, 'nom', e.target.value)} className="p-2.5 text-foreground text-sm" placeholder="Pilsner Malt"/>
-              <Input type="number" value={item.poids} onChange={(e) => handleItemChange(setCereales, item.id, 'poids', e.target.value)} className="p-2.5 text-foreground text-sm w-24" placeholder="0"/>
-              <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleRemoveItem(setCereales, item.id)}><Trash2 size={18} /></Button>
+              <Input type="number" value={item.poids} onChange={(e) => handleItemChange(setCereales, item.id, 'poids', e.target.value)} className="p-2.5 text-foreground text-sm sm:w-24" placeholder="0"/>
+              <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 justify-self-end sm:justify-self-auto" onClick={() => handleRemoveItem(setCereales, item.id)}><Trash2 size={18} /></Button>
             </div>
           ))}
         </CardContent>
@@ -217,12 +217,12 @@ export default function CreateRecipePage() {
         <CardContent className="space-y-4">
           {houblons.map((item) => (
             <div key={item.id} className="space-y-3 border-b pb-3 last:border-b-0 last:pb-0">
-              <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-3">
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] items-center gap-x-3 gap-y-2 sm:gap-y-0">
                 <Input value={item.nom} onChange={(e) => handleItemChange(setHoublons, item.id, 'nom', e.target.value)} className="p-2.5 text-foreground text-sm" placeholder="Cascade"/>
-                <Input type="number" value={item.poids} onChange={(e) => handleItemChange(setHoublons, item.id, 'poids', e.target.value)} className="p-2.5 text-foreground text-sm w-24" placeholder="0"/>
-                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleRemoveItem(setHoublons, item.id)}><Trash2 size={18} /></Button>
+                <Input type="number" value={item.poids} onChange={(e) => handleItemChange(setHoublons, item.id, 'poids', e.target.value)} className="p-2.5 text-foreground text-sm sm:w-24" placeholder="0"/>
+                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 justify-self-end sm:justify-self-auto" onClick={() => handleRemoveItem(setHoublons, item.id)}><Trash2 size={18} /></Button>
               </div>
-              <div className="grid grid-cols-[1fr_auto] items-end gap-x-3">
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-end gap-x-3 gap-y-2 sm:gap-y-0">
                 <div>
                   <Label htmlFor={`formatHoublonSelect-${item.id}`} className="text-sm font-medium text-muted-foreground">Format</Label>
                   <Select value={item.format} onValueChange={(value) => handleItemChange(setHoublons, item.id, 'format', value)}>
@@ -232,7 +232,7 @@ export default function CreateRecipePage() {
                 </div>
                 <div>
                   <Label htmlFor={`acideAlphaHoublonInput-${item.id}`} className="text-sm font-medium text-muted-foreground">% Alpha Acid</Label>
-                  <Input id={`acideAlphaHoublonInput-${item.id}`} type="number" value={item.acideAlpha} onChange={(e) => handleItemChange(setHoublons, item.id, 'acideAlpha', e.target.value)} className="mt-1 p-2.5 text-foreground text-sm w-24" placeholder="0"/>
+                  <Input id={`acideAlphaHoublonInput-${item.id}`} type="number" value={item.acideAlpha} onChange={(e) => handleItemChange(setHoublons, item.id, 'acideAlpha', e.target.value)} className="mt-1 p-2.5 text-foreground text-sm sm:w-24" placeholder="0"/>
                 </div>
               </div>
             </div>
@@ -246,16 +246,16 @@ export default function CreateRecipePage() {
           <Button variant="outline" size="sm" onClick={() => handleAddItem(setAutresIngredients, { nom: "", poids: "0" })}><PlusCircle size={16} className="mr-2" />Add Ingredient</Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-[1fr_auto_auto] items-end gap-x-3 mb-2">
-            <Label className="text-sm font-medium text-muted-foreground">Name</Label>
-            <Label className="text-sm font-medium text-muted-foreground">Weight (g)</Label>
-            <div className="w-8"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] items-end gap-x-3 mb-2">
+            <Label className="text-sm font-medium text-muted-foreground col-span-1 sm:col-span-1">Name</Label>
+            <Label className="text-sm font-medium text-muted-foreground mt-2 sm:mt-0 col-span-1 sm:col-span-1">Weight (g)</Label>
+            <div className="w-8 hidden sm:block"></div> {/* Spacer for larger screens */}
           </div>
           {autresIngredients.map((item) => (
-            <div key={item.id} className="grid grid-cols-[1fr_auto_auto] items-center gap-x-3">
+             <div key={item.id} className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] items-center gap-x-3 gap-y-2 sm:gap-y-0 mb-2">
               <Input value={item.nom} onChange={(e) => handleItemChange(setAutresIngredients, item.id, 'nom', e.target.value)} className="p-2.5 text-foreground text-sm" placeholder="e.g.: Coriander"/>
-              <Input type="number" value={item.poids} onChange={(e) => handleItemChange(setAutresIngredients, item.id, 'poids', e.target.value)} className="p-2.5 text-foreground text-sm w-24" placeholder="0"/>
-              <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleRemoveItem(setAutresIngredients, item.id)}><Trash2 size={18} /></Button>
+              <Input type="number" value={item.poids} onChange={(e) => handleItemChange(setAutresIngredients, item.id, 'poids', e.target.value)} className="p-2.5 text-foreground text-sm sm:w-24" placeholder="0"/>
+              <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 justify-self-end sm:justify-self-auto" onClick={() => handleRemoveItem(setAutresIngredients, item.id)}><Trash2 size={18} /></Button>
             </div>
           ))}
         </CardContent>
@@ -269,16 +269,16 @@ export default function CreateRecipePage() {
         <CardContent className="space-y-4">
            {levures.map((item) => (
             <div key={item.id} className="space-y-3 border-b pb-3 last:border-b-0 last:pb-0">
-              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-x-4 gap-y-4 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] items-end gap-x-3 gap-y-2 sm:gap-y-0">
                 <div className="flex-grow">
                   <Label htmlFor={`nomLevureInput-${item.id}`} className="text-sm font-medium text-muted-foreground">Name</Label>
                   <Input id={`nomLevureInput-${item.id}`} value={item.nom} onChange={(e) => handleItemChange(setLevures, item.id, 'nom', e.target.value)} className="mt-1 p-2.5 text-foreground text-sm" placeholder="SafAle US-05"/>
                 </div>
-                <div className="w-24 md:w-auto"> {/* Adjusted width for smaller screens */}
+                <div className="sm:w-24">
                   <Label htmlFor={`poidsLevureInput-${item.id}`} className="text-sm font-medium text-muted-foreground">Weight (g)</Label>
                   <Input id={`poidsLevureInput-${item.id}`} type="number" value={item.poids} onChange={(e) => handleItemChange(setLevures, item.id, 'poids', e.target.value)} className="mt-1 p-2.5 text-foreground text-sm w-full" placeholder="0"/>
                 </div>
-                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 self-end" onClick={() => handleRemoveItem(setLevures, item.id)}>
+                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 justify-self-end sm:justify-self-auto" onClick={() => handleRemoveItem(setLevures, item.id)}>
                   <Trash2 size={18} />
                 </Button>
               </div>

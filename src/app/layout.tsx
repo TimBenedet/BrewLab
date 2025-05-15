@@ -37,7 +37,7 @@ export default function RootLayout({
         </main>
         <Toaster />
         <footer className="bg-muted text-muted-foreground py-4 text-center text-sm">
-          <p>&copy; <FooterDate /> BrewLab. Brewed with passion.</p>
+          <p>&copy; <FooterDate /> TimBénédet. Brewed with passion.</p>
         </footer>
       </body>
     </html>
