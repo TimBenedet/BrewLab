@@ -6,10 +6,11 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { getHexForSrm } from '@/lib/srmUtils';
-import CustomBeerGlassIcon from '@/components/icons/CustomBeerGlassIcon'; // Import the new custom icon
+// Removed import of CustomBeerGlassIcon
+// import CustomBeerGlassIcon from '@/components/icons/CustomBeerGlassIcon'; 
 
 import {
-  BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon
+  BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, GlassWater // Added GlassWater
 } from 'lucide-react';
 
 
@@ -119,11 +120,12 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
       <Card className="shadow-lg overflow-hidden">
         <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
           {recipe.stats.colorSrm !== undefined && (
-            <CustomBeerGlassIcon
-              srmHexColor={srmHexColor}
+            <GlassWater // Using standard GlassWater icon
+              fill={srmHexColor} // Fill the interior with SRM color
+              stroke="currentColor" // Outline with current text color
               size={48}
               strokeWidth={1.5}
-              className="text-foreground" // For glassOutlineColor="currentColor"
+              className="text-foreground" // Ensures stroke uses foreground color from theme
             />
           )}
           <div className="flex-1">
@@ -245,3 +247,4 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
     </div>
   );
 }
+
