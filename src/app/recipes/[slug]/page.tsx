@@ -2,14 +2,14 @@
 import { getRecipeData, getAllRecipeSlugs } from '@/lib/recipes';
 import type { Recipe, ValueUnit, Fermentable, Hop, Yeast, Misc, MashStep } from '@/types/recipe';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
+// Removed Image import as it's no longer used for the beer glass
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { getHexForSrm } from '@/lib/srmUtils';
 
 import {
-  BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon
+  BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, GlassWater
 } from 'lucide-react';
 
 
@@ -105,8 +105,8 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
   const colorSrmValue = recipe.stats.colorSrm ? (typeof recipe.stats.colorSrm === 'number' ? recipe.stats.colorSrm : parseFloat(String(recipe.stats.colorSrm))) : 0;
 
   const targetStatsForGauges = [
-    { label: "Original Gravity", valueText: ogValue ? ogValue.toFixed(3) : '-', progressValue: ogValue ? Math.min(100,Math.max(0,(ogValue - 1) * 2000 - 80)) : 0, icon: ThermoIcon }, // Changed icon for OG
-    { label: "Final Gravity", valueText: fgValue ? fgValue.toFixed(3) : '-', progressValue: fgValue ? Math.min(100,Math.max(0,(fgValue - 1) * 2000 - 10)) : 0, icon: ThermoIcon }, // Changed icon for FG
+    { label: "Original Gravity", valueText: ogValue ? ogValue.toFixed(3) : '-', progressValue: ogValue ? Math.min(100,Math.max(0,(ogValue - 1) * 2000 - 80)) : 0, icon: ThermoIcon },
+    { label: "Final Gravity", valueText: fgValue ? fgValue.toFixed(3) : '-', progressValue: fgValue ? Math.min(100,Math.max(0,(fgValue - 1) * 2000 - 10)) : 0, icon: ThermoIcon },
     { label: "Alcohol By Volume", valueText: recipe.stats.abv?.toString() || '-', progressValue: Math.min(100,Math.max(0,abvValue * 100 / 15)), icon: Percent },
     { label: "Bitterness (IBU)", valueText: recipe.stats.ibu?.toString() || '-', progressValue: Math.min(100,Math.max(0,ibuValue * 100 / 100)), icon: Leaf },
     { label: "Color (SRM)", valueText: recipe.stats.colorSrm?.toString() || '-', progressValue: Math.min(100,Math.max(0,colorSrmValue * 100 / 40)), icon: Palette },
@@ -118,19 +118,13 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
     <div className="space-y-8">
       <Card className="shadow-lg overflow-hidden">
         <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
-          <Image 
-            src="https://placehold.co/40x60.png" 
-            alt="Beer glass" 
-            width={40} 
-            height={60} 
-            className="rounded"
-            data-ai-hint="beer glass"
-          />
           {recipe.stats.colorSrm !== undefined && (
-             <div
-              className="w-6 h-6 rounded-full border border-muted-foreground/50 shadow-sm"
-              style={{ backgroundColor: srmHexColor }}
-              title={`SRM: ${recipe.stats.colorSrm}`}
+            <GlassWater
+              size={48} // Increased size for better visibility
+              stroke="currentColor" // Outline and internal lines will use current text color
+              fill={srmHexColor} // Fill the body of the glass with the beer color
+              strokeWidth={1.5} // Adjusted stroke width
+              className="text-foreground" // Ensures currentColor resolves correctly
             />
           )}
           <div className="flex-1">
@@ -252,3 +246,4 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
     </div>
   );
 }
+
