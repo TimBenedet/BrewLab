@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle, Filter, FileText } from "lucide-react";
+import { PlusCircle, Filter } from "lucide-react";
 
 export default function HomePage() {
   // Mock styles for the filter dropdown. Replace with actual data as needed.
@@ -18,7 +18,7 @@ export default function HomePage() {
     <div className="space-y-6">
       {/* Top Actions Bar */}
       <div className="flex justify-end items-center space-x-3 pt-2">
-        <Select defaultValue="all">
+        <Select>
           <SelectTrigger className="w-auto md:w-[200px] text-sm">
             <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
             <SelectValue placeholder="Filtrer par style" />
@@ -40,12 +40,11 @@ export default function HomePage() {
       {/* Main Content Area - Empty State */}
       <Card className="w-full shadow-sm">
         <CardContent className="py-16 md:py-24 flex flex-col items-center justify-center text-center space-y-5">
-          <FileText size={48} className="text-muted-foreground/70 mb-3" />
           <h2 className="text-xl md:text-2xl font-medium text-foreground">
-            Aucune recette enregistrée
+            Aucune recette enregistrée.
           </h2>
           <p className="text-muted-foreground max-w-xs text-sm md:text-base">
-            Commencez par créer votre première recette pour la voir apparaître ici.
+            Commencez par créer votre première recette !
           </p>
           <Button size="lg" className="mt-4 text-base">
             <PlusCircle className="mr-2 h-5 w-5" />
