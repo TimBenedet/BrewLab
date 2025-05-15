@@ -1,11 +1,16 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle, Filter } from "lucide-react";
 import Link from 'next/link';
+import { getAllRecipes } from '@/lib/recipes';
+import type { Recipe } from '@/types/recipe';
+import { RecipeListClient } from '@/components/recipes/RecipeListClient';
+import { Card, CardContent } from "@/components/ui/card";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const recipes: Recipe[] = await getAllRecipes();
+
   // Mock styles for the filter dropdown. Replace with actual data as needed.
   const styles = [
     { value: "all", label: "Tous les styles" },
@@ -15,9 +20,6 @@ export default function HomePage() {
     { value: "pale_ale", label: "Pale Ale" },
     { value: "porter", label: "Porter" },
   ];
-
-  // Mocked recipes data for demonstration. Replace with actual data fetching.
-  const recipes: any[] = []; // Simule une liste vide de recettes pour l'instant
 
   return (
     <div className="space-y-6">
@@ -52,15 +54,12 @@ export default function HomePage() {
               Aucune recette enregistrée.
             </h2>
             <p className="text-muted-foreground max-w-xs text-sm md:text-base">
-              Commencez par créer votre première recette !
+              Placez vos fichiers BeerXML dans le dossier `public/recipes` et recompilez, ou commencez par créer votre première recette !
             </p>
           </CardContent>
         </Card>
       ) : (
-        // Ici, vous mapperez sur vos recettes pour les afficher, par exemple avec RecipeCard
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* {recipes.map(recipe => <RecipeCard key={recipe.id} recipe={recipe} />)} */}
-        </div>
+        <RecipeListClient recipes={recipes} />
       )}
     </div>
   );
