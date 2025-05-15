@@ -18,12 +18,15 @@ export function Header() {
 
   return (
     <header className="bg-card text-card-foreground border-b sticky top-0 z-40">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 h-16 grid grid-cols-[auto_1fr_auto] items-center">
+        {/* Logo - Column 1 */}
         <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
           <Beer size={26} className="text-primary" />
           <h1 className="text-xl font-semibold text-foreground">BrewLab</h1>
         </Link>
-        <nav className="flex items-center space-x-1">
+        
+        {/* Navigation - Column 2 */}
+        <nav className="flex justify-center items-center space-x-1">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -44,6 +47,9 @@ export function Header() {
             );
           })}
         </nav>
+
+        {/* Right Spacer - Column 3 (to ensure nav is centered properly) */}
+        <div></div>
       </div>
     </header>
   );
