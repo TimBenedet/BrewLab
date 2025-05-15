@@ -13,7 +13,7 @@ export default async function HomePage() {
 
   // Mock styles for the filter dropdown. Replace with actual data as needed.
   const styles = [
-    { value: "all", label: "Tous les styles" },
+    { value: "all", label: "All Styles" },
     { value: "ipa", label: "IPA" },
     { value: "stout", label: "Stout" },
     { value: "lager", label: "Lager" },
@@ -28,7 +28,7 @@ export default async function HomePage() {
         <Select>
           <SelectTrigger className="group w-auto md:w-[200px] text-sm shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border hover:border-primary">
             <Filter className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" />
-            <SelectValue placeholder="Filtrer par style" />
+            <SelectValue placeholder="Filter by style" />
           </SelectTrigger>
           <SelectContent>
             {styles.map((style) => (
@@ -38,12 +38,7 @@ export default async function HomePage() {
             ))}
           </SelectContent>
         </Select>
-        <Button asChild className="text-sm">
-          <Link href="/creer-recette">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Créer une recette
-          </Link>
-        </Button>
+        {/* "Create Recipe" button removed */}
       </div>
 
       {/* Main Content Area */}
@@ -51,10 +46,10 @@ export default async function HomePage() {
         <Card className="w-full shadow-sm border-border">
           <CardContent className="py-16 md:py-24 flex flex-col items-center justify-center text-center space-y-4">
             <h2 className="text-xl md:text-2xl font-medium text-foreground">
-              Aucune recette enregistrée.
+              No recipes saved.
             </h2>
             <p className="text-muted-foreground max-w-xs text-sm md:text-base">
-              Placez vos fichiers BeerXML dans le dossier `public/recipes` et recompilez, ou commencez par créer votre première recette !
+              Place your BeerXML files in the `public/recipes` folder and rebuild, or start by creating your first recipe!
             </p>
           </CardContent>
         </Card>
