@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Beer, Info, Wheat, PlusCircle, Trash2 } from "lucide-react"; // Wheat est disponible
+import { Beer, Info, Wheat, PlusCircle, Trash2 } from "lucide-react";
 
 interface IndicatorProps {
   label: string;
@@ -29,10 +29,10 @@ const IndicatorItem: React.FC<IndicatorProps> = ({ label, valueText, progressVal
 export default function CreateRecipePage() {
   // États pour Informations Générales
   const [nomBiere, setNomBiere] = useState("");
-  const [styleBiere, setStyleBiere] = useState("IPA"); // Valeur par défaut pour le Select
+  const [styleBiere, setStyleBiere] = useState("IPA");
   const [volumeBiere, setVolumeBiere] = useState("20");
 
-  // États pour Céréales et Sucres (exemple simple pour une ligne)
+  // États pour Céréales et Sucres
   const [nomCereale, setNomCereale] = useState("Pilsner Malt");
   const [poidsCereale, setPoidsCereale] = useState("0");
 
@@ -64,6 +64,79 @@ export default function CreateRecipePage() {
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-0 space-y-8">
+
+      {/* Section Indicateurs Clés (Existante) */}
+      <div className="flex flex-col items-center mb-8 mt-12">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Indicateurs Clés</h1>
+        <Beer size={32} className="text-primary" />
+      </div>
+
+      <Card className="mb-8 shadow-md">
+        <CardContent className="p-6">
+          {indicators.map((ind) => (
+            <IndicatorItem key={ind.label} label={ind.label} valueText={ind.valueText} progressValue={Math.min(100, Math.max(0, ind.progressValue))} />
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Section Valeurs (Existante) */}
+      <Card className="shadow-md">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+            <div>
+              <Label htmlFor="densiteInitialeInput" className="text-sm font-medium text-muted-foreground">Densité Initiale</Label>
+              <Input 
+                id="densiteInitialeInput" 
+                value={densiteInitiale}
+                onChange={(e) => setDensiteInitiale(e.target.value)}
+                className="mt-1 p-2.5 text-foreground text-sm"
+                placeholder="ex: 1,050"
+              />
+            </div>
+            <div>
+              <Label htmlFor="densiteFinaleInput" className="text-sm font-medium text-muted-foreground">Densité Finale</Label>
+              <Input 
+                id="densiteFinaleInput" 
+                value={densiteFinale}
+                onChange={(e) => setDensiteFinale(e.target.value)}
+                className="mt-1 p-2.5 text-foreground text-sm"
+                placeholder="ex: 1,010"
+              />
+            </div>
+            <div>
+              <Label htmlFor="couleurEBCInput" className="text-sm font-medium text-muted-foreground">Couleur (EBC)</Label>
+              <Input 
+                id="couleurEBCInput" 
+                value={couleurEBC}
+                onChange={(e) => setCouleurEBC(e.target.value)}
+                className="mt-1 p-2.5 text-foreground text-sm"
+                placeholder="ex: 10"
+              />
+            </div>
+            <div>
+              <Label htmlFor="amertumeIBUInput" className="text-sm font-medium text-muted-foreground">Amertume (IBU)</Label>
+              <Input 
+                id="amertumeIBUInput" 
+                value={amertumeIBU}
+                onChange={(e) => setAmertumeIBU(e.target.value)}
+                className="mt-1 p-2.5 text-foreground text-sm"
+                placeholder="ex: 30"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="alcoolABVInput" className="text-sm font-medium text-muted-foreground">Alcool (%ABV)</Label>
+              <Input 
+                id="alcoolABVInput" 
+                value={alcoolABV}
+                onChange={(e) => setAlcoolABV(e.target.value)}
+                className="mt-1 p-2.5 text-foreground text-sm"
+                placeholder="ex: 5,3"
+              />
+              <p className="text-xs text-muted-foreground mt-1.5">Calculé à partir de DI et DF.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Section Informations Générales */}
       <Card className="shadow-md">
@@ -155,80 +228,6 @@ export default function CreateRecipePage() {
         </CardContent>
       </Card>
 
-
-      {/* Section Indicateurs Clés (Existante) */}
-      <div className="flex flex-col items-center mb-8 mt-12"> {/* Added mt-12 for spacing */}
-        <h1 className="text-3xl font-bold text-foreground mb-2">Indicateurs Clés</h1>
-        <Beer size={32} className="text-primary" />
-      </div>
-
-      <Card className="mb-8 shadow-md">
-        <CardContent className="p-6">
-          {indicators.map((ind) => (
-            <IndicatorItem key={ind.label} label={ind.label} valueText={ind.valueText} progressValue={Math.min(100, Math.max(0, ind.progressValue))} />
-          ))}
-        </CardContent>
-      </Card>
-
-      {/* Section Valeurs (Existante) */}
-      <Card className="shadow-md">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-            <div>
-              <Label htmlFor="densiteInitialeInput" className="text-sm font-medium text-muted-foreground">Densité Initiale</Label>
-              <Input 
-                id="densiteInitialeInput" 
-                value={densiteInitiale}
-                onChange={(e) => setDensiteInitiale(e.target.value)}
-                className="mt-1 p-2.5 text-foreground text-sm"
-                placeholder="ex: 1,050"
-              />
-            </div>
-            <div>
-              <Label htmlFor="densiteFinaleInput" className="text-sm font-medium text-muted-foreground">Densité Finale</Label>
-              <Input 
-                id="densiteFinaleInput" 
-                value={densiteFinale}
-                onChange={(e) => setDensiteFinale(e.target.value)}
-                className="mt-1 p-2.5 text-foreground text-sm"
-                placeholder="ex: 1,010"
-              />
-            </div>
-            <div>
-              <Label htmlFor="couleurEBCInput" className="text-sm font-medium text-muted-foreground">Couleur (EBC)</Label>
-              <Input 
-                id="couleurEBCInput" 
-                value={couleurEBC}
-                onChange={(e) => setCouleurEBC(e.target.value)}
-                className="mt-1 p-2.5 text-foreground text-sm"
-                placeholder="ex: 10"
-              />
-            </div>
-            <div>
-              <Label htmlFor="amertumeIBUInput" className="text-sm font-medium text-muted-foreground">Amertume (IBU)</Label>
-              <Input 
-                id="amertumeIBUInput" 
-                value={amertumeIBU}
-                onChange={(e) => setAmertumeIBU(e.target.value)}
-                className="mt-1 p-2.5 text-foreground text-sm"
-                placeholder="ex: 30"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Label htmlFor="alcoolABVInput" className="text-sm font-medium text-muted-foreground">Alcool (%ABV)</Label>
-              <Input 
-                id="alcoolABVInput" 
-                value={alcoolABV}
-                onChange={(e) => setAlcoolABV(e.target.value)}
-                className="mt-1 p-2.5 text-foreground text-sm"
-                placeholder="ex: 5,3"
-              />
-              <p className="text-xs text-muted-foreground mt-1.5">Calculé à partir de DI et DF.</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
-
