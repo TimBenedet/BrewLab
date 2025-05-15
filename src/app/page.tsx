@@ -1,8 +1,9 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle, Filter, Info } from "lucide-react";
+import { PlusCircle, Filter } from "lucide-react";
+import Link from 'next/link';
 
 export default function HomePage() {
   // Mock styles for the filter dropdown. Replace with actual data as needed.
@@ -23,7 +24,7 @@ export default function HomePage() {
       {/* Top Actions Bar */}
       <div className="flex justify-end items-center space-x-3 pt-2">
         <Select>
-          <SelectTrigger className="group w-auto md:w-[200px] text-sm shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors duration-200">
+          <SelectTrigger className="group w-auto md:w-[200px] text-sm shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border hover:border-primary">
             <Filter className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" />
             <SelectValue placeholder="Filtrer par style" />
           </SelectTrigger>
@@ -35,9 +36,11 @@ export default function HomePage() {
             ))}
           </SelectContent>
         </Select>
-        <Button className="text-sm">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Créer une recette
+        <Button asChild className="text-sm">
+          <Link href="/creer-recette">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Créer une recette
+          </Link>
         </Button>
       </div>
 
@@ -45,15 +48,12 @@ export default function HomePage() {
       {recipes.length === 0 ? (
         <Card className="w-full shadow-sm border-border">
           <CardContent className="py-16 md:py-24 flex flex-col items-center justify-center text-center space-y-4">
-            {/* Vous pouvez ajouter une icône ici si vous le souhaitez, par exemple : */}
-            {/* <Info size={48} className="text-muted-foreground mb-4" /> */}
             <h2 className="text-xl md:text-2xl font-medium text-foreground">
               Aucune recette enregistrée.
             </h2>
             <p className="text-muted-foreground max-w-xs text-sm md:text-base">
-              Commencez par créer votre première recette ou importez-en !
+              Commencez par créer votre première recette !
             </p>
-            {/* Le bouton "Créer une recette" central a été enlevé comme demandé */}
           </CardContent>
         </Card>
       ) : (
