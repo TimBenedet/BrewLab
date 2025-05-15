@@ -2,14 +2,14 @@
 import { getRecipeData, getAllRecipeSlugs } from '@/lib/recipes';
 import type { Recipe, ValueUnit, Fermentable, Hop, Yeast, Misc, MashStep } from '@/types/recipe';
 import { notFound } from 'next/navigation';
-// Removed Image import as it's no longer used for the beer glass
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { getHexForSrm } from '@/lib/srmUtils';
+import CustomBeerGlassIcon from '@/components/icons/CustomBeerGlassIcon'; // Import the new custom icon
 
 import {
-  BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, GlassWater
+  BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon
 } from 'lucide-react';
 
 
@@ -119,12 +119,11 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
       <Card className="shadow-lg overflow-hidden">
         <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
           {recipe.stats.colorSrm !== undefined && (
-            <GlassWater
-              size={48} // Increased size for better visibility
-              stroke="currentColor" // Outline and internal lines will use current text color
-              fill={srmHexColor} // Fill the body of the glass with the beer color
-              strokeWidth={1.5} // Adjusted stroke width
-              className="text-foreground" // Ensures currentColor resolves correctly
+            <CustomBeerGlassIcon
+              srmHexColor={srmHexColor}
+              size={48}
+              strokeWidth={1.5}
+              className="text-foreground" // For glassOutlineColor="currentColor"
             />
           )}
           <div className="flex-1">
@@ -246,4 +245,3 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
     </div>
   );
 }
-
