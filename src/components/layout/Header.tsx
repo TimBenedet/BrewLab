@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Sparkles, Wrench, Beer } from 'lucide-react';
+import { BookOpen, Wrench, Beer } from 'lucide-react'; // Removed Sparkles
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,7 @@ export function Header() {
 
   const navLinks = [
     { href: '/', label: 'Mes recettes', icon: BookOpen },
-    { href: '/recettes-ia', label: 'Recettes IA', icon: Sparkles },
+    // { href: '/recettes-ia', label: 'Recettes IA', icon: Sparkles }, // Removed this line
     { href: '/equipements', label: 'Équipements', icon: Wrench },
   ];
 
