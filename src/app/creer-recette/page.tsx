@@ -19,7 +19,7 @@ interface Ingredient {
   nom: string;
   poids: string;
   // Add other common fields if necessary, or handle specific fields in specific ingredient types
-  [key: string]: any; 
+  [key: string]: any;
 }
 
 interface HopIngredient extends Ingredient {
@@ -66,10 +66,10 @@ export default function CreateRecipePage() {
   const [houblons, setHoublons] = useState<HopIngredient[]>([{ id: Date.now(), nom: "Cascade", poids: "0", format: "Pellets", acideAlpha: "0" }]);
   const [autresIngredients, setAutresIngredients] = useState<Ingredient[]>([{ id: Date.now(), nom: "", poids: "0" }]);
   const [levures, setLevures] = useState<YeastIngredient[]>([{ id: Date.now(), nom: "SafAle US-05", poids: "0", type: "Ale" }]);
-  
+
   // État pour Calendrier de Fermentation
   const [dateDebutFermentation, setDateDebutFermentation] = useState<Date | undefined>();
-  
+
   // État pour Notes Additionnelles
   const [notesAdditionnelles, setNotesAdditionnelles] = useState("");
 
@@ -103,19 +103,6 @@ export default function CreateRecipePage() {
   const handleItemChange = <T extends Ingredient>(setter: React.Dispatch<React.SetStateAction<T[]>>, id: number, field: keyof T, value: string) => {
     setter(prev => prev.map(item => item.id === id ? { ...item, [field]: value } : item));
   };
-  
-  const escapeCsvCell = (cellData: any): string => {
-    if (cellData === null || cellData === undefined) {
-      return '';
-    }
-    const stringData = String(cellData);
-    // If the data contains a comma, newline, or double quote, then wrap it in double quotes.
-    // Any double quote characters in the data must be escaped by doubling them (e.g., " becomes "").
-    if (stringData.includes(',') || stringData.includes('"') || stringData.includes('\n')) {
-      return `"${stringData.replace(/"/g, '""')}"`;
-    }
-    return stringData;
-  };
 
   const handleEnregistrerRecette = () => {
     const recetteData = {
@@ -126,45 +113,10 @@ export default function CreateRecipePage() {
         notesAdditionnelles
     };
 
-    const headers = [
-      "Nom de la bière", "Style", "Volume (litres)",
-      "Densité Initiale", "Densité Finale", "Couleur (EBC)", "Amertume (IBU)", "Alcool (%ABV)",
-      "Céréales et Sucres (JSON)", "Houblons (JSON)", "Autres Ingrédients (JSON)", "Levures (JSON)",
-      "Date de début de fermentation", "Notes Additionnelles"
-    ];
-
-    const row = [
-      recetteData.nomBiere, recetteData.styleBiere, recetteData.volumeBiere,
-      recetteData.densiteInitiale, recetteData.densiteFinale, recetteData.couleurEBC, recetteData.amertumeIBU, recetteData.alcoolABV,
-      JSON.stringify(recetteData.cereales),
-      JSON.stringify(recetteData.houblons),
-      JSON.stringify(recetteData.autresIngredients),
-      JSON.stringify(recetteData.levures),
-      recetteData.dateDebutFermentation,
-      recetteData.notesAdditionnelles
-    ].map(escapeCsvCell).join(',');
-
-    const csvString = headers.join(',') + '\n' + row;
-
-    // Logique pour télécharger le fichier CSV
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        const filename = (nomBiere || 'nouvelle-recette').replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        link.setAttribute("href", url);
-        link.setAttribute("download", `${filename}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        console.log("Fichier CSV généré et téléchargement initié:", `${filename}.csv`);
-    } else {
-        alert("La fonctionnalité de téléchargement n'est pas supportée par votre navigateur.");
-    }
-    console.log("Données de la recette (pour CSV):", recetteData);
-    // Pour l'instant, on ne modifie pas la liste des recettes affichées sur la page d'accueil.
-    // alert("Recette enregistrée (simulation CSV) ! Vérifiez la console et vos téléchargements.");
+    console.log("Données de la recette:", recetteData);
+    alert("Recette enregistrée (simulation) ! Vérifiez la console pour les données.");
+    // La logique pour la génération XML/autre et la mise à jour de la liste des recettes
+    // sera ajoutée ici.
   };
 
 
