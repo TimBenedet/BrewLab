@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle, Filter, Info } from "lucide-react"; // Ajout de Info pour l'icône de la carte
+import { PlusCircle, Filter, Info } from "lucide-react";
 
 export default function HomePage() {
   // Mock styles for the filter dropdown. Replace with actual data as needed.
@@ -21,7 +21,7 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       {/* Top Actions Bar */}
-      <div className="flex justify-center items-center space-x-3 pt-2">
+      <div className="flex justify-end items-center space-x-3 pt-2">
         <Select>
           <SelectTrigger className="group w-auto md:w-[200px] text-sm shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors duration-200">
             <Filter className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" />
