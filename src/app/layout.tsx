@@ -1,8 +1,10 @@
+
 import type { Metadata } from 'next';
 import { Inter, Roboto_Mono } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Toaster } from "@/components/ui/toaster";
+import { FooterDate } from '@/components/layout/FooterDate'; // Import the new component
 
 const inter = Inter({
   variable: '--font-sans',
@@ -35,7 +37,7 @@ export default function RootLayout({
         </main>
         <Toaster />
         <footer className="bg-muted text-muted-foreground py-4 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} BeerSmith Viewer. Brewed with passion.</p>
+          <p>&copy; <FooterDate /> BeerSmith Viewer. Brewed with passion.</p>
         </footer>
       </body>
     </html>
