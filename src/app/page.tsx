@@ -11,15 +11,13 @@ import { Card, CardContent } from "@/components/ui/card";
 export default async function HomePage() {
   const recipes: Recipe[] = await getAllRecipes();
 
-  // Mock styles for the filter dropdown. Replace with actual data as needed.
-  const styles = [
-    { value: "all", label: "All Styles" },
-    { value: "ipa", label: "IPA" },
-    { value: "stout", label: "Stout" },
-    { value: "lager", label: "Lager" },
-    { value: "pale_ale", label: "Pale Ale" },
-    { value: "porter", label: "Porter" },
-  ];
+  const allRecipeStyles = recipes.map(recipe => recipe.metadata.style).filter(style => style); // Filter out any empty/undefined styles
+  const uniqueStyleLabels = Array.from(new Set(allRecipeStyles));
+  const dynamicStyleOptions = uniqueStyleLabels.map(label => ({
+    value: label.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, ''), // Sanitize value
+    label: label
+  }));
+  const stylesForFilter = [{ value: "all", label: "All Styles" }, ...dynamicStyleOptions];
 
   return (
     <div className="space-y-6">
@@ -31,7 +29,7 @@ export default async function HomePage() {
             <SelectValue placeholder="Filter by style" />
           </SelectTrigger>
           <SelectContent>
-            {styles.map((style) => (
+            {stylesForFilter.map((style) => (
               <SelectItem key={style.value} value={style.value} className="text-sm">
                 {style.label}
               </SelectItem>

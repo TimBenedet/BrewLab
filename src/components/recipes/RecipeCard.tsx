@@ -45,13 +45,19 @@ export function RecipeCard({ recipe, onDelete }: RecipeCardProps) {
           </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">{recipe.metadata.style}</CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow space-y-1.5 text-sm">
-          <StatItem icon={Beer} label="Volume" value={formatValueUnit(recipe.metadata.batchSize)} />
-          <StatItem icon={Palette} label="Color" value={recipe.stats.colorSrm ? `${recipe.stats.colorSrm} SRM` : '-'} />
-          <StatItem icon={Percent} label="Alcohol" value={recipe.stats.abv ? `${recipe.stats.abv}` : '-'} />
-          <StatItem icon={Thermometer} label="OG" value={formatGravity(recipe.stats.og)} />
-          <StatItem icon={Thermometer} label="FG" value={formatGravity(recipe.stats.fg)} />
-          <StatItem icon={AlertTriangle} label="Bitterness" value={recipe.stats.ibu ? `${recipe.stats.ibu} IBU` : '-'} />
+        <CardContent className="flex-grow text-sm">
+          <div className="grid grid-cols-2 gap-x-3">
+            <div className="space-y-1.5"> {/* Left Column */}
+              <StatItem icon={Beer} label="Volume" value={formatValueUnit(recipe.metadata.batchSize)} />
+              <StatItem icon={Palette} label="Color" value={recipe.stats.colorSrm ? `${recipe.stats.colorSrm} SRM` : '-'} />
+              <StatItem icon={Percent} label="Alcohol" value={recipe.stats.abv ? `${recipe.stats.abv}` : '-'} />
+            </div>
+            <div className="space-y-1.5"> {/* Right Column */}
+              <StatItem icon={Thermometer} label="OG" value={formatGravity(recipe.stats.og)} />
+              <StatItem icon={Thermometer} label="FG" value={formatGravity(recipe.stats.fg)} />
+              <StatItem icon={AlertTriangle} label="Bitterness" value={recipe.stats.ibu ? `${recipe.stats.ibu} IBU` : '-'} />
+            </div>
+          </div>
         </CardContent>
       </Link>
       <CardFooter className="justify-between items-center pt-4">
