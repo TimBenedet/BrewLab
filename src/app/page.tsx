@@ -23,7 +23,7 @@ export default function HomePage() {
       {/* Top Actions Bar */}
       <div className="flex justify-end items-center space-x-3 pt-2">
         <Select>
-          <SelectTrigger className="w-auto md:w-[200px] text-sm shadow-sm">
+          <SelectTrigger className="w-auto md:w-[200px] text-sm shadow-sm hover:border-primary transition-colors duration-200">
             <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
             <SelectValue placeholder="Filtrer par style" />
           </SelectTrigger>
