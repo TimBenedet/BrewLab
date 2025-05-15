@@ -39,7 +39,7 @@ export function Header() {
                   isActive && 'text-primary bg-primary/5' // Style pour l'onglet actif
                 )}
               >
-                <Link href={link.href} className="flex items-center gap-1.5">
+                <Link href={link.href} className="flex items-center gap-1.5 font-semibold">
                   <link.icon size={16} />
                   {link.label}
                 </Link>
