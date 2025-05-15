@@ -19,8 +19,8 @@ const roboto_mono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'BeerSmith Recipe Viewer',
-  description: 'View and manage your BeerSmith XML recipes.',
+  title: 'BrewLab - Gestion de Recettes',
+  description: 'Visualisez et gérez vos recettes de bière.',
 };
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${roboto_mono.variable}`}>
+    <html lang="fr" className={`${inter.variable} ${roboto_mono.variable}`}>
       <body className="antialiased min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow container mx-auto px-4 py-8">
@@ -37,7 +37,7 @@ export default function RootLayout({
         </main>
         <Toaster />
         <footer className="bg-muted text-muted-foreground py-4 text-center text-sm">
-          <p>&copy; <FooterDate /> BeerSmith Viewer. Brewed with passion.</p>
+          <p>&copy; <FooterDate /> BrewLab. Brassé avec passion.</p>
         </footer>
       </body>
     </html>

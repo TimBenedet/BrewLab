@@ -62,7 +62,7 @@ export default function CreateRecipePage() {
   const [volumeBiere, setVolumeBiere] = useState("20");
 
   // États pour listes d'ingrédients
-  const [cereales, setCereales] = useState<Ingredient[]>([{ id: Date.now(), nom: "Pilsner Malt", poids: "0" }]);
+  const [cereales, setCereales] = useState<Ingredient[]>([{ id: Date.now(), nom: "Malt Pilsner", poids: "0" }]);
   const [houblons, setHoublons] = useState<HopIngredient[]>([{ id: Date.now(), nom: "Cascade", poids: "0", format: "Pellets", acideAlpha: "0" }]);
   const [autresIngredients, setAutresIngredients] = useState<Ingredient[]>([{ id: Date.now(), nom: "", poids: "0" }]);
   const [levures, setLevures] = useState<YeastIngredient[]>([{ id: Date.now(), nom: "SafAle US-05", poids: "0", type: "Ale" }]);
@@ -200,7 +200,7 @@ export default function CreateRecipePage() {
           </div>
           {cereales.map((item) => (
             <div key={item.id} className="grid grid-cols-[1fr_auto_auto] items-center gap-x-3">
-              <Input value={item.nom} onChange={(e) => handleItemChange(setCereales, item.id, 'nom', e.target.value)} className="p-2.5 text-foreground text-sm" placeholder="Pilsner Malt"/>
+              <Input value={item.nom} onChange={(e) => handleItemChange(setCereales, item.id, 'nom', e.target.value)} className="p-2.5 text-foreground text-sm" placeholder="Malt Pilsner"/>
               <Input type="number" value={item.poids} onChange={(e) => handleItemChange(setCereales, item.id, 'poids', e.target.value)} className="p-2.5 text-foreground text-sm w-24" placeholder="0"/>
               <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10" onClick={() => handleRemoveItem(setCereales, item.id)}><Trash2 size={18} /></Button>
             </div>
@@ -310,7 +310,7 @@ export default function CreateRecipePage() {
                 className={`w-full justify-start text-left font-normal ${!dateDebutFermentation && "text-muted-foreground"}`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateDebutFermentation ? format(dateDebutFermentation, "PPP") : <span>Choisir une date</span>}
+                {dateDebutFermentation ? format(dateDebutFermentation, "PPP", { locale: require('date-fns/locale/fr') }) : <span>Choisir une date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -319,6 +319,7 @@ export default function CreateRecipePage() {
                 selected={dateDebutFermentation}
                 onSelect={setDateDebutFermentation}
                 initialFocus
+                locale={require('date-fns/locale/fr')}
               />
             </PopoverContent>
           </Popover>

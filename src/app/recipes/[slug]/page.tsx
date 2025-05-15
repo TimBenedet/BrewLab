@@ -86,85 +86,85 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
         <CardHeader className="bg-muted p-6">
           <CardTitle className="text-3xl font-bold text-primary">{recipe.metadata.name}</CardTitle>
           <CardDescription className="text-lg text-muted-foreground">{recipe.metadata.style}</CardDescription>
-          {recipe.metadata.author && <p className="text-sm text-muted-foreground italic">By: {recipe.metadata.author}</p>}
+          {recipe.metadata.author && <p className="text-sm text-muted-foreground italic">Par : {recipe.metadata.author}</p>}
         </CardHeader>
         
         <CardContent className="p-6 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl text-primary"><Info size={20} /> Metadata</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-xl text-primary"><Info size={20} /> Métadonnées</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2">
-              <DetailItem label="Batch Size" value={recipe.metadata.batchSize} icon={<Scale size={16}/>} />
-              <DetailItem label="Boil Time" value={recipe.metadata.boilTime} icon={<Clock size={16}/>} />
-              <DetailItem label="Efficiency" value={recipe.metadata.efficiency} icon={<Percent size={16}/>} />
+              <DetailItem label="Volume du lot" value={recipe.metadata.batchSize} icon={<Scale size={16}/>} />
+              <DetailItem label="Temps d'ébullition" value={recipe.metadata.boilTime} icon={<Clock size={16}/>} />
+              <DetailItem label="Efficacité" value={recipe.metadata.efficiency} icon={<Percent size={16}/>} />
             </CardContent>
           </Card>
 
           <IngredientTable
-            title="Fermentables"
-            icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-wheat"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11c1.9.95 2.28 3.08 1 5L3.47 12.53ZM8 22l-2-2c-1.28 1.28-3.38.9-5-1l-2.53-2.53C4.92 13.72 7.05 13.33 8 11l4 4-6 6Z"/><path d="M16 8c-1.9.95-2.28 3.08-1 5l-2.53-2.53C13.42 8.72 15.55 8.33 16.43 6.07L18 4.5l2.53 2.53c1.28 1.28.9 3.38-1 5l-2 2Z"/></svg>} // Using Lucide's Wheat
+            title="Fermentescibles"
+            icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-wheat"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11c1.9.95 2.28 3.08 1 5L3.47 12.53ZM8 22l-2-2c-1.28 1.28-3.38.9-5-1l-2.53-2.53C4.92 13.72 7.05 13.33 8 11l4 4-6 6Z"/><path d="M16 8c-1.9.95-2.28 3.08-1 5l-2.53-2.53C13.42 8.72 15.55 8.33 16.43 6.07L18 4.5l2.53 2.53c1.28 1.28.9 3.38-1 5l-2 2Z"/></svg>}
             items={recipe.fermentables}
             columns={[
-              { key: 'name', header: 'Name' },
-              { key: 'amount', header: 'Amount' },
+              { key: 'name', header: 'Nom' },
+              { key: 'amount', header: 'Quantité' },
               { key: 'type', header: 'Type' },
             ]}
           />
 
           <IngredientTable
-            title="Hops"
+            title="Houblons"
             icon={<Leaf size={20} />}
             items={recipe.hops}
             columns={[
-              { key: 'name', header: 'Name' },
-              { key: 'amount', header: 'Amount' },
-              { key: 'use', header: 'Use' },
-              { key: 'time', header: 'Time' },
+              { key: 'name', header: 'Nom' },
+              { key: 'amount', header: 'Quantité' },
+              { key: 'use', header: 'Usage' },
+              { key: 'time', header: 'Temps' },
               { key: 'alpha', header: 'Alpha %', render: (item: Hop) => item.alpha ? `${item.alpha.value} ${item.alpha.unit}` : '-' },
             ]}
           />
 
           <IngredientTable
-            title="Yeast"
+            title="Levure"
             icon={<Beaker size={20} />}
             items={recipe.yeasts}
             columns={[
-              { key: 'name', header: 'Name' },
+              { key: 'name', header: 'Nom' },
               { key: 'type', header: 'Type' },
-              { key: 'form', header: 'Form' },
-              { key: 'attenuation', header: 'Attenuation', render: (item: Yeast) => item.attenuation ? `${item.attenuation.value} ${item.attenuation.unit}` : '-' },
+              { key: 'form', header: 'Forme' },
+              { key: 'attenuation', header: 'Atténuation', render: (item: Yeast) => item.attenuation ? `${item.attenuation.value} ${item.attenuation.unit}` : '-' },
             ]}
           />
 
           {recipe.miscs && recipe.miscs.length > 0 && (
             <IngredientTable
-              title="Miscellaneous Ingredients"
+              title="Ingrédients Divers"
               icon={<CalendarDays size={20} />}
               items={recipe.miscs}
               columns={[
-                { key: 'name', header: 'Name' },
-                { key: 'amount', header: 'Amount' },
-                { key: 'use', header: 'Use' },
-                { key: 'time', header: 'Time', render: (item: Misc) => item.time ? `${item.time.value} ${item.time.unit}` : '-' },
+                { key: 'name', header: 'Nom' },
+                { key: 'amount', header: 'Quantité' },
+                { key: 'use', header: 'Usage' },
+                { key: 'time', header: 'Temps', render: (item: Misc) => item.time ? `${item.time.value} ${item.time.unit}` : '-' },
               ]}
             />
           )}
           
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl text-primary"><Thermometer size={20} /> Mash Profile: {recipe.mash.name}</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-xl text-primary"><Thermometer size={20} /> Profil d'Empâtage : {recipe.mash.name}</CardTitle>
             </CardHeader>
             <CardContent>
               <IngredientTable
-                title="Mash Steps"
-                icon={<svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 1.5C4.5 1.22386 4.72386 1 5 1C5.27614 1 5.5 1.22386 5.5 1.5V2.07101L6.03171 2.28061C6.29917 2.38833 6.50402 2.574 6.62136 2.81066L6.64268 2.85323L7.5 4.52002L8.35732 2.85323L8.37864 2.81066C8.49598 2.574 8.70083 2.38833 8.96829 2.28061L9.5 2.07101V1.5C9.5 1.22386 9.72386 1 10 1C10.2761 1 10.5 1.22386 10.5 1.5V2.07101L11.0317 2.28061C11.69 2.53137 12.1486 3.07048 12.2964 3.74506L12.323 3.87868L12.5 4.5H13.5C13.7761 4.5 14 4.72386 14 5V11C14 11.2761 13.7761 11.5 13.5 11.5H1.5C1.22386 11.5 1 11.2761 1 11V5C1 4.72386 1.22386 4.5 1.5 4.5H2.67699L2.69749 3.89912C2.85347 3.10088 3.46386 2.51077 4.20251 2.29439L4.5 2.21547V1.5ZM2.5 5.5V10.5H12.5V5.5H2.5ZM5.5 5.5H9.5V8.5H5.5V5.5Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>} // Custom mash tun icon
+                title="Paliers d'Empâtage"
+                icon={<svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 1.5C4.5 1.22386 4.72386 1 5 1C5.27614 1 5.5 1.22386 5.5 1.5V2.07101L6.03171 2.28061C6.29917 2.38833 6.50402 2.574 6.62136 2.81066L6.64268 2.85323L7.5 4.52002L8.35732 2.85323L8.37864 2.81066C8.49598 2.574 8.70083 2.38833 8.96829 2.28061L9.5 2.07101V1.5C9.5 1.22386 9.72386 1 10 1C10.2761 1 10.5 1.22386 10.5 1.5V2.07101L11.0317 2.28061C11.69 2.53137 12.1486 3.07048 12.2964 3.74506L12.323 3.87868L12.5 4.5H13.5C13.7761 4.5 14 4.72386 14 5V11C14 11.2761 13.7761 11.5 13.5 11.5H1.5C1.22386 11.5 1 11.2761 1 11V5C1 4.72386 1.22386 4.5 1.5 4.5H2.67699L2.69749 3.89912C2.85347 3.10088 3.46386 2.51077 4.20251 2.29439L4.5 2.21547V1.5ZM2.5 5.5V10.5H12.5V5.5H2.5ZM5.5 5.5H9.5V8.5H5.5V5.5Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>}
                 items={recipe.mash.mashSteps}
                 columns={[
-                  { key: 'name', header: 'Step Name' },
+                  { key: 'name', header: 'Nom du Palier' },
                   { key: 'type', header: 'Type' },
-                  { key: 'stepTemp', header: 'Temperature' },
-                  { key: 'stepTime', header: 'Time' },
+                  { key: 'stepTemp', header: 'Température' },
+                  { key: 'stepTime', header: 'Temps' },
                   { key: 'description', header: 'Description', render: (item: MashStep) => item.description || '-' },
                 ]}
               />
@@ -187,16 +187,16 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl text-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-beer"><path d="M17 11.5V8a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v3.5A1.5 1.5 0 0 0 8.5 13h7a1.5 1.5 0 0 0 1.5-1.5Z"/><path d="M10 9.5A1.5 1.5 0 1 1 8.5 8"/><path d="M15.5 8A1.5 1.5 0 1 1 14 9.5"/><path d="M12 13v8"/><path d="M9 21h6"/></svg> {/* Lucide's Beer */}
-                Target Stats
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-beer"><path d="M17 11.5V8a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v3.5A1.5 1.5 0 0 0 8.5 13h7a1.5 1.5 0 0 0 1.5-1.5Z"/><path d="M10 9.5A1.5 1.5 0 1 1 8.5 8"/><path d="M15.5 8A1.5 1.5 0 1 1 14 9.5"/><path d="M12 13v8"/><path d="M9 21h6"/></svg>
+                Statistiques Cibles
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2">
-              <DetailItem label="Original Gravity (OG)" value={recipe.stats.og ? (typeof recipe.stats.og === 'number' ? recipe.stats.og.toFixed(3) : recipe.stats.og) : undefined} icon={<ThermometerSnowflake size={16}/>} />
-              <DetailItem label="Final Gravity (FG)" value={recipe.stats.fg ? (typeof recipe.stats.fg === 'number' ? recipe.stats.fg.toFixed(3) : recipe.stats.fg) : undefined} icon={<ThermometerSnowflake size={16}/>} />
-              <DetailItem label="Alcohol By Volume (ABV)" value={recipe.stats.abv} icon={<Percent size={16}/>} />
-              <DetailItem label="Bitterness (IBU)" value={recipe.stats.ibu} icon={<Leaf size={16}/>} />
-              <DetailItem label="Color (SRM)" value={recipe.stats.colorSrm} icon={<Palette size={16}/>} />
+              <DetailItem label="Densité Initiale (DI)" value={recipe.stats.og ? (typeof recipe.stats.og === 'number' ? recipe.stats.og.toFixed(3) : recipe.stats.og) : undefined} icon={<ThermometerSnowflake size={16}/>} />
+              <DetailItem label="Densité Finale (DF)" value={recipe.stats.fg ? (typeof recipe.stats.fg === 'number' ? recipe.stats.fg.toFixed(3) : recipe.stats.fg) : undefined} icon={<ThermometerSnowflake size={16}/>} />
+              <DetailItem label="Alcool Par Volume (%APV)" value={recipe.stats.abv} icon={<Percent size={16}/>} />
+              <DetailItem label="Amertume (IBU)" value={recipe.stats.ibu} icon={<Leaf size={16}/>} />
+              <DetailItem label="Couleur (SRM)" value={recipe.stats.colorSrm} icon={<Palette size={16}/>} />
             </CardContent>
           </Card>
         </CardContent>
