@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Wrench, Beer } from 'lucide-react'; // Removed Sparkles
+import { BookOpen, Wrench, Beer } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -10,20 +10,16 @@ import { useState, useEffect } from 'react';
 
 export function Header() {
   const currentPathname = usePathname();
-  // Initialize activePath to null. It will be set after client-side hydration.
   const [activePath, setActivePath] = useState<string | null>(null); 
 
   useEffect(() => {
-    // usePathname() can return null on initial client render until the router is fully ready.
-    // We set activePath once currentPathname is a string.
     if (currentPathname !== null) {
       setActivePath(currentPathname);
     }
-  }, [currentPathname]); // Re-run this effect if the pathname changes
+  }, [currentPathname]);
 
   const navLinks = [
     { href: '/', label: 'Mes recettes', icon: BookOpen },
-    // { href: '/recettes-ia', label: 'Recettes IA', icon: Sparkles }, // Removed this line
     { href: '/equipements', label: 'Équipements', icon: Wrench },
   ];
 
@@ -39,8 +35,6 @@ export function Header() {
         {/* Navigation - Column 2 */}
         <nav className="flex justify-center items-center space-x-1">
           {navLinks.map((link) => {
-            // Determine if the link is active.
-            // This will only be true if activePath is a string (i.e., resolved on the client) AND matches the link's href.
             const isActive = typeof activePath === 'string' && activePath === link.href;
             
             return (
@@ -50,8 +44,6 @@ export function Header() {
                 asChild
                 className={cn(
                   'text-muted-foreground hover:text-primary hover:bg-primary/10 px-3 py-2 h-auto',
-                  // Apply active styles only if isActive is true.
-                  // On server and initial client render, activePath is null, so isActive is false, no active styles applied.
                   isActive && 'text-primary bg-primary/5' 
                 )}
               >
@@ -65,7 +57,10 @@ export function Header() {
         </nav>
 
         {/* Right Spacer - Column 3 (to ensure nav is centered properly) */}
-        <div></div>
+        <div aria-hidden="true" className="flex items-center gap-2 invisible pointer-events-none">
+          <Beer size={26} />
+          <h1 className="text-xl font-semibold">BrewLab</h1>
+        </div>
       </div>
     </header>
   );
