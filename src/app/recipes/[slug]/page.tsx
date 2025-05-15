@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { BookOpen, Thermometer, Percent, Leaf, Beaker, Info, CalendarDays, Scale, Clock, Palette } from 'lucide-react';
+import { BookOpen, Thermometer, Percent, Leaf, Beaker, Info, CalendarDays, Scale, Clock, Palette, ThermometerSnowflake } from 'lucide-react';
 
 export async function generateStaticParams() {
   const slugs = getAllRecipeSlugs();
