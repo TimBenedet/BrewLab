@@ -1,34 +1,110 @@
+import fs from 'fs';
+import path from 'path';
 
-// Helper function to convert SRM value to an approximate HEX color string
-export function srmToHex(srm: number | string | undefined): string {
+interface SrmColorEntry {
+  srm: number;
+  hex: string;
+  description?: string;
+}
+
+let srmColorMapInstance: Map<number, SrmColorEntry> | null = null;
+
+function parseSrmCsv(csvContent: string): Map<number, SrmColorEntry> {
+  const lines = csvContent.trim().split('\n');
+  const map = new Map<number, SrmColorEntry>();
+  // Skip header line
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    const parts = line.split(',');
+    if (parts.length >= 3) {
+      const srmString = parts[0].trim();
+      const description = parts[1].trim();
+      const hex = parts[2].trim();
+      
+      if (srmString.endsWith('+')) {
+        const srmValue = parseInt(srmString.slice(0, -1), 10);
+        if (!isNaN(srmValue)) {
+          // For "20+", we'll store it as 20, and handle lookups for >=20
+           map.set(srmValue, { srm: srmValue, hex, description });
+        }
+      } else {
+        const srmValue = parseInt(srmString, 10);
+        if (!isNaN(srmValue)) {
+          map.set(srmValue, { srm: srmValue, hex, description });
+        }
+      }
+    }
+  }
+  return map;
+}
+
+function getSrmColorMap(): Map<number, SrmColorEntry> {
+  if (srmColorMapInstance) {
+    return srmColorMapInstance;
+  }
+  try {
+    const csvPath = path.join(process.cwd(), 'public/srm-colors.csv');
+    const csvContent = fs.readFileSync(csvPath, 'utf8');
+    srmColorMapInstance = parseSrmCsv(csvContent);
+    return srmColorMapInstance;
+  } catch (error) {
+    console.error("Failed to read or parse srm-colors.csv:", error);
+    srmColorMapInstance = new Map<number, SrmColorEntry>(); // Return empty map on error
+    return srmColorMapInstance;
+  }
+}
+
+export function getHexForSrm(srm: number | string | undefined): string {
   const srmValue = Number(srm);
+  if (isNaN(srmValue) || srmValue < 0) {
+    return '#CCCCCC'; // Default color for invalid SRM
+  }
 
-  if (isNaN(srmValue) || srmValue < 0) return '#CCCCCC'; // Default to light gray if invalid or not present
+  const colorMap = getSrmColorMap();
+  if (colorMap.size === 0) {
+    return '#CCCCCC'; // Default if map is empty
+  }
 
-  // Based on common SRM to Hex color charts
-  if (srmValue <= 1) return '#F8F753'; // Pale Straw
-  if (srmValue <= 2) return '#F8F753'; // Pale Straw
-  if (srmValue <= 3) return '#F6F513'; // Straw
-  if (srmValue <= 4) return '#EAE600'; // Pale Gold
-  if (srmValue <= 5) return '#E0B400'; // Gold
-  if (srmValue <= 6) return '#D5A600'; // Deep Gold
-  if (srmValue <= 7) return '#CB9900'; // Pale Amber
-  if (srmValue <= 8) return '#C18D00'; // Pale Amber
-  if (srmValue <= 9) return '#B88000'; // Medium Amber
-  if (srmValue <= 10) return '#B07400'; // Medium Amber
-  if (srmValue <= 11) return '#A86800'; // Deep Amber
-  if (srmValue <= 12) return '#A05D00'; // Deep Amber
-  if (srmValue <= 13) return '#985200'; // Deep Amber
-  if (srmValue <= 14) return '#914800'; // Amber-Brown
-  if (srmValue <= 17) return '#8A3E00'; // Brown
-  if (srmValue <= 20) return '#833500'; // Brown
-  if (srmValue <= 22) return '#7C2D00'; // Ruby Brown
-  if (srmValue <= 24) return '#752500'; // Deep Brown
-  if (srmValue <= 26) return '#6E1E00'; // Deep Brown
-  if (srmValue <= 29) return '#671800'; // Dark Brown
-  if (srmValue <= 30) return '#601200'; // Dark Brown (Porter)
-  if (srmValue <= 35) return '#590D00'; // Very Dark Brown
-  if (srmValue <= 39) return '#530900'; // Very Dark Brown (Stout)
-  if (srmValue >= 40) return '#300809'; // Black
-  return '#0F0000'; // Default to Black for very high SRM or if somehow missed
+  // Find the closest SRM value in the map
+  let closestSrmKey = -1;
+  let minDiff = Infinity;
+  let maxSrmKey = -1;
+
+  for (const key of colorMap.keys()) {
+    if (key > maxSrmKey) {
+        maxSrmKey = key;
+    }
+    if (key === srmValue) {
+      closestSrmKey = key;
+      break;
+    }
+    const diff = Math.abs(key - srmValue);
+    if (key <= srmValue && diff < minDiff) {
+      minDiff = diff;
+      closestSrmKey = key;
+    }
+  }
+  
+  // Handle "20+" case and values greater than max defined SRM
+  // If srmValue is greater than or equal to the highest defined SRM key (e.g. 20 for "20+")
+  // and that key exists, use that color.
+  const twentyPlusEntry = colorMap.get(20); // Assuming 20 is the key for "20+"
+  if (twentyPlusEntry && srmValue >= 20) {
+    return twentyPlusEntry.hex;
+  }
+
+
+  if (closestSrmKey !== -1) {
+    return colorMap.get(closestSrmKey)?.hex || '#CCCCCC';
+  }
+  
+  // Fallback if no suitable key found (e.g., SRM is lower than any defined value)
+  // Or if srmValue is very high and no "20+" like rule matched
+  if (srmValue > maxSrmKey && maxSrmKey !== -1) {
+      const maxEntry = colorMap.get(maxSrmKey);
+      if (maxEntry) return maxEntry.hex;
+  }
+
+
+  return '#CCCCCC'; // Final fallback
 }

@@ -6,10 +6,10 @@ import Image from 'next/image';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { SrmColorSwatch } from '@/components/recipes/SrmColorSwatch';
+import { getHexForSrm } from '@/lib/srmUtils';
 
 import {
-  BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, ThermometerSnowflake, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon
+  BookOpen, Percent, Leaf, Info, CalendarDays, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon
 } from 'lucide-react';
 
 
@@ -98,19 +98,21 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
     notFound();
   }
   
-  const ogValue = recipe.stats.og ? (typeof recipe.stats.og === 'number' ? recipe.stats.og : parseFloat(recipe.stats.og)) : 0;
-  const fgValue = recipe.stats.fg ? (typeof recipe.stats.fg === 'number' ? recipe.stats.fg : parseFloat(recipe.stats.fg)) : 0;
-  const abvValue = recipe.stats.abv ? parseFloat(recipe.stats.abv.replace('%','')) : 0;
-  const ibuValue = recipe.stats.ibu ? (typeof recipe.stats.ibu === 'number' ? recipe.stats.ibu : parseFloat(recipe.stats.ibu)) : 0;
-  const colorSrmValue = recipe.stats.colorSrm ? (typeof recipe.stats.colorSrm === 'number' ? recipe.stats.colorSrm : parseFloat(recipe.stats.colorSrm)) : 0;
+  const ogValue = recipe.stats.og ? (typeof recipe.stats.og === 'number' ? recipe.stats.og : parseFloat(String(recipe.stats.og))) : 0;
+  const fgValue = recipe.stats.fg ? (typeof recipe.stats.fg === 'number' ? recipe.stats.fg : parseFloat(String(recipe.stats.fg))) : 0;
+  const abvValue = recipe.stats.abv ? parseFloat(String(recipe.stats.abv).replace('%','')) : 0;
+  const ibuValue = recipe.stats.ibu ? (typeof recipe.stats.ibu === 'number' ? recipe.stats.ibu : parseFloat(String(recipe.stats.ibu))) : 0;
+  const colorSrmValue = recipe.stats.colorSrm ? (typeof recipe.stats.colorSrm === 'number' ? recipe.stats.colorSrm : parseFloat(String(recipe.stats.colorSrm))) : 0;
 
   const targetStatsForGauges = [
-    { label: "Original Gravity", valueText: ogValue ? ogValue.toFixed(3) : '-', progressValue: ogValue ? Math.min(100,Math.max(0,(ogValue - 1) * 2000 - 80)) : 0, icon: ThermometerSnowflake },
-    { label: "Final Gravity", valueText: fgValue ? fgValue.toFixed(3) : '-', progressValue: fgValue ? Math.min(100,Math.max(0,(fgValue - 1) * 2000 - 10)) : 0, icon: ThermometerSnowflake },
-    { label: "Alcohol By Volume", valueText: recipe.stats.abv || '-', progressValue: Math.min(100,Math.max(0,abvValue * 100 / 15)), icon: Percent },
+    { label: "Original Gravity", valueText: ogValue ? ogValue.toFixed(3) : '-', progressValue: ogValue ? Math.min(100,Math.max(0,(ogValue - 1) * 2000 - 80)) : 0, icon: ThermoIcon }, // Changed icon for OG
+    { label: "Final Gravity", valueText: fgValue ? fgValue.toFixed(3) : '-', progressValue: fgValue ? Math.min(100,Math.max(0,(fgValue - 1) * 2000 - 10)) : 0, icon: ThermoIcon }, // Changed icon for FG
+    { label: "Alcohol By Volume", valueText: recipe.stats.abv?.toString() || '-', progressValue: Math.min(100,Math.max(0,abvValue * 100 / 15)), icon: Percent },
     { label: "Bitterness (IBU)", valueText: recipe.stats.ibu?.toString() || '-', progressValue: Math.min(100,Math.max(0,ibuValue * 100 / 100)), icon: Leaf },
     { label: "Color (SRM)", valueText: recipe.stats.colorSrm?.toString() || '-', progressValue: Math.min(100,Math.max(0,colorSrmValue * 100 / 40)), icon: Palette },
   ];
+  
+  const srmHexColor = getHexForSrm(recipe.stats.colorSrm);
 
   return (
     <div className="space-y-8">
@@ -122,10 +124,14 @@ export default async function RecipeDetailPage({ params }: RecipeDetailPageProps
             width={40} 
             height={60} 
             className="rounded"
-            data-ai-hint="beer glass" 
+            data-ai-hint="beer glass"
           />
-          {recipe.stats.colorSrm !== undefined && ( // Conditionally render if SRM exists
-            <SrmColorSwatch srm={recipe.stats.colorSrm} />
+          {recipe.stats.colorSrm !== undefined && (
+             <div
+              className="w-6 h-6 rounded-full border border-muted-foreground/50 shadow-sm"
+              style={{ backgroundColor: srmHexColor }}
+              title={`SRM: ${recipe.stats.colorSrm}`}
+            />
           )}
           <div className="flex-1">
             <CardTitle className="text-3xl font-bold text-primary">{recipe.metadata.name}</CardTitle>
