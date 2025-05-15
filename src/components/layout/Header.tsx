@@ -10,17 +10,19 @@ import { useState, useEffect } from 'react';
 
 export function Header() {
   const currentPathname = usePathname();
-  const [activePath, setActivePath] = useState<string | null>(null); 
+  const [activePath, setActivePath] = useState<string | null>(null);
 
   useEffect(() => {
+    // Ensure currentPathname is not null before setting activePath
+    // This helps prevent potential mismatches during initial client render if pathname is briefly null
     if (currentPathname !== null) {
       setActivePath(currentPathname);
     }
   }, [currentPathname]);
 
   const navLinks = [
-    { href: '/', label: 'Mes recettes', icon: BookOpen },
-    { href: '/equipements', label: 'Équipements', icon: Wrench },
+    { href: '/', label: 'My Recipes', icon: BookOpen },
+    { href: '/equipements', label: 'Equipments', icon: Wrench },
   ];
 
   return (
@@ -33,9 +35,10 @@ export function Header() {
         </Link>
         
         {/* Navigation - Column 2 */}
-        <nav className="flex justify-center items-center space-x-1">
+        <nav className="flex justify-center items-center space-x-1 sm:space-x-2">
           {navLinks.map((link) => {
-            const isActive = typeof activePath === 'string' && activePath === link.href;
+            // Check isActive only if activePath is not null
+            const isActive = activePath !== null && activePath === link.href;
             
             return (
               <Button
@@ -43,13 +46,20 @@ export function Header() {
                 variant="ghost"
                 asChild
                 className={cn(
-                  'text-muted-foreground hover:text-primary hover:bg-primary/10 px-3 py-2 h-auto',
+                  'text-muted-foreground hover:text-primary hover:bg-primary/10',
+                  'h-auto p-2 sm:px-3 sm:py-2', // Mobile: p-2, SM and up: px-3 py-2
                   isActive && 'text-primary bg-primary/5' 
                 )}
               >
-                <Link href={link.href} className="flex items-center gap-1.5 font-semibold">
+                <Link
+                  href={link.href}
+                  className={cn(
+                    'flex flex-col items-center text-center gap-0.5', // Mobile: vertical layout, small gap
+                    'sm:flex-row sm:gap-1.5 font-semibold' // SM and up: horizontal layout, standard gap
+                  )}
+                >
                   <link.icon size={16} />
-                  {link.label}
+                  <span className="text-xs leading-tight sm:text-sm">{link.label}</span>
                 </Link>
               </Button>
             );
@@ -58,8 +68,8 @@ export function Header() {
 
         {/* Right Spacer - Column 3 (to ensure nav is centered properly) */}
         <div aria-hidden="true" className="flex items-center gap-2 invisible pointer-events-none">
-          <Beer size={26} />
-          <h1 className="text-xl font-semibold">BrewLab</h1>
+          <Beer size={26} className="text-primary" />
+          <h1 className="text-xl font-semibold text-foreground">BrewLab</h1>
         </div>
       </div>
     </header>
