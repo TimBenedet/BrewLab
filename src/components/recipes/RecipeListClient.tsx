@@ -27,7 +27,7 @@ export function RecipeListClient({ recipes }: RecipeListClientProps) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="text"
-          placeholder="Filtrer les recettes par nom ou style..."
+          placeholder="Filter recipes by name or style..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="w-full max-w-md pl-10 text-base py-3 rounded-lg shadow-sm focus:ring-primary focus:border-primary"
@@ -41,7 +41,7 @@ export function RecipeListClient({ recipes }: RecipeListClientProps) {
         </div>
       ) : (
         <p className="text-center text-muted-foreground py-10 text-lg">
-          Aucune recette ne correspond à votre filtre. Essayez un autre terme de recherche !
+          No recipes match your filter. Try another search term!
         </p>
       )}
     </div>

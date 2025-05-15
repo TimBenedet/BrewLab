@@ -22,7 +22,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           {recipe.stats.abv && (
             <div className="flex items-center gap-2">
               <Percent size={16} className="text-accent" />
-              <span>%APV: {recipe.stats.abv}</span>
+              <span>ABV: {recipe.stats.abv}</span>
             </div>
           )}
           {recipe.stats.ibu && (
@@ -34,7 +34,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           {recipe.stats.og && (
              <div className="flex items-center gap-2">
               <ThermometerSnowflake size={16} className="text-accent" />
-              <span>DI: {typeof recipe.stats.og === 'number' ? recipe.stats.og.toFixed(3) : recipe.stats.og}</span>
+              <span>OG: {typeof recipe.stats.og === 'number' ? recipe.stats.og.toFixed(3) : recipe.stats.og}</span>
             </div>
           )}
           {recipe.stats.colorSrm && (
@@ -45,7 +45,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           )}
         </CardContent>
         <CardFooter>
-          <Badge variant="outline">Voir la recette</Badge>
+          <Badge variant="outline">View Recipe</Badge>
         </CardFooter>
       </Card>
     </Link>
