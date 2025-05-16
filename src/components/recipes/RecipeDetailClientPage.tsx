@@ -213,7 +213,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
   return (
     <div className="space-y-8">
       <Card className="shadow-lg overflow-hidden">
-        <CardHeader className="bg-muted p-6 flex flex-row items-start gap-3">
+        <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
           <GlassWater
             size={48}
             fill={srmHexColor}
@@ -324,3 +324,4 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
+
