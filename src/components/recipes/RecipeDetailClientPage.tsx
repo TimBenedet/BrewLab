@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep } from '@/types/recipe';
+import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep, Fermentable } from '@/types/recipe';
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { 
-  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Wind 
+  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Flame, Wind 
 } from 'lucide-react';
 import CustomBeerGlassIcon from '@/components/icons/CustomBeerGlassIcon';
 
@@ -83,48 +83,209 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
 };
 
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
-  const { notes, stepsMarkdown } = recipe;
+  const { mash, hops, miscs, yeasts, metadata, notes, stepsMarkdown } = recipe;
 
-  if (stepsMarkdown) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-xl text-primary">
-            <BookOpen size={20} /> Brewer's Detailed Procedure
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{stepsMarkdown}</ReactMarkdown>
-          </article>
-        </CardContent>
-      </Card>
-    );
-  }
+  const boilHops = hops.filter(h => h.use.toLowerCase() === 'boil' || h.use.toLowerCase() === 'first wort');
+  const boilMiscs = miscs?.filter(m => m.use.toLowerCase() === 'boil');
+  const aromaHops = hops.filter(h => h.use.toLowerCase() === 'aroma' || h.use.toLowerCase() === 'whirlpool');
+  const aromaMiscs = miscs?.filter(m => m.use.toLowerCase() === 'whirlpool');
+  const dryHops = hops.filter(h => h.use.toLowerCase() === 'dry hop');
+  const fermentationMiscs = miscs?.filter(m => m.use.toLowerCase() === 'fermentation' || m.use.toLowerCase() === 'primary' || m.use.toLowerCase() === 'secondary');
 
-  if (notes) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-xl text-primary">
-            <FileTextIcon size={20} /> Brewer's Notes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{notes}</ReactMarkdown>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+
+  const boilAdditions = [
+    ...(boilHops.map(h => ({ ...h, type: 'Hop' }))),
+    ...(boilMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
+  ].sort((a, b) => (b.time?.value ?? 0) - (a.time?.value ?? 0)); // Sort by time, descending (e.g., 60 min first)
+
+  const aromaAdditions = [
+    ...(aromaHops.map(h => ({ ...h, type: 'Hop' }))),
+    ...(aromaMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
+  ].sort((a, b) => (b.time?.value ?? 0) - (a.time?.value ?? 0));
+
+  const fermentationAdditions = [
+    ...(dryHops.map(h => ({ ...h, type: 'Hop' }))),
+    ...(fermentationMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
+  ].sort((a, b) => (a.time?.value ?? 0) - (b.time?.value ?? 0)); // Sort by time, ascending for fermentation days
+
 
   return (
-    <Card>
-      <CardContent>
-        <p className="text-muted-foreground py-4">No detailed steps or notes provided for this recipe.</p>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      {mash?.mashSteps && mash.mashSteps.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <CookingPot size={20} /> Mash Schedule: {mash.name}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Step</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Temperature</TableHead>
+                  <TableHead>Time</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mash.mashSteps.map((step, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{step.name}</TableCell>
+                    <TableCell>{step.type}</TableCell>
+                    <TableCell>{step.stepTemp.value} {step.stepTemp.unit}</TableCell>
+                    <TableCell>{step.stepTime.value} {step.stepTime.unit}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {(boilAdditions.length > 0 || metadata.boilTime) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <Flame size={20} /> Boil Schedule
+            </CardTitle>
+            {metadata.boilTime && <CardDescription>Total Boil Time: {metadata.boilTime.value} {metadata.boilTime.unit}</CardDescription>}
+          </CardHeader>
+          {boilAdditions.length > 0 && (
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Ingredient</TableHead>
+                    <TableHead>Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {boilAdditions.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.time?.value ?? '-'} {item.time?.unit}</TableCell>
+                      <TableCell>{item.name} ({item.type})</TableCell>
+                      <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          )}
+        </Card>
+      )}
+      
+      {aromaAdditions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <Wind size={20} /> Whirlpool / Aroma Additions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Time / Temp</TableHead>
+                  <TableHead>Ingredient</TableHead>
+                  <TableHead>Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {aromaAdditions.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{item.time?.value ?? '-'} {item.time?.unit}</TableCell>
+                    <TableCell>{item.name} ({item.type})</TableCell>
+                    <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {(yeasts.length > 0 || fermentationAdditions.length > 0) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <FlaskConical size={20} /> Fermentation
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {yeasts.map((yeast, index) => (
+              <div key={`yeast-${index}`}>
+                <p className="font-semibold">{yeast.name}</p>
+                <p className="text-sm text-muted-foreground">Type: {yeast.type}, Form: {yeast.form}</p>
+                {yeast.attenuation && <p className="text-sm text-muted-foreground">Attenuation: {yeast.attenuation.value}{yeast.attenuation.unit}</p>}
+              </div>
+            ))}
+            {fermentationAdditions.length > 0 && (
+              <div>
+                <h4 className="font-semibold mt-2 mb-1">Additions during Fermentation:</h4>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Day / Time</TableHead>
+                      <TableHead>Ingredient</TableHead>
+                      <TableHead>Amount</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {fermentationAdditions.map((item, index) => (
+                      <TableRow key={`ferm-add-${index}`}>
+                        <TableCell>{item.time?.value ?? '-'} {item.time?.unit}</TableCell>
+                        <TableCell>{item.name} ({item.type})</TableCell>
+                        <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {stepsMarkdown && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <BookOpen size={20} /> Brewer's Detailed Procedure
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{stepsMarkdown}</ReactMarkdown>
+            </article>
+          </CardContent>
+        </Card>
+      )}
+
+      {!stepsMarkdown && notes && (
+         <Card>
+           <CardHeader>
+             <CardTitle className="flex items-center gap-2 text-xl text-primary">
+               <FileTextIcon size={20} /> Brewer's Notes
+             </CardTitle>
+           </CardHeader>
+           <CardContent>
+             <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
+               <ReactMarkdown remarkPlugins={[remarkGfm]}>{notes}</ReactMarkdown>
+             </div>
+           </CardContent>
+         </Card>
+      )}
+      
+      {!stepsMarkdown && !notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && boilAdditions.length === 0 && aromaAdditions.length === 0 && yeasts.length === 0 && fermentationAdditions.length === 0 && (
+        <Card>
+          <CardContent>
+            <p className="text-muted-foreground py-4">No detailed steps or procedural notes provided for this recipe.</p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };
 
@@ -213,7 +374,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
                   items={recipe.fermentables}
                   columns={[
                     { key: 'name', header: 'Name' },
-                    { key: 'amount', header: 'Amount' },
+                    { key: 'amount', header: 'Amount', render: (item: Fermentable) => `${item.amount.value} ${item.amount.unit}` },
                     { key: 'type', header: 'Type' },
                   ]}
                 />
@@ -224,9 +385,9 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
                   items={recipe.hops}
                   columns={[
                     { key: 'name', header: 'Name' },
-                    { key: 'amount', header: 'Amount' },
+                    { key: 'amount', header: 'Amount', render: (item: Hop) => `${item.amount.value} ${item.amount.unit}` },
                     { key: 'use', header: 'Use' },
-                    { key: 'time', header: 'Time' },
+                    { key: 'time', header: 'Time', render: (item: Hop) => item.time ? `${item.time.value} ${item.time.unit}` : '-' },
                     { key: 'alpha', header: 'Alpha %', render: (item: Hop) => item.alpha ? `${item.alpha.value} ${item.alpha.unit}` : '-' },
                   ]}
                 />
@@ -250,14 +411,12 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
                     items={recipe.miscs}
                     columns={[
                       { key: 'name', header: 'Name' },
-                      { key: 'amount', header: 'Amount' },
+                      { key: 'amount', header: 'Amount', render: (item: Misc) => `${item.amount.value} ${item.amount.unit}` },
                       { key: 'use', header: 'Use' },
                       { key: 'time', header: 'Time', render: (item: Misc) => item.time ? `${item.time.value} ${item.time.unit}` : '-' },
                     ]}
                   />
                 )}
-                
-                {/* General notes are now handled by RecipeStepsDisplay if stepsMarkdown is absent */}
               </div>
             </TabsContent>
             <TabsContent value="steps">
@@ -269,3 +428,5 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
+
+    
