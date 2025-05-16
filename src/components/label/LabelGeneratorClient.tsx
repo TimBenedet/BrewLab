@@ -76,7 +76,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume);
+        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates if label size changed before selecting recipe
 
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
@@ -104,7 +104,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIngredientsSummaryForLabel('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRecipeSlug, recipes, labelSizeKey]);
+  }, [selectedRecipeSlug, recipes, labelSizeKey]); // Added labelSizeKey dependency
 
   useEffect(() => {
     setVolume(SIZES[labelSizeKey].defaultVolume);
@@ -254,23 +254,22 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               </div>
             </div>
 
-            {(ibu || srm || ingredientsSummaryForLabel) && (
-              <div
-                className="absolute top-0 left-1 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px]"
-                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
-              >
-                  {(ibu || srm) && (
-                    <span className="block">
-                        IBU : {ibu || 'N/A'}, SRM : {srm || 'N/A'}
-                    </span>
-                  )}
-                  {ingredientsSummaryForLabel && (
-                    <span className="block mt-1"> 
-                        <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
-                    </span>
-                  )}
-              </div>
-            )}
+            {/* Vertical Text Block */}
+            <div
+              className="absolute top-0 left-1 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px]"
+              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
+            >
+              {(ibu || srm) && (
+                <span className="block whitespace-nowrap">
+                    IBU : {ibu || 'N/A'}, SRM : {srm || 'N/A'}
+                </span>
+              )}
+              {ingredientsSummaryForLabel && (
+                <span className="block mt-1 whitespace-nowrap"> 
+                    <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
+                </span>
+              )}
+            </div>
           </div>
           <div className="mt-4 text-sm text-muted-foreground flex items-center">
             <Ruler size={16} className="mr-2 text-primary" />
@@ -285,4 +284,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
+    
+
     
