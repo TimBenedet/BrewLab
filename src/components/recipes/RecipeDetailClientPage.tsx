@@ -70,7 +70,7 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
               <TableRow key={index}>
                 {columns.map(col => (
                   <TableCell key={String(col.key)}>
-                    {col.render ? col.render(item) : item[col.key]?.value !== undefined ? `${item[col.key].value} ${item[col.key].unit}` : item[col.key] ?? '-'}
+                    {col.render ? col.render(item) : item[col.key]?.value !== undefined ? `${item[col.key].value} ${item[col.key].unit}` : String(item[col.key] ?? '-')}
                   </TableCell>
                 ))}
               </TableRow>
@@ -96,7 +96,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const boilAdditions = [
     ...(boilHops.map(h => ({ ...h, type: 'Hop' }))),
     ...(boilMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
-  ].sort((a, b) => (b.time?.value ?? 0) - (a.time?.value ?? 0)); // Sort by time, descending (e.g., 60 min first)
+  ].sort((a, b) => (b.time?.value ?? 0) - (a.time?.value ?? 0)); 
 
   const aromaAdditions = [
     ...(aromaHops.map(h => ({ ...h, type: 'Hop' }))),
@@ -106,42 +106,25 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const fermentationAdditions = [
     ...(dryHops.map(h => ({ ...h, type: 'Hop' }))),
     ...(fermentationMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
-  ].sort((a, b) => (a.time?.value ?? 0) - (b.time?.value ?? 0)); // Sort by time, ascending for fermentation days
+  ].sort((a, b) => (a.time?.value ?? 0) - (b.time?.value ?? 0)); 
 
 
   return (
     <div className="space-y-6">
-      {mash?.mashSteps && mash.mashSteps.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl text-primary">
-              <CookingPot size={20} /> Mash Schedule: {mash.name}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Step</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Temperature</TableHead>
-                  <TableHead>Time</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mash.mashSteps.map((step, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{step.name}</TableCell>
-                    <TableCell>{step.type}</TableCell>
-                    <TableCell>{step.stepTemp.value} {step.stepTemp.unit}</TableCell>
-                    <TableCell>{step.stepTime.value} {step.stepTime.unit}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-primary">
+            <CookingPot size={20} /> Mashing
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-foreground">
+          <p><strong>Prepare Mash Tun:</strong> Preheat your mash tun by adding hot water and letting it sit for a few minutes. Discard water.</p>
+          <p><strong>Strike Water:</strong> Heat 15.73 liters of water to 73°C (163.4°F).</p>
+          <p><strong>Mash In:</strong> Add grains to the strike water. Stir well to avoid dough balls. Target mash temperature: 67°C (152.6°F).</p>
+          <p><strong>Rest:</strong> Hold mash at 67°C (152.6°F) for 60 minutes.</p>
+          <p><strong>Mash Out (Optional):</strong> Raise temperature to 76°C (168.8°F) for 10 minutes. This can help with lautering.</p>
+        </CardContent>
+      </Card>
 
       {(boilAdditions.length > 0 || metadata.boilTime) && (
         <Card>
@@ -248,7 +231,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
         </Card>
       )}
 
-      {stepsMarkdown && (
+      {recipe.stepsMarkdown && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl text-primary">
@@ -257,13 +240,13 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
           </CardHeader>
           <CardContent>
             <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{stepsMarkdown}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.stepsMarkdown}</ReactMarkdown>
             </article>
           </CardContent>
         </Card>
       )}
 
-      {!stepsMarkdown && notes && (
+      {!recipe.stepsMarkdown && recipe.notes && (
          <Card>
            <CardHeader>
              <CardTitle className="flex items-center gap-2 text-xl text-primary">
@@ -272,13 +255,13 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
            </CardHeader>
            <CardContent>
              <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-               <ReactMarkdown remarkPlugins={[remarkGfm]}>{notes}</ReactMarkdown>
+               <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.notes}</ReactMarkdown>
              </div>
            </CardContent>
          </Card>
       )}
       
-      {!stepsMarkdown && !notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && boilAdditions.length === 0 && aromaAdditions.length === 0 && yeasts.length === 0 && fermentationAdditions.length === 0 && (
+      {!recipe.stepsMarkdown && !recipe.notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && boilAdditions.length === 0 && aromaAdditions.length === 0 && yeasts.length === 0 && fermentationAdditions.length === 0 && (
         <Card>
           <CardContent>
             <p className="text-muted-foreground py-4">No detailed steps or procedural notes provided for this recipe.</p>
@@ -317,11 +300,11 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
       <Card className="shadow-lg overflow-hidden">
         <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
           {srmHexColor && (
-            <CustomBeerGlassIcon
-              srmHexColor={srmHexColor}
+            <GlassWater
               size={48}
+              fill={srmHexColor}
+              stroke="currentColor" 
               strokeWidth={1.5}
-              glassOutlineColor="currentColor" 
               className="text-foreground"
             />
           )}
@@ -428,5 +411,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
+
+    
 
     
