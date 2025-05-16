@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Wrench, Beer, Menu } from 'lucide-react';
+import { BookOpen, Wrench, Beer, Menu, StickyNote } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ export function Header() {
 
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
+    { href: '/label-generator', label: 'Label Generator', icon: StickyNote },
     { href: '/equipements', label: 'Equipments', icon: Wrench },
   ];
 
