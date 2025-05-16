@@ -9,7 +9,6 @@ export interface Recipe {
   mash: Mash;
   notes?: string;
   stats: RecipeStats;
-  stepsMarkdown?: string; // Added for Markdown content
 }
 
 export interface RecipeMetadata {

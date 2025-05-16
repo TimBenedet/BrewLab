@@ -34,7 +34,7 @@ function parseValueUnit(xmlVal?: XmlValueUnit | number | string): ValueUnit | un
 }
 
 
-function transformRecipeData(slug: string, xmlData: XmlRecipe, stepsMarkdown?: string): Recipe {
+function transformRecipeData(slug: string, xmlData: XmlRecipe): Recipe {
   const rawRecipe = xmlData.recipe;
 
   // Make sure to handle potentially missing top-level stat elements
@@ -92,20 +92,17 @@ function transformRecipeData(slug: string, xmlData: XmlRecipe, stepsMarkdown?: s
       ibu: stats.ibu,
       colorSrm: stats.colorSrm,
     },
-    stepsMarkdown,
   };
 }
 
 
 export function getAllRecipeSlugs(): string[] {
   try {
-    const entries = fs.readdirSync(recipesDirectory, { withFileTypes: true });
-    return entries
-      .filter(dirent => dirent.isDirectory() && !dirent.name.startsWith('.')) // Ignore hidden directories
-      .map(dirent => dirent.name);
+    const fileNames = fs.readdirSync(recipesDirectory);
+    return fileNames
+      .filter(fileName => fileName.endsWith('.xml') && !fileName.startsWith('.'))
+      .map(fileName => fileName.replace(/\.xml$/, ''));
   } catch (error) {
-    // If recipesDirectory doesn't exist (e.g. new project), it's not a critical error for slug generation.
-    // Only log if it's an unexpected error.
     if (error && typeof error === 'object' && 'code' in error && error.code !== 'ENOENT') {
         console.error("Error reading recipes directory for slugs:", error);
     }
@@ -114,40 +111,17 @@ export function getAllRecipeSlugs(): string[] {
 }
 
 export async function getRecipeData(slug: string): Promise<Recipe | null> {
-  const recipeDir = path.join(recipesDirectory, slug);
-  const xmlFileName = `${slug}.xml`; // XML file should match the directory slug name
-  const mdFileName = `${slug}.md`;   // Markdown file should match the directory slug name
-  const xmlFullPath = path.join(recipeDir, xmlFileName);
-  const mdFullPath = path.join(recipeDir, mdFileName);
-  let stepsMarkdown: string | undefined = undefined;
+  const fullPath = path.join(recipesDirectory, `${slug}.xml`);
 
   try {
-    // Check if directory for slug exists
-    if (!fs.existsSync(recipeDir) || !fs.lstatSync(recipeDir).isDirectory()) {
-        // This console.warn can be noisy if many slugs are checked that don't exist (e.g. during dev)
-        // console.warn(`Recipe directory not found for slug: ${slug} (path: ${recipeDir})`);
+    if (!fs.existsSync(fullPath)) {
         return null;
     }
-
-    // Read Markdown file if it exists
-    if (fs.existsSync(mdFullPath)) {
-      stepsMarkdown = fs.readFileSync(mdFullPath, 'utf8');
-    }
-  } catch (error) {
-    // Log warning but don't fail if markdown is missing or unreadable
-    console.warn(`Could not read Markdown file ${mdFullPath}:`, error);
-  }
-
-  try {
-    if (!fs.existsSync(xmlFullPath)) {
-        // console.warn(`XML file not found: ${xmlFullPath}`);
-        return null;
-    }
-    const fileContents = fs.readFileSync(xmlFullPath, 'utf8');
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
     
     const validationResult = XMLValidator.validate(fileContents);
     if (validationResult !== true) {
-      console.error(`XML validation error for ${xmlFullPath}:`, validationResult.err);
+      console.error(`XML validation error for ${fullPath}:`, validationResult.err);
       return null;
     }
 
@@ -171,23 +145,22 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
     const parser = new XMLParser(options);
     const jsonObj = parser.parse(fileContents) as XmlRecipe;
     
-    // Check if essential recipe data is present after parsing
     if (!jsonObj || !jsonObj.recipe || !jsonObj.recipe.metadata || !jsonObj.recipe.metadata.name) {
-        console.error(`Essential recipe data missing in ${xmlFullPath} after parsing.`);
+        console.error(`Essential recipe data missing in ${fullPath} after parsing.`);
         return null;
     }
     
-    return transformRecipeData(slug, jsonObj, stepsMarkdown);
+    return transformRecipeData(slug, jsonObj);
 
   } catch (error) {
-    console.error(`Error reading or parsing recipe file ${xmlFullPath}:`, error);
+    console.error(`Error reading or parsing recipe file ${fullPath}:`, error);
     return null;
   }
 }
 
 export async function getAllRecipes(): Promise<Recipe[]> {
   const slugsRaw = getAllRecipeSlugs();
-  const uniqueSlugs = Array.from(new Set(slugsRaw)); // Ensure uniqueness
+  const uniqueSlugs = Array.from(new Set(slugsRaw)); 
 
   const recipesPromises = uniqueSlugs.map(slug => getRecipeData(slug));
   const recipes = await Promise.all(recipesPromises);
