@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep, ParsedMarkdownSections } from '@/types/recipe';
+import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep, ParsedMarkdownSections, Fermentable } from '@/types/recipe';
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -82,7 +82,7 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
 };
 
 const MarkdownSection: React.FC<{ content?: string }> = ({ content }) => {
-  if (!content) return null;
+  if (!content || content.trim() === "") return null;
   return (
     <article className="prose prose-sm max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
@@ -95,7 +95,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const notes = recipe.notes;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4"> {/* Reduced spacing from space-y-6 */}
       {(sections?.brewersNotes || notes) && (
         <Card>
           <CardHeader>
@@ -315,3 +315,4 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
+
