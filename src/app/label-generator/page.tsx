@@ -1,13 +1,15 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Palette, Ruler } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Palette, Ruler, Download } from 'lucide-react';
 
 interface LabelDimensions {
   name: string;
@@ -26,8 +28,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 70, 
     widthCmText: '8.0 - 10.0', 
     heightCmText: '7.0 - 9.0', 
-    widthPx: '321px', // Corresponds to 8.5cm
-    heightPx: '265px'  // Corresponds to 7cm
+    widthPx: '321px',
+    heightPx: '265px'
   },
   '75cl': { 
     name: '75CL', 
@@ -35,8 +37,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 90, 
     widthCmText: '10.0 - 12.0', 
     heightCmText: '9.0 - 11.0', 
-    widthPx: '378px', // Corresponds to 10cm
-    heightPx: '340px'  // Corresponds to 9cm
+    widthPx: '378px',
+    heightPx: '340px'
   },
 };
 
@@ -49,7 +51,27 @@ export default function LabelGeneratorPage() {
   const [volume, setVolume] = useState('330ml');
   const [labelSizeKey, setLabelSizeKey] = useState<string>('33cl');
 
+  const previewRef = useRef<HTMLDivElement>(null);
   const currentDimensions = SIZES[labelSizeKey];
+
+  const handleDownloadImage = async () => {
+    const element = previewRef.current;
+    if (!element) return;
+
+    const canvas = await html2canvas(element, {
+      scale: 2, // Increase scale for better quality
+      backgroundColor: null, // Use transparent background if possible
+    });
+    const data = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+
+    link.href = data;
+    link.download = `${beerName.toLowerCase().replace(/\s+/g, '-')}-label.png`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-0 space-y-8">
@@ -112,9 +134,10 @@ export default function LabelGeneratorPage() {
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center p-4">
             <div
+              ref={previewRef}
               className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out"
               style={{ 
-                fontFamily: 'serif', // Example font
+                fontFamily: 'serif', 
                 width: currentDimensions.widthPx,
                 height: currentDimensions.heightPx,
               }}
@@ -125,7 +148,6 @@ export default function LabelGeneratorPage() {
               </div>
               
               <div className="w-full my-4">
-                {/* Placeholder for a logo or graphic */}
                 <div className="w-16 h-16 bg-muted mx-auto rounded-full flex items-center justify-center text-muted-foreground text-2xl" data-ai-hint="beer logo">🍻</div>
               </div>
               
@@ -143,6 +165,10 @@ export default function LabelGeneratorPage() {
              <div className="mt-1 text-xs text-muted-foreground">
               <span>(Recommended range for {currentDimensions.name}: Width {currentDimensions.widthCmText}cm, Height {currentDimensions.heightCmText}cm)</span>
             </div>
+            <Button onClick={handleDownloadImage} className="mt-6">
+              <Download size={18} className="mr-2" />
+              Download Label
+            </Button>
           </CardContent>
         </Card>
       </div>
