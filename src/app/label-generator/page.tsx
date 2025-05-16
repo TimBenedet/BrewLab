@@ -6,7 +6,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Palette } from 'lucide-react'; // Or another relevant icon
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Palette, Ruler } from 'lucide-react'; // Or another relevant icon
+
+interface LabelDimensions {
+  name: string;
+  widthCm: number;
+  heightCm: number;
+  widthPx: string;
+  heightPx: string;
+}
+
+const SIZES: Record<string, LabelDimensions> = {
+  '33cl': { name: '33CL', widthCm: 8.5, heightCm: 7, widthPx: '321px', heightPx: '265px' },
+  '50cl': { name: '50CL', widthCm: 8, heightCm: 10, widthPx: '302px', heightPx: '378px' },
+};
 
 export default function LabelGeneratorPage() {
   const [beerName, setBeerName] = useState('My Awesome Beer');
@@ -15,6 +29,9 @@ export default function LabelGeneratorPage() {
   const [breweryName, setBreweryName] = useState('HomeBrew Hero Co.');
   const [tagline, setTagline] = useState('Crafted with passion, just for fun!');
   const [volume, setVolume] = useState('330ml');
+  const [labelSize, setLabelSize] = useState<string>('33cl');
+
+  const currentDimensions = SIZES[labelSize];
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-0 space-y-8">
@@ -43,7 +60,7 @@ export default function LabelGeneratorPage() {
               <Input id="abv" type="text" value={abv} onChange={(e) => setAbv(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label htmlFor="volume" className="text-sm font-medium text-muted-foreground">Volume (e.g., 330ml, 12oz)</Label>
+              <Label htmlFor="volume" className="text-sm font-medium text-muted-foreground">Container Volume (e.g., 330ml, 12oz)</Label>
               <Input id="volume" type="text" value={volume} onChange={(e) => setVolume(e.target.value)} className="mt-1" />
             </div>
             <div>
@@ -54,6 +71,19 @@ export default function LabelGeneratorPage() {
               <Label htmlFor="tagline" className="text-sm font-medium text-muted-foreground">Tagline/Description</Label>
               <Textarea id="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} className="mt-1" />
             </div>
+            <div>
+              <Label className="text-sm font-medium text-muted-foreground">Label Size</Label>
+              <RadioGroup value={labelSize} onValueChange={setLabelSize} className="mt-2 space-y-2">
+                {Object.keys(SIZES).map((key) => (
+                  <div key={key} className="flex items-center space-x-2">
+                    <RadioGroupItem value={key} id={`size-${key}`} />
+                    <Label htmlFor={`size-${key}`} className="font-normal">
+                      {SIZES[key].name} ({SIZES[key].widthCm}cm x {SIZES[key].heightCm}cm)
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
           </CardContent>
         </Card>
 
@@ -62,10 +92,14 @@ export default function LabelGeneratorPage() {
           <CardHeader>
             <CardTitle className="text-xl">Label Preview</CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-center p-4">
+          <CardContent className="flex flex-col items-center justify-center p-4">
             <div
-              className="w-[200px] h-[300px] border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg"
-              style={{ fontFamily: 'serif' }} // Example font
+              className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out"
+              style={{ 
+                fontFamily: 'serif', // Example font
+                width: currentDimensions.widthPx,
+                height: currentDimensions.heightPx,
+              }}
             >
               <div className="w-full">
                 <h2 className="text-2xl font-bold text-primary break-words">{beerName}</h2>
@@ -83,6 +117,10 @@ export default function LabelGeneratorPage() {
                 <p className="font-semibold text-primary break-words">{breweryName}</p>
                 <p className="text-muted-foreground">ABV: {abv}% | Vol: {volume}</p>
               </div>
+            </div>
+            <div className="mt-4 text-sm text-muted-foreground flex items-center">
+              <Ruler size={16} className="mr-2 text-primary" />
+              <span>Selected Label Dimensions: {currentDimensions.widthCm}cm x {currentDimensions.heightCm}cm</span>
             </div>
           </CardContent>
         </Card>
