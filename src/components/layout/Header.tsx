@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Wrench, Menu, Image as ImageIcon, Beer } from 'lucide-react'; // Changed StickyNote to Image as ImageIcon
+import { BookOpen, Wrench, Menu } from 'lucide-react'; // Removed ImageIcon
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -13,12 +13,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
+import { Beer } from 'lucide-react';
 
 export function Header() {
   const currentPathname = usePathname();
   const [activePath, setActivePath] = useState<string | null>(null);
 
   useEffect(() => {
+    // Ensure currentPathname is not null before setting activePath
     if (currentPathname !== null) {
       setActivePath(currentPathname);
     }
@@ -26,7 +28,7 @@ export function Header() {
 
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
-    { href: '/label-generator', label: 'Label Generator', icon: ImageIcon }, // Changed here
+    // { href: '/label-generator', label: 'Label Generator', icon: ImageIcon }, // Removed Link
     { href: '/equipements', label: 'Equipments', icon: Wrench },
   ];
 
@@ -40,6 +42,7 @@ export function Header() {
   const DesktopNav = () => (
     <nav className="flex justify-center items-center space-x-1 sm:space-x-2">
       {navLinks.map((link) => {
+        // Ensure activePath is not null before comparing
         const isActive = activePath !== null && activePath === link.href;
         return (
           <Button
@@ -67,13 +70,14 @@ export function Header() {
       })}
     </nav>
   );
-
+  
   const DesktopSpacer = () => (
     <div aria-hidden="true" className="flex items-center gap-2 invisible pointer-events-none">
       <Beer size={26} className="text-primary" />
       <h1 className="text-xl font-semibold text-foreground">BrewLab</h1>
     </div>
   );
+
 
   return (
     <header className="bg-card text-card-foreground border-b sticky top-0 z-40">
