@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep, Fermentable } from '@/types/recipe';
+import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep, Fermentable, ParsedMarkdownSections } from '@/types/recipe';
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -81,37 +81,35 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
   );
 };
 
+const MarkdownSection: React.FC<{ content?: string }> = ({ content }) => {
+  if (!content) return null;
+  return (
+    <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+    </article>
+  );
+};
+
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
+  const sections = recipe.parsedMarkdownSections;
+
   return (
     <div className="space-y-6">
-      {recipe.stepsMarkdown && (
+      {(sections?.brewersNotes || recipe.notes) && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl text-primary">
-              <BookOpen size={20} /> Brewer's Detailed Procedure
+              <BookOpen size={20} /> Brewer's Notes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.stepsMarkdown}</ReactMarkdown>
-            </article>
+            {sections?.brewersNotes ? (
+              <MarkdownSection content={sections.brewersNotes} />
+            ) : recipe.notes ? ( // Fallback to XML notes if no MD Brewer's Notes
+              <MarkdownSection content={recipe.notes} />
+            ) : null}
           </CardContent>
         </Card>
-      )}
-
-      {!recipe.stepsMarkdown && recipe.notes && (
-         <Card>
-           <CardHeader>
-             <CardTitle className="flex items-center gap-2 text-xl text-primary">
-               <FileTextIcon size={20} /> Brewer's Notes
-             </CardTitle>
-           </CardHeader>
-           <CardContent>
-             <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-               <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.notes}</ReactMarkdown>
-             </div>
-           </CardContent>
-         </Card>
       )}
 
       <Card>
@@ -120,19 +118,19 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
             <CookingPot size={20} /> Mashing
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-foreground">
-          {/* Content removed - this card serves as a section header */}
+        <CardContent className="text-sm text-foreground">
+           <MarkdownSection content={sections?.mashing} />
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl text-primary">
-            <Flame size={20} /> Boil (60 minutes total)
+            <Flame size={20} /> Boil
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-foreground">
-          {/* Content removed - this card serves as a section header */}
+        <CardContent className="text-sm text-foreground">
+          <MarkdownSection content={sections?.boil} />
         </CardContent>
       </Card>
       
@@ -142,8 +140,8 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
             <Wind size={20} /> Whirlpool / Aroma Additions
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-foreground">
-          {/* Content removed - this card serves as a section header */}
+        <CardContent className="text-sm text-foreground">
+          <MarkdownSection content={sections?.whirlpoolAromaAdditions} />
         </CardContent>
       </Card>
 
@@ -153,8 +151,8 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
             <Snowflake size={20} /> Cooling
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-foreground">
-          {/* Content removed - this card serves as a section header */}
+        <CardContent className="text-sm text-foreground">
+          <MarkdownSection content={sections?.cooling} />
         </CardContent>
       </Card>
 
@@ -164,8 +162,8 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
             <FlaskConical size={20} /> Fermentation
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-foreground">
-            {/* Content removed - this card serves as a section header */}
+        <CardContent className="text-sm text-foreground">
+            <MarkdownSection content={sections?.fermentation} />
         </CardContent>
       </Card>
 
@@ -175,8 +173,8 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
             <Package size={20} /> Bottling/Kegging
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-foreground">
-            {/* Content removed - this card serves as a section header */}
+        <CardContent className="text-sm text-foreground">
+            <MarkdownSection content={sections?.bottlingKegging} />
         </CardContent>
       </Card>
     </div>
