@@ -85,18 +85,13 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const { mash, hops, miscs, yeasts, metadata, notes, stepsMarkdown } = recipe;
 
+  // These variables might still be useful for other sections or if you reintroduce dynamic parts.
   const boilHops = hops.filter(h => h.use.toLowerCase() === 'boil' || h.use.toLowerCase() === 'first wort');
   const boilMiscs = miscs?.filter(m => m.use.toLowerCase() === 'boil');
   const aromaHops = hops.filter(h => h.use.toLowerCase() === 'aroma' || h.use.toLowerCase() === 'whirlpool');
   const aromaMiscs = miscs?.filter(m => m.use.toLowerCase() === 'whirlpool');
   const dryHops = hops.filter(h => h.use.toLowerCase() === 'dry hop');
   const fermentationMiscs = miscs?.filter(m => m.use.toLowerCase() === 'fermentation' || m.use.toLowerCase() === 'primary' || m.use.toLowerCase() === 'secondary');
-
-
-  const boilAdditions = [
-    ...(boilHops.map(h => ({ ...h, type: 'Hop' }))),
-    ...(boilMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
-  ].sort((a, b) => (b.time?.value ?? 0) - (a.time?.value ?? 0)); 
 
   const aromaAdditions = [
     ...(aromaHops.map(h => ({ ...h, type: 'Hop' }))),
@@ -126,38 +121,21 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
         </CardContent>
       </Card>
 
-      {(boilAdditions.length > 0 || metadata.boilTime) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl text-primary">
-              <Flame size={20} /> Boil Schedule
-            </CardTitle>
-            {metadata.boilTime && <CardDescription>Total Boil Time: {metadata.boilTime.value} {metadata.boilTime.unit}</CardDescription>}
-          </CardHeader>
-          {boilAdditions.length > 0 && (
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Time</TableHead>
-                    <TableHead>Ingredient</TableHead>
-                    <TableHead>Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {boilAdditions.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.time?.value ?? '-'} {item.time?.unit}</TableCell>
-                      <TableCell>{item.name} ({item.type})</TableCell>
-                      <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          )}
-        </Card>
-      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-primary">
+            <Flame size={20} /> Boil (60 minutes total)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-foreground">
+          <p><strong>Collect Wort:</strong> Sparge grains with approximately 12.5 liters of water at 76°C (168.8°F), or until you collect about 23 liters of wort.</p>
+          <p><strong>Bring to Boil:</strong> Bring the wort to a rolling boil.</p>
+          <p><strong>60 min - Bittering Hops:</strong> Add 20g of Magnum hops.</p>
+          <p><strong>15 min - Flavor Hops:</strong> Add 25g of Cascade hops.</p>
+          <p><strong>10 min - Whirlfloc/Irish Moss:</strong> Add 1 Whirlfloc tablet or 1 tsp Irish Moss (optional, for clarity).</p>
+          <p><strong>0 min/Flameout - Aroma Hops:</strong> Add 25g of Amarillo hops. Start whirlpool if desired.</p>
+        </CardContent>
+      </Card>
       
       {aromaAdditions.length > 0 && (
         <Card>
@@ -261,7 +239,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
          </Card>
       )}
       
-      {!recipe.stepsMarkdown && !recipe.notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && boilAdditions.length === 0 && aromaAdditions.length === 0 && yeasts.length === 0 && fermentationAdditions.length === 0 && (
+      {!recipe.stepsMarkdown && !recipe.notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && aromaAdditions.length === 0 && yeasts.length === 0 && fermentationAdditions.length === 0 && (
         <Card>
           <CardContent>
             <p className="text-muted-foreground py-4">No detailed steps or procedural notes provided for this recipe.</p>
@@ -411,7 +389,3 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
-
-    
-
-    
