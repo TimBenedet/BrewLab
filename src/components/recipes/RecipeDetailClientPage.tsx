@@ -82,8 +82,6 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
 };
 
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
-  const { mash, hops, miscs, yeasts, metadata, notes, stepsMarkdown } = recipe;
-
   return (
     <div className="space-y-6">
       {recipe.stepsMarkdown && (
@@ -123,11 +121,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-foreground">
-          <p><strong>Prepare Mash Tun:</strong> Preheat your mash tun by adding hot water and letting it sit for a few minutes. Discard water.</p>
-          <p><strong>Strike Water:</strong> Heat 15.73 liters of water to 73°C (163.4°F).</p>
-          <p><strong>Mash In:</strong> Add grains to the strike water. Stir well to avoid dough balls. Target mash temperature: 67°C (152.6°F).</p>
-          <p><strong>Rest:</strong> Hold mash at 67°C (152.6°F) for 60 minutes.</p>
-          <p><strong>Mash Out (Optional):</strong> Raise temperature to 76°C (168.8°F) for 10 minutes. This can help with lautering.</p>
+          {/* Content removed - this card serves as a section header */}
         </CardContent>
       </Card>
 
@@ -138,12 +132,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-foreground">
-          <p><strong>Collect Wort:</strong> Sparge grains with approximately 12.5 liters of water at 76°C (168.8°F), or until you collect about 23 liters of wort.</p>
-          <p><strong>Bring to Boil:</strong> Bring the wort to a rolling boil.</p>
-          <p><strong>60 min - Bittering Hops:</strong> Add 20g of Magnum hops.</p>
-          <p><strong>15 min - Flavor Hops:</strong> Add 25g of Cascade hops.</p>
-          <p><strong>10 min - Whirlfloc/Irish Moss:</strong> Add 1 Whirlfloc tablet or 1 tsp Irish Moss (optional, for clarity).</p>
-          <p><strong>0 min/Flameout - Aroma Hops:</strong> Add 25g of Amarillo hops. Start whirlpool if desired.</p>
+          {/* Content removed - this card serves as a section header */}
         </CardContent>
       </Card>
       
@@ -154,8 +143,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-foreground">
-          <p><strong>Cool to 80-85°C (176-185°F):</strong> If you added flameout hops and want a whirlpool, cool the wort slightly.</p>
-          <p><strong>Whirlpool:</strong> Stir the wort gently for 15-20 minutes. This helps settle trub and enhances hop aroma.</p>
+          {/* Content removed - this card serves as a section header */}
         </CardContent>
       </Card>
 
@@ -166,9 +154,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-foreground">
-          <p>Cool the wort rapidly to your yeast's pitching temperature (e.g., 18-22°C or 64-72°F for most ales).</p>
-          <p>Use an immersion chiller, counterflow chiller, or an ice bath in your sanitized fermenter.</p>
-          <p>Ensure the wort is adequately aerated once cooled to provide oxygen for the yeast.</p>
+          {/* Content removed - this card serves as a section header */}
         </CardContent>
       </Card>
 
@@ -179,11 +165,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-foreground">
-            <p><strong>Sanitize:</strong> Ensure your fermenter and any equipment touching the cooled wort is thoroughly sanitized.</p>
-            <p><strong>Transfer Wort:</strong> Transfer the cooled wort to the fermenter, avoiding excessive splashing (after initial aeration if done pre-transfer).</p>
-            <p><strong>Aerate Wort:</strong> Aerate the wort well by shaking the fermenter or using an oxygenation stone.</p>
-            <p><strong>Pitch Yeast:</strong> Add 1 sachet of SafAle US-05 yeast.</p>
-            <p><strong>Ferment:</strong> Ferment at 18-20°C (64-68°F) for 7-14 days, or until final gravity is stable.</p>
+            {/* Content removed - this card serves as a section header */}
         </CardContent>
       </Card>
 
@@ -194,15 +176,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-foreground">
-            <p><strong>Check Final Gravity:</strong> Ensure fermentation is complete by taking gravity readings a few days apart.</p>
-            <p><strong>Prime (if bottling):</strong> If bottling, prepare a priming sugar solution (e.g., ~100g dextrose for 19L batch, dissolved in boiled water). Gently mix into the beer.</p>
-            <p><strong>Bottle/Keg:</strong> Transfer beer to sanitized bottles or keg.</p>
-            <p><strong>Condition:</strong></p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Bottles: Store at room temperature for 2-3 weeks for carbonation.</li>
-              <li>Keg: Force carbonate as per your setup.</li>
-            </ul>
-            <p><strong>Chill & Enjoy:</strong> Once carbonated/conditioned, chill and enjoy your Classic Amber Ale!</p>
+            {/* Content removed - this card serves as a section header */}
         </CardContent>
       </Card>
     </div>
