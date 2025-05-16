@@ -1,3 +1,4 @@
+
 import fs from 'fs';
 import path from 'path';
 import { XMLParser, XMLValidator } from 'fast-xml-parser';
@@ -144,9 +145,13 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
 }
 
 export async function getAllRecipes(): Promise<Recipe[]> {
-  const slugs = getAllRecipeSlugs();
+  const slugsRaw = getAllRecipeSlugs();
+  // Ensure that we only process unique slugs
+  const uniqueSlugs = Array.from(new Set(slugsRaw));
+
   const recipes = await Promise.all(
-    slugs.map(slug => getRecipeData(slug))
+    uniqueSlugs.map(slug => getRecipeData(slug))
   );
   return recipes.filter(recipe => recipe !== null) as Recipe[];
 }
+
