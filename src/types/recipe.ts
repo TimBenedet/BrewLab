@@ -63,11 +63,11 @@ export interface MashStep {
 }
 
 export interface RecipeStats {
-  og?: string | number;
-  fg?: string | number;
-  abv?: string;
-  ibu?: string | number;
-  colorSrm?: string | number;
+  og?: number;
+  fg?: number;
+  abv?: string; // ABV is a string like "5.0%"
+  ibu?: number;
+  colorSrm?: number;
 }
 
 export interface ValueUnit {

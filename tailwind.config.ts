@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -88,10 +87,37 @@ export default {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out'
-  		}
+  		},
+      typography: ({ theme }: { theme: any }) => ({
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': theme('colors.foreground'),
+            '--tw-prose-headings': theme('colors.primary.DEFAULT'),
+            '--tw-prose-lead': theme('colors.foreground'),
+            '--tw-prose-links': theme('colors.primary.DEFAULT'),
+            '--tw-prose-bold': theme('colors.foreground'),
+            '--tw-prose-counters': theme('colors.muted.foreground'),
+            '--tw-prose-bullets': theme('colors.muted.foreground'),
+            '--tw-prose-hr': theme('colors.border'),
+            '--tw-prose-quotes': theme('colors.primary.DEFAULT'),
+            '--tw-prose-quote-borders': theme('colors.border'),
+            '--tw-prose-captions': theme('colors.muted.foreground'),
+            '--tw-prose-code': theme('colors.foreground'),
+            '--tw-prose-pre-code': theme('colors.card.foreground'),
+            '--tw-prose-pre-bg': theme('colors.card.DEFAULT'),
+            '--tw-prose-th-borders': theme('colors.border'),
+            '--tw-prose-td-borders': theme('colors.border'),
+            '--tw-prose-invert-body': theme('colors.foreground'), // Example: Invert for dark mode
+            '--tw-prose-invert-headings': theme('colors.primary.DEFAULT'),
+            '--tw-prose-invert-links': theme('colors.primary.DEFAULT'),
+             // Add more overrides as needed for dark mode and other elements
+          },
+        },
+      }),
   	}
   },
   plugins: [
-    require("tailwindcss-animate")
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography")
   ],
 } satisfies Config;
