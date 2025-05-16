@@ -52,13 +52,12 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           <Badge 
             variant="outline" 
             className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
-            onClick={(e) => e.stopPropagation()} // Prevents click event from bubbling if there were other handlers on Card
+            onClick={(e) => e.stopPropagation()} 
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
-                // Navigate on Enter or Space for accessibility
-                // This might require router.push if Link's default behavior isn't enough
+                // Intentionally left blank, Link handles navigation
               }
             }}
           >
