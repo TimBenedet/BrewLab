@@ -28,7 +28,7 @@ function parseValueUnit(xmlVal?: XmlValueUnit): ValueUnit | undefined {
 }
 
 
-function transformRecipeData(slug: string, xmlData: XmlRecipe): Recipe {
+function transformRecipeData(slug: string, xmlData: XmlRecipe, stepsMarkdown?: string): Recipe {
   const rawRecipe = xmlData.recipe;
 
   return {
@@ -83,6 +83,7 @@ function transformRecipeData(slug: string, xmlData: XmlRecipe): Recipe {
       ibu: rawRecipe.stats.ibu,
       colorSrm: rawRecipe.stats.colorSrm,
     },
+    stepsMarkdown,
   };
 }
 
@@ -91,7 +92,7 @@ export function getAllRecipeSlugs() {
   try {
     const fileNames = fs.readdirSync(recipesDirectory);
     return fileNames
-      .filter(fileName => fileName.endsWith('.xml'))
+      .filter(fileName => fileName.endsWith('.xml')) // Still list based on XML files
       .map(fileName => fileName.replace(/\.xml$/, ''));
   } catch (error) {
     console.error("Error reading recipes directory:", error);
@@ -100,9 +101,22 @@ export function getAllRecipeSlugs() {
 }
 
 export async function getRecipeData(slug: string): Promise<Recipe | null> {
-  const fullPath = path.join(recipesDirectory, `${slug}.xml`);
+  const xmlFullPath = path.join(recipesDirectory, `${slug}.xml`);
+  const mdFullPath = path.join(recipesDirectory, `${slug}.md`);
+  let stepsMarkdown: string | undefined = undefined;
+
   try {
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    // Read Markdown file if it exists
+    if (fs.existsSync(mdFullPath)) {
+      stepsMarkdown = fs.readFileSync(mdFullPath, 'utf8');
+    }
+  } catch (error) {
+    console.warn(`Could not read Markdown file for ${slug}.md:`, error);
+    // Continue without markdown content if it fails
+  }
+
+  try {
+    const fileContents = fs.readFileSync(xmlFullPath, 'utf8');
     
     const validationResult = XMLValidator.validate(fileContents);
     if (validationResult !== true) {
@@ -117,15 +131,11 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
       parseAttributeValue: true,
       parseNodeValue: true,
       trimValues: true,
-      // isArray: (tagName: string, jPath: string , isLeafNode: boolean , isAttribute: boolean) => {
-      //   // Ensure lists of ingredients are always arrays
-      //   return ['fermentable', 'hop', 'yeast', 'misc', 'mashStep'].includes(tagName);
-      // }
     };
     const parser = new XMLParser(options);
     const jsonObj = parser.parse(fileContents) as XmlRecipe;
     
-    return transformRecipeData(slug, jsonObj);
+    return transformRecipeData(slug, jsonObj, stepsMarkdown);
 
   } catch (error) {
     console.error(`Error reading or parsing recipe file ${slug}.xml:`, error);
