@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import html2canvas from 'html2canvas';
 import type { Recipe } from '@/types/recipe';
-import { PackageOpen } from 'lucide-react';
+import { Beer } from 'lucide-react'; // Import Beer icon
 
 interface LabelGeneratorClientProps {
   recipes: Recipe[];
@@ -36,6 +36,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
   const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('');
+  const [currentSrmHexColor, setCurrentSrmHexColor] = useState<string>('#CCCCCC'); // Default color
 
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -47,16 +48,23 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv?.toString() || 'N/A');
         setIbu(recipe.stats.ibu?.toString() || 'N/A');
         setSrm(recipe.stats.colorSrm?.toString() || 'N/A');
+        setCurrentSrmHexColor(recipe.srmHexColor || '#CCCCCC');
         
         const ingredientsList = [];
         if (recipe.hops && recipe.hops.length > 0) {
-          ingredientsList.push(...recipe.hops.slice(0, 2).map(h => h.name));
+          ingredientsList.push(...recipe.hops.slice(0, 2).map(h => h.NAME));
         }
         if (recipe.fermentables && recipe.fermentables.length > 0) {
-          ingredientsList.push(...recipe.fermentables.slice(0, 3).map(f => f.name));
+          // Filter for key fermentables like malts/grains
+          const keyFermentables = recipe.fermentables.filter(f => 
+            f.TYPE?.toLowerCase().includes('grain') || 
+            f.TYPE?.toLowerCase().includes('malt') ||
+            f.TYPE?.toLowerCase().includes('extract') 
+          ).slice(0, 3).map(f => f.NAME);
+          ingredientsList.push(...keyFermentables);
         }
         if (recipe.miscs && recipe.miscs.length > 0) {
-          ingredientsList.push(...recipe.miscs.slice(0, 1).map(m => m.name));
+          ingredientsList.push(...recipe.miscs.slice(0, 1).map(m => m.NAME));
         }
         setIngredientsSummaryForLabel(ingredientsList.join(', '));
 
@@ -67,6 +75,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIbu('N/A');
       setSrm('N/A');
       setIngredientsSummaryForLabel('');
+      setCurrentSrmHexColor('#CCCCCC'); // Reset to default if no recipe selected
     }
   }, [selectedRecipeSlug, recipes]);
 
@@ -91,7 +100,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       
       const currentDimensions = SIZES[labelSizeKey];
       const canvas = await html2canvas(element, {
-        backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff',
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#ffffff',
         scale: 2, 
         width: parseInt(currentDimensions.previewContentWidthPx, 10),
         height: parseInt(currentDimensions.previewContentHeightPx, 10),
@@ -230,7 +239,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 position: 'absolute',
                 top: '50%',
                 right: '0.5rem',
-                transform: 'translateY(-50%) rotate(180deg)', // Added rotate(180deg)
+                transform: 'translateY(-50%) rotate(180deg)',
                 writingMode: 'vertical-rl',
                 fontSize: '0.75rem', 
                 maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`,
@@ -241,9 +250,17 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               <span>{volume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
             </div>
 
-            {/* Placeholder for a central logo/icon */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-10 my-auto">
-              <PackageOpen size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4} strokeWidth={1} />
+            {/* Central Beer Icon */}
+            <div className="absolute inset-0 flex items-center justify-center my-auto">
+              <Beer
+                size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4} 
+                style={{
+                  transform: 'rotate(-90deg)', // Handle pointing upwards
+                  fill: currentSrmHexColor,
+                  stroke: 'hsl(var(--primary))',
+                }}
+                strokeWidth={1.5}
+              />
             </div>
 
              {/* Bottom Centered Text (Brewery & Tagline) */}
@@ -262,3 +279,4 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
+
