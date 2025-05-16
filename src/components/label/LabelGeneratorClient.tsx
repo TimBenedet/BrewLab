@@ -16,22 +16,28 @@ interface LabelGeneratorClientProps {
   recipes: Recipe[];
 }
 
-const PREVIEW_WIDTH_PX = '200px'; 
+const PREVIEW_WIDTH_PX = '200px';
 const PREVIEW_HEIGHT_PX = '400px';
+
+const SIZES = {
+  '33cl': { displayVolume: '33CL', widthMm: 200, heightMm: 70, widthCmText: '20.0', heightCmText: '7.0', previewContentWidthPx: '500px', previewContentHeightPx: '175px' },
+  '75cl': { displayVolume: '75CL', widthMm: 260, heightMm: 90, widthCmText: '26.0', heightCmText: '9.0', previewContentWidthPx: '500px', previewContentHeightPx: '173px' },
+};
+
 
 export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [selectedRecipeSlug, setSelectedRecipeSlug] = useState<string | null>(null);
   const [beerName, setBeerName] = useState('Select a Recipe');
-  const [style, setStyle] = useState('');
-  const [abv, setAbv] = useState('');
-  const [volume, setVolume] = useState(''); // Will be auto-filled based on label size
   const [breweryName, setBreweryName] = useState('Your Craft Brewery');
   const [tagline, setTagline] = useState('Handcrafted Beer');
-  
+
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
+  const [abv, setAbv] = useState<string>('N/A');
+  const [volume, setVolume] = useState<string>(SIZES['33cl'].displayVolume); // Default to 33CL display
+  const [labelSizeKey, setLabelSizeKey] = useState<keyof typeof SIZES>('33cl');
   const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('');
-  
+
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,12 +45,10 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       const recipe = recipes.find(r => r.slug === selectedRecipeSlug);
       if (recipe) {
         setBeerName(recipe.metadata.name || 'Untitled Beer');
-        setStyle(recipe.metadata.style || 'Unknown Style');
         setAbv(recipe.stats.abv?.toString() || 'N/A');
-        // Volume will be set by label size selection
         setIbu(recipe.stats.ibu?.toString() || 'N/A');
         setSrm(recipe.stats.colorSrm?.toString() || 'N/A');
-        
+
         const ingredients = [];
         if (recipe.hops && recipe.hops.length > 0) {
           ingredients.push(...recipe.hops.slice(0, 2).map(h => h.name));
@@ -56,19 +60,19 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
           ingredients.push(...recipe.miscs.slice(0, 1).map(m => m.name));
         }
         setIngredientsSummaryForLabel(ingredients.join(', '));
-
       }
     } else {
       setBeerName('Select a Recipe');
-      setStyle('');
-      setAbv('');
-      // Volume will be set by label size selection
+      setAbv('N/A');
       setIbu('N/A');
       setSrm('N/A');
       setIngredientsSummaryForLabel('');
     }
   }, [selectedRecipeSlug, recipes]);
 
+  useEffect(() => {
+    setVolume(SIZES[labelSizeKey].displayVolume);
+  }, [labelSizeKey]);
 
   const handleDownloadImage = async () => {
     const element = previewRef.current;
@@ -79,25 +83,24 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const originalOverflow = element.style.overflow;
 
     try {
-      // Temporarily reset styles for capture
       element.style.transform = 'none';
-      element.style.padding = '0'; // Remove padding for capture if it interferes
+      element.style.padding = '0';
       element.style.overflow = 'visible';
 
-      // Wait for the browser to apply style changes
       await new Promise(resolve => requestAnimationFrame(resolve));
-      
+
+      const currentDimensions = SIZES[labelSizeKey];
       const canvas = await html2canvas(element, {
         backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff',
-        scale: 2, // Higher scale for better quality
-        width: element.offsetWidth, // Use actual element dimensions
-        height: element.offsetHeight,
+        scale: 2,
+        width: parseInt(currentDimensions.previewContentWidthPx, 10),
+        height: parseInt(currentDimensions.previewContentHeightPx, 10),
         x: 0,
         y: 0,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
+        windowWidth: parseInt(currentDimensions.previewContentWidthPx, 10),
+        windowHeight: parseInt(currentDimensions.previewContentHeightPx, 10),
       });
       const data = canvas.toDataURL('image/png');
       const link = document.createElement('a');
@@ -108,14 +111,14 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Error generating label image:", error);
-      // Potentially show a toast notification to the user
     } finally {
-      // Restore original styles
       element.style.transform = originalTransform;
       element.style.padding = originalPadding;
       element.style.overflow = originalOverflow;
     }
   };
+
+  const currentDimensions = SIZES[labelSizeKey];
 
   return (
     <div className="grid md:grid-cols-2 gap-8">
@@ -144,17 +147,33 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               </SelectContent>
             </Select>
           </div>
-          
-          {/* Other input fields for manual override or if no recipe is selected */}
-          {/* These fields are controlled and will update the preview */}
-          {/* The beerName field is removed as per previous request to solely rely on selector */}
-          {/*
+
           <div>
-            <Label htmlFor="beerNameInput" className="text-sm font-medium text-muted-foreground">Beer Name (for preview)</Label>
-            <Input id="beerNameInput" value={beerName} onChange={(e) => setBeerName(e.target.value)} className="mt-1" placeholder="e.g., My Awesome IPA" />
+            <Label className="text-sm font-medium text-muted-foreground">Label Size (Container)</Label>
+            <RadioGroup
+              value={labelSizeKey}
+              onValueChange={(value) => setLabelSizeKey(value as keyof typeof SIZES)}
+              className="mt-1 flex space-x-4"
+            >
+              {Object.entries(SIZES).map(([key, sizeDetails]) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <RadioGroupItem value={key} id={`size-${key}`} />
+                  <Label htmlFor={`size-${key}`} className="text-sm font-normal">
+                    {sizeDetails.displayVolume} ({sizeDetails.widthCmText}cm x {sizeDetails.heightCmText}cm)
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
           </div>
-          */}
-          {/* No input fields for IBU and SRM as per previous request */}
+          
+          <div>
+            <Label htmlFor="breweryNameInput" className="text-sm font-medium text-muted-foreground">Brewery Name</Label>
+            <Input id="breweryNameInput" value={breweryName} onChange={(e) => setBreweryName(e.target.value)} className="mt-1" placeholder="e.g., Your Craft Brewery" />
+          </div>
+          <div>
+            <Label htmlFor="taglineInput" className="text-sm font-medium text-muted-foreground">Tagline/Description</Label>
+            <Input id="taglineInput" value={tagline} onChange={(e) => setTagline(e.target.value)} className="mt-1" placeholder="e.g., Handcrafted Special Beer" />
+          </div>
 
         </CardContent>
       </Card>
@@ -163,35 +182,36 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         <CardHeader>
           <CardTitle className="text-xl">Label Preview</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[450px]"> {/* Increased min-height */}
+        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[450px]">
           <div
             ref={previewRef}
-            className="bg-card border-2 border-primary text-primary shadow-lg rounded-md relative overflow-hidden p-4" // Added p-4 for internal padding
+            className="bg-card border-2 border-primary text-primary shadow-lg rounded-md relative overflow-hidden p-4 flex flex-col justify-between items-center text-center"
             style={{
               width: PREVIEW_WIDTH_PX,
               height: PREVIEW_HEIGHT_PX,
-              fontFamily: 'serif', // Classic label font
+              fontFamily: 'serif',
             }}
           >
             {/* Top Information Block */}
-            <div className="absolute top-2 left-0 right-0 w-full px-2 text-center text-primary text-[10px]">
-              <p className="whitespace-nowrap overflow-hidden text-ellipsis">IBU : {ibu}, SRM : {srm}</p>
-              <p>Ingrédients : {ingredientsSummaryForLabel || 'N/A'}</p>
+            <div className="absolute top-2 left-1 right-0 w-full px-1 text-left text-[7px] text-primary" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}>
+                <span className="block whitespace-nowrap">IBU : {ibu}, SRM : {srm}</span>
+                <span className="block whitespace-nowrap font-semibold mt-1">Ingrédients :</span>
+                <span className="block">{ingredientsSummaryForLabel || 'N/A'}</span>
             </div>
 
-            {/* Vertical Beer Name on the LEFT */}
+            {/* Beer Name on the Left (but visually appears on the left of the content after rotation) */}
             {beerName && (
               <div
                 className="text-primary whitespace-nowrap"
                 style={{
                   position: 'absolute',
                   top: '50%',
-                  left: '0.5rem', 
+                  left: '0.5rem',
                   transform: 'translateY(-50%) rotate(180deg)',
                   writingMode: 'vertical-rl',
                   fontSize: '1.25rem', // text-xl
                   fontWeight: 'bold',
-                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 2.5rem)`, // Adjust to avoid overlap with top/bottom info
+                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 50px)`, // Adjust to avoid overlap
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -199,17 +219,41 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 {beerName}
               </div>
             )}
+            
+            {/* Volume and ABV on the Right */}
+            <div
+              className="text-primary whitespace-nowrap"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                right: '0.5rem',
+                transform: 'translateY(-50%)',
+                writingMode: 'vertical-rl',
+                fontSize: '0.75rem', // text-xs
+                maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 50px)`, // Adjust to avoid overlap
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <span>{volume} - {abv}% alc.</span>
+            </div>
 
-            {/* Placeholder for a central logo/icon - can be made dynamic later */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-10">
+
+            {/* Placeholder for a central logo/icon */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-10 my-auto">
               <PackageOpen size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4} strokeWidth={1} />
+            </div>
+
+             {/* Bottom Centered Text (Brewery & Tagline) */}
+            <div className="w-full absolute bottom-2 left-0 right-0 px-2">
+                <p className="text-[10px] font-semibold text-primary">{breweryName}</p>
+                <p className="text-[10px] text-muted-foreground">{tagline}</p>
             </div>
           </div>
           <Button onClick={handleDownloadImage} className="mt-4">Download Label</Button>
           <div className="mt-4 text-sm text-muted-foreground text-center">
             <p>Abstract Preview Representation.</p>
-            {/* Updated dimensions text for clarity */}
-            <p className="text-xs">(Dimensions: 10cm W x 20cm H simulated)</p>
+            <p className="text-xs">(Simulated for {currentDimensions.displayVolume}: {currentDimensions.widthCmText}cm W x {currentDimensions.heightCmText}cm H)</p>
           </div>
         </CardContent>
       </Card>
