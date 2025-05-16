@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input"; // Ensured import
 import html2canvas from 'html2canvas';
 import type { Recipe } from '@/types/recipe';
 import { Beer } from 'lucide-react';
@@ -21,7 +21,6 @@ const SIZES = {
   '75cl': { displayVolume: '75CL', defaultVolume: '750ml', widthMm: 260, heightMm: 90, widthCmText: '26.0', heightCmText: '9.0', previewContentWidthPx: '500px', previewContentHeightPx: '173px' },
 };
 
-
 export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [selectedRecipeSlug, setSelectedRecipeSlug] = useState<string | null>(null);
   const [beerName, setBeerName] = useState('Select a Recipe');
@@ -33,9 +32,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [abv, setAbv] = useState<string>('N/A');
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
-  const [currentSrmHexColor, setCurrentSrmHexColor] = useState<string>('#CCCCCC');
   const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('N/A');
-
+  const [currentSrmHexColor, setCurrentSrmHexColor] = useState<string>('#CCCCCC');
 
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +62,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         const allIngredients = [...hopsList, ...fermentablesList, ...miscsList].filter(Boolean);
         const validIngredientNames = allIngredients.filter(name => typeof name === 'string' && name.trim() !== '');
         setIngredientsSummaryForLabel(validIngredientNames.length > 0 ? validIngredientNames.join(', ') : 'N/A');
+
       } else {
         setBeerName('Recipe Not Found');
         setStyle('Beer Style');
@@ -92,52 +91,25 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const element = previewRef.current;
     if (!element) return;
 
-    const originalTransform = element.style.transform;
-    const originalPadding = element.style.padding;
-    const originalOverflow = element.style.overflow;
-
-    try {
-      element.style.transform = 'none'; 
-      element.style.padding = '0'; 
-      element.style.overflow = 'visible'; 
-
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      
-      const currentDimensions = SIZES[labelSizeKey];
-      const canvas = await html2canvas(element, {
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#ffffff',
-        scale: 2, 
-        width: parseInt(currentDimensions.previewContentWidthPx, 10),
-        height: parseInt(currentDimensions.previewContentHeightPx, 10),
-        x: 0, 
-        y: 0,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: parseInt(currentDimensions.previewContentWidthPx, 10),
-        windowHeight: parseInt(currentDimensions.previewContentHeightPx, 10),
-      });
-      const data = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = data;
-      link.download = `${(beerName && beerName !== 'Select a Recipe' ? beerName.toLowerCase().replace(/\s+/g, '-') : 'beer')}-label.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error generating label image:", error);
-    } finally {
-      if (element) { 
-        element.style.transform = originalTransform;
-        element.style.padding = originalPadding;
-        element.style.overflow = originalOverflow;
-      }
-    }
+    // Simplified capture: captures the element as displayed (rotated)
+    const canvas = await html2canvas(element, {
+      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#ffffff',
+      scale: 2, 
+    });
+    const data = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = data;
+    link.download = `${(beerName && beerName !== 'Select a Recipe' ? beerName.toLowerCase().replace(/\s+/g, '-') : 'beer')}-label.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   
   const currentDimensions = SIZES[labelSizeKey];
 
-  const PREVIEW_CONTAINER_WIDTH_PX = currentDimensions.previewContentHeightPx;
-  const PREVIEW_CONTAINER_HEIGHT_PX = currentDimensions.previewContentWidthPx;
+  // For the container that HOLDS the rotated preview
+  const PREVIEW_CONTAINER_WIDTH_PX = currentDimensions.previewContentHeightPx; // e.g. 175px
+  const PREVIEW_CONTAINER_HEIGHT_PX = currentDimensions.previewContentWidthPx; // e.g. 500px
 
   return (
     <div className="grid md:grid-cols-2 gap-8">
@@ -202,25 +174,28 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
           <CardTitle className="text-xl">Label Preview</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center p-4 min-h-[550px]">
+          {/* Container for the rotated label preview */}
           <div
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center" // This container is tall and narrow
             style={{
               width: PREVIEW_CONTAINER_WIDTH_PX, 
               height: PREVIEW_CONTAINER_HEIGHT_PX, 
             }}
           >
+            {/* The actual label content, styled as horizontal, then rotated */}
             <div
               ref={previewRef}
               className="bg-card border-2 border-primary text-primary shadow-lg rounded-md relative overflow-hidden p-4 flex flex-col justify-between items-center text-center"
               style={{
-                width: currentDimensions.previewContentWidthPx, 
-                height: currentDimensions.previewContentHeightPx, 
+                width: currentDimensions.previewContentWidthPx, // Actual content width before rotation
+                height: currentDimensions.previewContentHeightPx, // Actual content height before rotation
                 fontFamily: 'serif',
                 transformOrigin: 'center center',
                 transform: 'rotate(90deg)',
               }}
             >
-               {(ibu !== 'N/A' || srm !== 'N/A' || ingredientsSummaryForLabel !== 'N/A') && (
+              {/* Top Info: IBU, SRM, Ingredients - Horizontal within the unrotated context */}
+               {(ibu !== 'N/A' || srm !== 'N/A' || (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A')) && (
                 <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
                   {(ibu !== 'N/A' || srm !== 'N/A') && (
                     <p className="text-[7px] text-primary">
@@ -235,6 +210,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 </div>
               )}
               
+              {/* Left Vertical Text: Beer Name */}
               {beerName !== 'Select a Recipe' && beerName && (
                 <div
                   className="text-primary whitespace-nowrap flex flex-col items-start justify-start"
@@ -255,6 +231,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 </div>
               )}
               
+              {/* Right Vertical Text: Volume - ABV */}
               <div
                 className="text-primary whitespace-nowrap flex flex-col items-start justify-start"
                 style={{
@@ -272,6 +249,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 <span>{volume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
               </div>
 
+              {/* Center: Beer Icon */}
               <div className="absolute inset-0 flex items-center justify-center my-auto">
                 <Beer
                   size={Math.min(parseInt(currentDimensions.previewContentWidthPx,10), parseInt(currentDimensions.previewContentHeightPx,10)) * 0.4}
@@ -279,11 +257,12 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                   stroke={'hsl(var(--primary))'}
                   strokeWidth={1.5}
                   style={{
-                    transform: 'rotate(-90deg)', 
+                    transform: 'rotate(-90deg)', // Orient handle upwards in vertical preview
                   }}
                 />
               </div>
 
+              {/* Bottom: Brewery Name, Tagline */}
               <div className="w-full absolute bottom-2 left-0 right-0 px-2">
                   <p className="text-[10px] font-semibold text-primary">{breweryName}</p>
                   <p className="text-[10px] text-muted-foreground">{tagline}</p>
