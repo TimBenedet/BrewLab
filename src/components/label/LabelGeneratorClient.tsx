@@ -21,26 +21,29 @@ interface LabelDimensions {
   heightCmText: string;
   widthPx: string;
   heightPx: string;
+  defaultVolume: string;
 }
 
 const SIZES: Record<string, LabelDimensions> = {
   '33cl': {
     name: '33CL',
-    widthMm: 200,      // 20cm
-    heightMm: 70,       // 7cm
+    widthMm: 200,
+    heightMm: 70,
     widthCmText: '20.0',
     heightCmText: '7.0',
-    widthPx: '380px',   // Proportional preview width
-    heightPx: '133px'   // Proportional preview height (380 * 70 / 200)
+    widthPx: '380px',
+    heightPx: '133px',
+    defaultVolume: '330ml'
   },
   '75cl': {
     name: '75CL',
-    widthMm: 260,      // 26cm
-    heightMm: 90,       // 9cm
+    widthMm: 260,
+    heightMm: 90,
     widthCmText: '26.0',
     heightCmText: '9.0',
-    widthPx: '380px',   // Proportional preview width
-    heightPx: '132px'   // Proportional preview height (380 * 90 / 260)
+    widthPx: '380px',
+    heightPx: '132px',
+    defaultVolume: '750ml'
   },
 };
 
@@ -53,6 +56,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [beerName, setBeerName] = useState('My Awesome Beer');
   const [style, setStyle] = useState('IPA - India Pale Ale');
   const [abv, setAbv] = useState('6.5');
+  const [ibu, setIbu] = useState<string | number | undefined>('40');
+  const [srm, setSrm] = useState<string | number | undefined>('10');
   const [breweryName, setBreweryName] = useState('HomeBrew Hero Co.');
   const [tagline, setTagline] = useState('Crafted with passion, just for fun!');
   const [volume, setVolume] = useState('330ml');
@@ -68,23 +73,47 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setBeerName(recipe.metadata.name);
         setStyle(recipe.metadata.style);
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
-        setVolume(recipe.metadata.batchSize ? `${recipe.metadata.batchSize.value}${recipe.metadata.batchSize.unit}` : '330ml');
-        // BreweryName and Tagline are not typically in recipe XML, so they are not pre-filled from recipe data.
+        setIbu(recipe.stats.ibu ?? '');
+        setSrm(recipe.stats.colorSrm ?? '');
+        // Auto-set volume based on the currently selected label size if a recipe is loaded
+        setVolume(SIZES[labelSizeKey].defaultVolume);
       }
-    } else {
-      // Optionally reset to defaults if no recipe is selected, or keep current user edits.
-      // For now, we'll keep user edits if they deselect a recipe (though Select doesn't easily allow deselecting to null)
     }
-  }, [selectedRecipeSlug, recipes]);
+  }, [selectedRecipeSlug, recipes, labelSizeKey]);
+
+  useEffect(() => {
+    // Auto-update volume when label size changes, regardless of recipe selection
+    setVolume(SIZES[labelSizeKey].defaultVolume);
+  }, [labelSizeKey]);
 
   const handleDownloadImage = async () => {
     const element = previewRef.current;
     if (!element) return;
 
+    // Temporarily remove padding for capture if it's causing issues, then re-add
+    const originalPadding = element.style.padding;
+    element.style.padding = '0'; // Or set to a minimal value if required for internal spacing
+
+    // Wait for the DOM to update if padding change needs to reflect
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+
     const canvas = await html2canvas(element, {
-      scale: 2,
-      backgroundColor: null,
+      scale: 2, // Higher scale for better resolution
+      backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff', // Explicit background
+      width: element.offsetWidth, // Capture based on offsetWidth
+      height: element.offsetHeight, // Capture based on offsetHeight
+      x: 0,
+      y: 0,
+      scrollX: 0, // Ensure no scrolling interference
+      scrollY: 0,
+      windowWidth: element.scrollWidth, // Tell html2canvas the full width
+      windowHeight: element.scrollHeight, // Tell html2canvas the full height
+      useCORS: true, // If you ever add external images
     });
+
+    element.style.padding = originalPadding; // Restore padding
+
     const data = canvas.toDataURL('image/png');
     const link = document.createElement('a');
 
@@ -137,8 +166,9 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             <Input id="abv" type="text" value={abv} onChange={(e) => setAbv(e.target.value)} className="mt-1" />
           </div>
           <div>
-            <Label htmlFor="volume" className="text-sm font-medium text-muted-foreground">Container Volume (e.g., 330ml, 12oz)</Label>
+            <Label htmlFor="volume" className="text-sm font-medium text-muted-foreground">Container Volume</Label>
             <Input id="volume" type="text" value={volume} onChange={(e) => setVolume(e.target.value)} className="mt-1" />
+            <p className="text-xs text-muted-foreground mt-1">Auto-filled based on label size. You can override it.</p>
           </div>
           <div>
             <Label htmlFor="breweryName" className="text-sm font-medium text-muted-foreground">Brewery Name</Label>
@@ -170,30 +200,59 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
           <CardTitle className="text-xl">Label Preview</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center p-4">
-          <div
-            ref={previewRef}
-            className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out"
+          <div // Outer container for relative positioning of vertical text
+            className="relative"
             style={{
-              fontFamily: 'serif', // Example font
               width: currentDimensions.widthPx,
               height: currentDimensions.heightPx,
             }}
           >
-            <div className="w-full">
-              <h2 className="text-2xl font-bold text-primary break-words">{beerName}</h2>
-              <p className="text-xs text-muted-foreground italic break-words">{style}</p>
+            <div
+              ref={previewRef}
+              className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out overflow-hidden" // Added overflow-hidden
+              style={{
+                fontFamily: 'serif',
+                width: '100%', // Fill the relative parent
+                height: '100%', // Fill the relative parent
+                boxSizing: 'border-box',
+              }}
+            >
+              <div className="w-full">
+                <h2 className="text-2xl font-bold text-primary break-words">{beerName}</h2>
+                <p className="text-xs text-muted-foreground italic break-words">{style}</p>
+              </div>
+
+              <div className="w-full my-auto flex justify-center items-center">
+                 <PackageOpen size={Math.min(parseInt(currentDimensions.widthPx)*0.2, parseInt(currentDimensions.heightPx)*0.2)} className="text-muted-foreground" data-ai-hint="beer logo" />
+              </div>
+
+              <div className="w-full text-xs">
+                <p className="break-words">{tagline}</p>
+                <div className="border-t border-muted-foreground my-1"></div>
+                <p className="font-semibold text-primary break-words">{breweryName}</p>
+                <p className="text-muted-foreground">ABV: {abv}% | Vol: {volume}</p>
+              </div>
             </div>
 
-            <div className="w-full my-auto flex justify-center items-center"> {/* Centered placeholder logo */}
-               <PackageOpen size={Math.min(parseInt(currentDimensions.widthPx)*0.2, parseInt(currentDimensions.heightPx)*0.2)} className="text-muted-foreground" data-ai-hint="beer logo" />
-            </div>
+            {/* Vertical IBU Text */}
+            {ibu && (
+              <div
+                className="absolute top-0 left-1 h-full flex items-center text-muted-foreground text-[8px] transform"
+                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
+              >
+                <span>IBU: {ibu}</span>
+              </div>
+            )}
 
-            <div className="w-full text-xs">
-              <p className="break-words">{tagline}</p>
-              <div className="border-t border-muted-foreground my-2"></div>
-              <p className="font-semibold text-primary break-words">{breweryName}</p>
-              <p className="text-muted-foreground">ABV: {abv}% | Vol: {volume}</p>
-            </div>
+            {/* Vertical SRM Text */}
+            {srm && (
+              <div
+                className="absolute top-0 right-1 h-full flex items-center text-muted-foreground text-[8px]"
+                style={{ writingMode: 'vertical-rl' }}
+              >
+                <span>SRM: {srm}</span>
+              </div>
+            )}
           </div>
           <div className="mt-4 text-sm text-muted-foreground flex items-center">
             <Ruler size={16} className="mr-2 text-primary" />
