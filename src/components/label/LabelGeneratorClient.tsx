@@ -93,32 +93,28 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const element = previewRef.current;
     if (!element) return;
 
-    // Store original styles
     const originalTransform = element.style.transform;
     const originalPadding = element.style.padding;
     const originalOverflow = element.style.overflow;
 
     try {
-      // Temporarily modify styles for capture
-      element.style.transform = 'none'; // Reset rotation for capture
-      element.style.padding = '0'; // Remove padding for precise capture
-      element.style.overflow = 'visible'; // Ensure all content is visible
+      element.style.transform = 'none'; 
+      element.style.padding = '0'; 
+      element.style.overflow = 'visible'; 
 
-      // Ensure styles are applied before capture
       await new Promise(resolve => requestAnimationFrame(resolve));
       
       const currentDimensions = SIZES[labelSizeKey];
       const canvas = await html2canvas(element, {
         backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#ffffff',
         scale: 2, 
-        // Use the *content's* unrotated dimensions for the canvas
         width: parseInt(currentDimensions.previewContentWidthPx, 10),
         height: parseInt(currentDimensions.previewContentHeightPx, 10),
         x: 0, 
         y: 0,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: parseInt(currentDimensions.previewContentWidthPx, 10), // Inform html2canvas about the intended viewport
+        windowWidth: parseInt(currentDimensions.previewContentWidthPx, 10),
         windowHeight: parseInt(currentDimensions.previewContentHeightPx, 10),
       });
       const data = canvas.toDataURL('image/png');
@@ -130,10 +126,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Error generating label image:", error);
-      // Consider adding a user-facing error message here (e.g., using a toast)
     } finally {
-      // Restore original styles
-      if (element) { // Check if element still exists (it should)
+      if (element) { 
         element.style.transform = originalTransform;
         element.style.padding = originalPadding;
         element.style.overflow = originalOverflow;
@@ -142,10 +136,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   };
   
   const currentDimensions = SIZES[labelSizeKey];
-
-  // For the container that HOLDS the rotated preview
-  // const PREVIEW_CONTAINER_WIDTH_PX = currentDimensions.previewContentHeightPx; 
-  // const PREVIEW_CONTAINER_HEIGHT_PX = currentDimensions.previewContentWidthPx; 
 
   return (
     <div className="grid md:grid-cols-2 gap-8">
@@ -210,26 +200,25 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
           <CardTitle className="text-xl">Label Preview</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center p-4 min-h-[450px]">
-          {/* Container for the preview - direct styling for portrait orientation */}
           <div
             ref={previewRef}
             className="bg-card border-2 border-primary text-primary shadow-lg rounded-md relative overflow-hidden p-4 flex flex-col justify-between items-center text-center"
             style={{
-              width: PREVIEW_WIDTH_PX, // Fixed portrait width for on-screen preview
-              height: PREVIEW_HEIGHT_PX, // Fixed portrait height for on-screen preview
+              width: PREVIEW_WIDTH_PX,
+              height: PREVIEW_HEIGHT_PX,
               fontFamily: 'serif',
             }}
           >
             {/* Top Information Block */}
-             {(ibu !== 'N/A' || srm !== 'N/A' || (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A')) && (
+            {(ibu !== 'N/A' || srm !== 'N/A' || (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A')) && (
               <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
                 {(ibu !== 'N/A' || srm !== 'N/A') && (
                   <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
                     IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
                   </p>
                 )}
-                { (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A' ) && (
-                    <p className="text-[7px] text-primary mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                {ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A' && (
+                    <p className="text-[7px] text-primary mt-0.5 whitespace-normal">
                         <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
                     </p>
                 )}
@@ -239,12 +228,12 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             {/* Beer Name on the Left */}
             {beerName !== 'Select a Recipe' && beerName && (
               <div
-                className="text-primary whitespace-nowrap flex flex-col items-start justify-start"
+                className="text-primary whitespace-nowrap"
                 style={{
                   position: 'absolute',
-                  top: '50%', 
+                  top: '50%',
                   left: '0.5rem', 
-                  transform: 'translateY(-50%) rotate(180deg)', 
+                  transform: 'translateY(-50%) rotate(180deg)',
                   writingMode: 'vertical-rl',
                   fontSize: '1.25rem', 
                   fontWeight: 'bold',
@@ -259,12 +248,12 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             
             {/* Volume and ABV on the Right */}
             <div
-              className="text-primary whitespace-nowrap flex flex-col items-start justify-start"
+              className="text-primary whitespace-nowrap"
               style={{
                 position: 'absolute',
-                top: '50%', 
-                right: '0.5rem', 
-                transform: 'translateY(-50%) rotate(180deg)', 
+                top: '50%',
+                right: '0.5rem',
+                transform: 'translateY(-50%) rotate(180deg)',
                 writingMode: 'vertical-rl',
                 fontSize: '0.75rem', 
                 maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`,
@@ -283,7 +272,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 stroke={'hsl(var(--primary))'}
                 strokeWidth={1.5}
                 style={{
-                  transform: 'rotate(-90deg)', // Orient handle upwards in vertical preview
+                  transform: 'rotate(-90deg)',
                 }}
               />
             </div>
@@ -304,5 +293,3 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
-
-    
