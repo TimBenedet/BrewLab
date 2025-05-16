@@ -79,6 +79,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
+        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates based on current label size with recipe load
         
         const mainHops = recipe.hops.map(h => h.name).filter(Boolean);
         setHopsDisplay(mainHops.length > 0 ? mainHops.slice(0,2).join(', ') : '');
@@ -96,15 +97,15 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setAbv('6.5');
       setIbu('');
       setSrm('');
+      setVolume(SIZES[labelSizeKey].defaultVolume);
       setHopsDisplay('');
       setYeastDisplay('');
       setMiscDisplay('');
     }
-    setVolume(SIZES[labelSizeKey].defaultVolume);
   }, [selectedRecipeSlug, recipes, labelSizeKey]);
 
   useEffect(() => {
-    // Auto-update volume when label size changes, if no recipe is selected or to override recipe volume
+    // Auto-update volume when label size changes
     setVolume(SIZES[labelSizeKey].defaultVolume);
   }, [labelSizeKey]);
 
@@ -262,10 +263,10 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               </div>
             </div>
 
-            {/* Combined Vertical Info Text (IBU, SRM, Ingredients) */}
+            {/* Vertical Info Text (IBU, SRM, Ingredients) - Positioned to the left */}
             {(ibu || srm || hopsDisplay || yeastDisplay || miscDisplay) && (
               <div
-                className="absolute top-0 left-1 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px] py-2 pr-1" // Added pr-1 for spacing from content
+                className="absolute top-0 left-1 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px] py-2 pr-1"
                 style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
               >
                   {ibu && <span className="block">IBU: {ibu}</span>}
@@ -295,5 +296,3 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
-
-    
