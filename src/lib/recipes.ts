@@ -101,24 +101,31 @@ export function getAllRecipeSlugs(): string[] {
   try {
     const entries = fs.readdirSync(recipesDirectory, { withFileTypes: true });
     return entries
-      .filter(dirent => dirent.isDirectory())
+      .filter(dirent => dirent.isDirectory() && !dirent.name.startsWith('.')) // Ignore hidden directories
       .map(dirent => dirent.name);
   } catch (error) {
-    console.error("Error reading recipes directory for slugs:", error);
+    // If recipesDirectory doesn't exist (e.g. new project), it's not a critical error for slug generation.
+    // Only log if it's an unexpected error.
+    if (error && typeof error === 'object' && 'code' in error && error.code !== 'ENOENT') {
+        console.error("Error reading recipes directory for slugs:", error);
+    }
     return [];
   }
 }
 
 export async function getRecipeData(slug: string): Promise<Recipe | null> {
   const recipeDir = path.join(recipesDirectory, slug);
-  const xmlFullPath = path.join(recipeDir, `${slug}.xml`);
-  const mdFullPath = path.join(recipeDir, `${slug}.md`);
+  const xmlFileName = `${slug}.xml`; // XML file should match the directory slug name
+  const mdFileName = `${slug}.md`;   // Markdown file should match the directory slug name
+  const xmlFullPath = path.join(recipeDir, xmlFileName);
+  const mdFullPath = path.join(recipeDir, mdFileName);
   let stepsMarkdown: string | undefined = undefined;
 
   try {
     // Check if directory for slug exists
     if (!fs.existsSync(recipeDir) || !fs.lstatSync(recipeDir).isDirectory()) {
-        console.warn(`Recipe directory not found for slug: ${slug}`);
+        // This console.warn can be noisy if many slugs are checked that don't exist (e.g. during dev)
+        // console.warn(`Recipe directory not found for slug: ${slug} (path: ${recipeDir})`);
         return null;
     }
 
@@ -133,7 +140,7 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
 
   try {
     if (!fs.existsSync(xmlFullPath)) {
-        console.warn(`XML file not found: ${xmlFullPath}`);
+        // console.warn(`XML file not found: ${xmlFullPath}`);
         return null;
     }
     const fileContents = fs.readFileSync(xmlFullPath, 'utf8');
