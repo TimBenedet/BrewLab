@@ -26,31 +26,45 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   const formatGravity = (val?: string | number) => (typeof val === 'number' ? val.toFixed(3) : formatOptionalNumber(val));
 
   return (
-    <Card className="h-full flex flex-col overflow-hidden bg-card hover:border-primary transition-all duration-200 ease-in-out transform hover:-translate-y-1 relative group">
-      <Link href={`/recipes/${recipe.slug}`} className="block flex-grow p-0">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-xl font-semibold text-primary group-hover:text-accent transition-colors">
-            {recipe.metadata.name}
-          </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">{recipe.metadata.style}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex-grow text-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-2 sm:gap-y-1.5"> {/* Updated for better stacking on xs */}
-            <div className="space-y-1.5"> {/* Left Column */}
-              <StatItem icon={Beer} label="Volume" value={formatValueUnit(recipe.metadata.batchSize)} />
-              <StatItem icon={Palette} label="Color" value={recipe.stats.colorSrm ? `${recipe.stats.colorSrm} SRM` : '-'} />
-              <StatItem icon={Percent} label="Alcohol" value={recipe.stats.abv ? `${recipe.stats.abv}` : '-'} />
-            </div>
-            <div className="space-y-1.5"> {/* Right Column */}
-              <StatItem icon={Thermometer} label="OG" value={formatGravity(recipe.stats.og)} />
-              <StatItem icon={Thermometer} label="FG" value={formatGravity(recipe.stats.fg)} />
-              <StatItem icon={AlertTriangle} label="Bitterness" value={recipe.stats.ibu ? `${recipe.stats.ibu} IBU` : '-'} />
-            </div>
+    <Card className="h-full flex flex-col overflow-hidden bg-card hover:border-primary/50 transition-all duration-200 ease-in-out transform hover:-translate-y-1 relative group">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-semibold text-primary group-hover:text-accent transition-colors">
+          {recipe.metadata.name}
+        </CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">{recipe.metadata.style}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow text-sm">
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-x-3 gap-y-2 sm:gap-y-1.5">
+          <div className="space-y-1.5"> {/* Left Column */}
+            <StatItem icon={Beer} label="Volume" value={formatValueUnit(recipe.metadata.batchSize)} />
+            <StatItem icon={Palette} label="Color" value={recipe.stats.colorSrm ? `${recipe.stats.colorSrm} SRM` : '-'} />
+            <StatItem icon={Percent} label="Alcohol" value={recipe.stats.abv ? `${recipe.stats.abv}` : '-'} />
           </div>
-        </CardContent>
-      </Link>
+          <div className="space-y-1.5"> {/* Right Column */}
+            <StatItem icon={Thermometer} label="OG" value={formatGravity(recipe.stats.og)} />
+            <StatItem icon={Thermometer} label="FG" value={formatGravity(recipe.stats.fg)} />
+            <StatItem icon={AlertTriangle} label="Bitterness" value={recipe.stats.ibu ? `${recipe.stats.ibu} IBU` : '-'} />
+          </div>
+        </div>
+      </CardContent>
       <CardFooter className="justify-start items-center pt-4">
-        <Badge variant="outline">View Recipe</Badge>
+        <Link href={`/recipes/${recipe.slug}`} passHref legacyBehavior>
+          <Badge 
+            variant="outline" 
+            className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+            onClick={(e) => e.stopPropagation()} // Prevents click event from bubbling if there were other handlers on Card
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                // Navigate on Enter or Space for accessibility
+                // This might require router.push if Link's default behavior isn't enough
+              }
+            }}
+          >
+            View Recipe
+          </Badge>
+        </Link>
       </CardFooter>
     </Card>
   );
