@@ -85,18 +85,8 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const { mash, hops, miscs, yeasts, metadata, notes, stepsMarkdown } = recipe;
 
-  // These variables might still be useful for other sections or if you reintroduce dynamic parts.
-  const boilHops = hops.filter(h => h.use.toLowerCase() === 'boil' || h.use.toLowerCase() === 'first wort');
-  const boilMiscs = miscs?.filter(m => m.use.toLowerCase() === 'boil');
-  const aromaHops = hops.filter(h => h.use.toLowerCase() === 'aroma' || h.use.toLowerCase() === 'whirlpool');
-  const aromaMiscs = miscs?.filter(m => m.use.toLowerCase() === 'whirlpool');
   const dryHops = hops.filter(h => h.use.toLowerCase() === 'dry hop');
   const fermentationMiscs = miscs?.filter(m => m.use.toLowerCase() === 'fermentation' || m.use.toLowerCase() === 'primary' || m.use.toLowerCase() === 'secondary');
-
-  const aromaAdditions = [
-    ...(aromaHops.map(h => ({ ...h, type: 'Hop' }))),
-    ...(aromaMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
-  ].sort((a, b) => (b.time?.value ?? 0) - (a.time?.value ?? 0));
 
   const fermentationAdditions = [
     ...(dryHops.map(h => ({ ...h, type: 'Hop' }))),
@@ -137,35 +127,17 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
         </CardContent>
       </Card>
       
-      {aromaAdditions.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl text-primary">
-              <Wind size={20} /> Whirlpool / Aroma Additions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Time / Temp</TableHead>
-                  <TableHead>Ingredient</TableHead>
-                  <TableHead>Amount</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {aromaAdditions.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{item.time?.value ?? '-'} {item.time?.unit}</TableCell>
-                    <TableCell>{item.name} ({item.type})</TableCell>
-                    <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-primary">
+            <Wind size={20} /> Whirlpool / Aroma Additions
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-foreground">
+          <p><strong>Cool to 80-85°C (176-185°F):</strong> If you added flameout hops and want a whirlpool, cool the wort slightly.</p>
+          <p><strong>Whirlpool:</strong> Stir the wort gently for 15-20 minutes. This helps settle trub and enhances hop aroma.</p>
+        </CardContent>
+      </Card>
 
       {(yeasts.length > 0 || fermentationAdditions.length > 0) && (
         <Card>
@@ -239,7 +211,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
          </Card>
       )}
       
-      {!recipe.stepsMarkdown && !recipe.notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && aromaAdditions.length === 0 && yeasts.length === 0 && fermentationAdditions.length === 0 && (
+      {!recipe.stepsMarkdown && !recipe.notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && yeasts.length === 0 && fermentationAdditions.length === 0 && (
         <Card>
           <CardContent>
             <p className="text-muted-foreground py-4">No detailed steps or procedural notes provided for this recipe.</p>
