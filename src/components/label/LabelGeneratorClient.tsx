@@ -76,7 +76,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates if label size changed before selecting recipe
+        setVolume(SIZES[labelSizeKey].defaultVolume);
 
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
@@ -95,6 +95,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
       }
     } else {
+      // Reset to defaults if no recipe is selected
       setBeerName('My Awesome Beer');
       setStyle('IPA - India Pale Ale');
       setAbv('6.5');
@@ -104,7 +105,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIngredientsSummaryForLabel('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRecipeSlug, recipes, labelSizeKey]); // Added labelSizeKey dependency
+  }, [selectedRecipeSlug, recipes, labelSizeKey]);
 
   useEffect(() => {
     setVolume(SIZES[labelSizeKey].defaultVolume);
@@ -118,7 +119,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const originalPadding = element.style.padding;
     element.style.padding = '0'; 
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 0)); // Ensure styles are applied
 
     const canvas = await html2canvas(element, {
       scale: 2, 
@@ -187,7 +188,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             <Label htmlFor="abv" className="text-sm font-medium text-muted-foreground">Alcohol by Volume (%)</Label>
             <Input id="abv" type="text" value={abv} onChange={(e) => setAbv(e.target.value)} className="mt-1" />
           </div>
-          <div>
+           <div>
             <Label htmlFor="volume" className="text-sm font-medium text-muted-foreground">Container Volume</Label>
             <Input id="volume" type="text" value={volume} onChange={(e) => setVolume(e.target.value)} className="mt-1" />
             <p className="text-xs text-muted-foreground mt-1">Auto-filled based on label size. You can override it.</p>
@@ -232,21 +233,24 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               ref={previewRef}
               className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out overflow-hidden"
               style={{
-                fontFamily: 'serif',
+                fontFamily: 'serif', 
                 width: '100%', 
                 height: '100%',
                 boxSizing: 'border-box',
               }}
             >
+              {/* Top Text Block */}
               <div className="w-full">
                 <h2 className="text-xl font-bold text-primary break-words">{beerName}</h2>
                 <p className="text-[11px] text-muted-foreground italic break-words">{style}</p>
               </div>
 
+              {/* Middle Icon Block */}
               <div className="w-full my-auto flex justify-center items-center">
                  <PackageOpen size={Math.min(parseInt(currentDimensions.widthPx)*0.2, parseInt(currentDimensions.heightPx)*0.2)} className="text-muted-foreground" data-ai-hint="beer logo" />
               </div>
 
+              {/* Bottom Text Block */}
               <div className="w-full text-[10px]">
                 <p className="break-words">{tagline}</p>
                 <p className="font-semibold text-primary break-words mt-1">{breweryName}</p>
@@ -256,7 +260,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
             {/* Vertical Text Block */}
             <div
-              className="absolute top-0 left-1 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px]"
+              className="absolute top-0 left-1 h-full flex flex-col justify-start items-start text-muted-foreground text-[7px]"
               style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
             >
               {(ibu || srm) && (
@@ -265,7 +269,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 </span>
               )}
               {ingredientsSummaryForLabel && (
-                <span className="block mt-1 whitespace-nowrap"> 
+                <span className="block whitespace-nowrap"> 
                     <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
                 </span>
               )}
