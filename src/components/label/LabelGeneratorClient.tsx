@@ -31,8 +31,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [breweryName, setBreweryName] = useState('Your Craft Brewery');
   const [tagline, setTagline] = useState('Handcrafted Beer');
   const [labelSizeKey, setLabelSizeKey] = useState<keyof typeof SIZES>('33cl');
-  const [volume, setVolume] = useState<string>(SIZES['33cl'].defaultVolume); // Stores "330ml" or "750ml"
-  const [displayVolume, setDisplayVolume] = useState<string>(SIZES['33cl'].displayVolume); // Stores "33CL" or "75CL"
+  const [volume, setVolume] = useState<string>(SIZES['33cl'].defaultVolume);
+  const [displayVolume, setDisplayVolume] = useState<string>(SIZES['33cl'].displayVolume);
   const [abv, setAbv] = useState<string>('N/A');
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
@@ -93,7 +93,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const element = previewRef.current;
     if (!element) return;
 
-    // Temporarily reset transform and padding for accurate capture of unrotated content
     const originalTransform = element.style.transform;
     const originalPadding = element.style.padding;
     const originalOverflow = element.style.overflow;
@@ -103,20 +102,33 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       element.style.padding = '0'; 
       element.style.overflow = 'visible'; 
 
-      // Ensure styles are applied before capture
       await new Promise(resolve => requestAnimationFrame(resolve));
       
       const currentDimensions = SIZES[labelSizeKey];
+      
+      const cardBgValue = getComputedStyle(document.documentElement).getPropertyValue('--card').trim();
+      let bgColorForCanvas = '#ffffff'; // Default fallback
+      if (cardBgValue) {
+        // Check if it looks like HSL values (e.g., "210 10% 20%")
+        // and construct the full hsl() function string.
+        if (cardBgValue.split(' ').length === 3 && cardBgValue.includes('%')) {
+          bgColorForCanvas = `hsl(${cardBgValue})`;
+        } else {
+          // Assume it's already a valid color string (e.g., hex, rgb)
+          bgColorForCanvas = cardBgValue; 
+        }
+      }
+
       const canvas = await html2canvas(element, {
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#ffffff', // Use card background or white
-        scale: 2, // Higher scale for better resolution
-        width: parseInt(currentDimensions.previewContentWidthPx, 10), // Capture based on the content's intended flat width
-        height: parseInt(currentDimensions.previewContentHeightPx, 10), // Capture based on the content's intended flat height
-        x: 0, // Start capture from top-left
+        backgroundColor: bgColorForCanvas,
+        scale: 2, 
+        width: parseInt(currentDimensions.previewContentWidthPx, 10),
+        height: parseInt(currentDimensions.previewContentHeightPx, 10),
+        x: 0, 
         y: 0,
-        scrollX: 0, // Ensure no scrolling affects capture
+        scrollX: 0,
         scrollY: 0,
-        windowWidth: parseInt(currentDimensions.previewContentWidthPx, 10), // Set window size for canvas to content size
+        windowWidth: parseInt(currentDimensions.previewContentWidthPx, 10),
         windowHeight: parseInt(currentDimensions.previewContentHeightPx, 10),
       });
       const data = canvas.toDataURL('image/png');
@@ -128,10 +140,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Error generating label image:", error);
-      // Consider adding a user-facing error message here, e.g., using a toast
     } finally {
-      // Restore original styles
-      if (element) { // Check if element still exists
+      if (element) { 
         element.style.transform = originalTransform;
         element.style.padding = originalPadding;
         element.style.overflow = originalOverflow;
@@ -203,100 +213,88 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         <CardHeader>
           <CardTitle className="text-xl">Label Preview</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[450px]"> {/* Adjusted min-height for taller preview */}
-          {/* Container for the rotated label preview */}
+        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[450px]">
           <div
-            className="relative flex items-center justify-center my-auto"
+            ref={previewRef}
+            className="bg-card border-2 border-primary text-primary shadow-lg rounded-md relative overflow-hidden p-4 flex flex-col justify-between items-center text-center"
             style={{
-              width: PREVIEW_WIDTH_PX, // This is the on-screen width of the vertical preview
-              height: PREVIEW_HEIGHT_PX, // This is the on-screen height of the vertical preview
+              width: PREVIEW_WIDTH_PX,
+              height: PREVIEW_HEIGHT_PX,
+              fontFamily: 'serif', 
             }}
           >
-            {/* The actual label content, styled with its original horizontal dimensions and then rotated */}
-            <div
-              ref={previewRef}
-              className="bg-card border-2 border-primary text-primary shadow-lg rounded-md relative overflow-hidden p-4 flex flex-col justify-between items-center text-center"
-              style={{
-                width: PREVIEW_WIDTH_PX, // The label's content width as if it were horizontal
-                height: PREVIEW_HEIGHT_PX, // The label's content height as if it were horizontal
-                fontFamily: 'serif',
-                // transform: 'rotate(0deg)', // No rotation for this state
-                // transformOrigin: 'center center',
-              }}
-            >
-              {/* Top Information Block */}
-              {(ibu !== 'N/A' || srm !== 'N/A' || (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A')) && (
-                <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
-                  {(ibu !== 'N/A' || srm !== 'N/A') && (
-                    <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
-                      IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
+            {/* Top Information Block */}
+            {(ibu !== 'N/A' || srm !== 'N/A' || (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A')) && (
+              <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
+                {(ibu !== 'N/A' || srm !== 'N/A') && (
+                  <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
+                    IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
+                  </p>
+                )}
+                {ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A' && (
+                    <p className="text-[7px] text-primary mt-0.5 whitespace-normal">
+                        <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
                     </p>
-                  )}
-                  {ingredientsSummaryForLabel && ( 
-                      <p className="text-[7px] text-primary mt-0.5 whitespace-normal">
-                          <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
-                      </p>
-                  )}
-                </div>
-              )}
-              
-              {/* Beer Name on the Left */}
-              {beerName !== 'Select a Recipe' && beerName && (
-                <div
-                  className="text-primary whitespace-nowrap"
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '0.5rem', 
-                    transform: 'translateY(-50%) rotate(180deg)',
-                    writingMode: 'vertical-rl',
-                    fontSize: '1.25rem', 
-                    fontWeight: 'bold',
-                    maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`, 
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {beerName}
-                </div>
-              )}
-              
-              {/* Volume and ABV on the Right */}
+                )}
+              </div>
+            )}
+            
+            {/* Beer Name on the Left */}
+            {beerName !== 'Select a Recipe' && beerName && (
               <div
                 className="text-primary whitespace-nowrap"
                 style={{
                   position: 'absolute',
                   top: '50%',
-                  right: '0.5rem',
+                  left: '0.5rem', 
                   transform: 'translateY(-50%) rotate(180deg)',
                   writingMode: 'vertical-rl',
-                  fontSize: '0.75rem', 
-                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`,
+                  fontSize: '1.25rem', 
+                  fontWeight: 'bold',
+                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`, 
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
               >
-                <span>{displayVolume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
+                {beerName}
               </div>
+            )}
+            
+            {/* Volume and ABV on the Right */}
+            <div
+              className="text-primary whitespace-nowrap"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                right: '0.5rem',
+                transform: 'translateY(-50%) rotate(180deg)',
+                writingMode: 'vertical-rl',
+                fontSize: '0.75rem', 
+                maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <span>{displayVolume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
+            </div>
 
-              {/* Central Beer Icon */}
-              <div className="absolute inset-0 flex items-center justify-center my-auto">
-                <Beer
-                  size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4}
-                  fill={currentSrmHexColor}
-                  stroke={'hsl(var(--primary))'}
-                  strokeWidth={1.5}
-                  style={{
-                    transform: 'rotate(-90deg)', // Rotate icon to be upright within the rotated label
-                  }}
-                />
-              </div>
+            {/* Central Beer Icon */}
+            <div className="absolute inset-0 flex items-center justify-center my-auto">
+              <Beer
+                size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4}
+                fill={currentSrmHexColor}
+                stroke={'hsl(var(--primary))'}
+                strokeWidth={1.5}
+                style={{
+                  transform: 'rotate(-90deg)',
+                }}
+              />
+            </div>
 
-               {/* Bottom Centered Text (Brewery & Tagline) */}
-              <div className="w-full absolute bottom-2 left-0 right-0 px-2">
-                  <p className="text-[10px] font-semibold text-primary">{breweryName}</p>
-                  <p className="text-[10px] text-muted-foreground">{tagline}</p>
-              </div>
+             {/* Bottom Centered Text (Brewery & Tagline) */}
+            <div className="w-full absolute bottom-2 left-0 right-0 px-2">
+                <p className="text-[10px] font-semibold text-primary">{breweryName}</p>
+                <p className="text-[10px] text-muted-foreground">{tagline}</p>
             </div>
           </div>
           <Button onClick={handleDownloadImage} className="mt-4">Download Label</Button>
