@@ -7,19 +7,37 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Palette, Ruler } from 'lucide-react'; // Or another relevant icon
+import { Palette, Ruler } from 'lucide-react';
 
 interface LabelDimensions {
   name: string;
-  widthCm: number;
-  heightCm: number;
+  widthMm: number;
+  heightMm: number;
+  widthCmText: string;
+  heightCmText: string;
   widthPx: string;
   heightPx: string;
 }
 
 const SIZES: Record<string, LabelDimensions> = {
-  '33cl': { name: '33CL', widthCm: 8.5, heightCm: 7, widthPx: '321px', heightPx: '265px' },
-  '50cl': { name: '50CL', widthCm: 8, heightCm: 10, widthPx: '302px', heightPx: '378px' },
+  '33cl': { 
+    name: '33CL', 
+    widthMm: 85, 
+    heightMm: 70, 
+    widthCmText: '8.0 - 10.0', 
+    heightCmText: '7.0 - 9.0', 
+    widthPx: '321px', // Corresponds to 8.5cm
+    heightPx: '265px'  // Corresponds to 7cm
+  },
+  '75cl': { 
+    name: '75CL', 
+    widthMm: 100, 
+    heightMm: 90, 
+    widthCmText: '10.0 - 12.0', 
+    heightCmText: '9.0 - 11.0', 
+    widthPx: '378px', // Corresponds to 10cm
+    heightPx: '340px'  // Corresponds to 9cm
+  },
 };
 
 export default function LabelGeneratorPage() {
@@ -29,9 +47,9 @@ export default function LabelGeneratorPage() {
   const [breweryName, setBreweryName] = useState('HomeBrew Hero Co.');
   const [tagline, setTagline] = useState('Crafted with passion, just for fun!');
   const [volume, setVolume] = useState('330ml');
-  const [labelSize, setLabelSize] = useState<string>('33cl');
+  const [labelSizeKey, setLabelSizeKey] = useState<string>('33cl');
 
-  const currentDimensions = SIZES[labelSize];
+  const currentDimensions = SIZES[labelSizeKey];
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-0 space-y-8">
@@ -73,12 +91,12 @@ export default function LabelGeneratorPage() {
             </div>
             <div>
               <Label className="text-sm font-medium text-muted-foreground">Label Size</Label>
-              <RadioGroup value={labelSize} onValueChange={setLabelSize} className="mt-2 space-y-2">
+              <RadioGroup value={labelSizeKey} onValueChange={setLabelSizeKey} className="mt-2 space-y-2">
                 {Object.keys(SIZES).map((key) => (
                   <div key={key} className="flex items-center space-x-2">
                     <RadioGroupItem value={key} id={`size-${key}`} />
                     <Label htmlFor={`size-${key}`} className="font-normal">
-                      {SIZES[key].name} ({SIZES[key].widthCm}cm x {SIZES[key].heightCm}cm)
+                      {SIZES[key].name} (W: {SIZES[key].widthCmText}cm, H: {SIZES[key].heightCmText}cm)
                     </Label>
                   </div>
                 ))}
@@ -108,7 +126,7 @@ export default function LabelGeneratorPage() {
               
               <div className="w-full my-4">
                 {/* Placeholder for a logo or graphic */}
-                <div className="w-16 h-16 bg-muted mx-auto rounded-full flex items-center justify-center text-muted-foreground text-2xl">🍻</div>
+                <div className="w-16 h-16 bg-muted mx-auto rounded-full flex items-center justify-center text-muted-foreground text-2xl" data-ai-hint="beer logo">🍻</div>
               </div>
               
               <div className="w-full text-xs">
@@ -120,7 +138,10 @@ export default function LabelGeneratorPage() {
             </div>
             <div className="mt-4 text-sm text-muted-foreground flex items-center">
               <Ruler size={16} className="mr-2 text-primary" />
-              <span>Selected Label Dimensions: {currentDimensions.widthCm}cm x {currentDimensions.heightCm}cm</span>
+              <span>Selected Preview: {currentDimensions.widthMm}mm x {currentDimensions.heightMm}mm</span>
+            </div>
+             <div className="mt-1 text-xs text-muted-foreground">
+              <span>(Recommended range for {currentDimensions.name}: Width {currentDimensions.widthCmText}cm, Height {currentDimensions.heightCmText}cm)</span>
             </div>
           </CardContent>
         </Card>
