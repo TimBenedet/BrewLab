@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Recipe, ValueUnit, Hop, Yeast, Misc } from '@/types/recipe';
+import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep } from '@/types/recipe';
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -9,7 +9,9 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon } from 'lucide-react';
+import { 
+  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Wind 
+} from 'lucide-react';
 
 
 const DetailItem: React.FC<{ label: string; value?: string | number | ValueUnit; icon?: React.ReactNode }> = ({ label, value, icon }) => {
@@ -79,35 +81,201 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
   );
 };
 
-const RecipeStepsDisplay: React.FC<{ markdownContent?: string }> = ({ markdownContent }) => {
-  if (!markdownContent) {
-    return (
+const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
+  const { mash, hops, miscs, yeasts, metadata, notes, stepsMarkdown } = recipe;
+
+  const boilAdditions = [
+    ...(hops?.filter(h => h.use === 'Boil') || []),
+    ...(miscs?.filter(m => m.use === 'Boil') || [])
+  ].sort((a, b) => (b.time?.value || 0) - (a.time?.value || 0)); // Sort by time, descending (60 min first)
+
+  const whirlpoolAdditions = [
+    ...(hops?.filter(h => h.use === 'Whirlpool' || h.use === 'Aroma') || []),
+    ...(miscs?.filter(m => m.use === 'Whirlpool' || m.use === 'Aroma') || [])
+  ].sort((a, b) => (a.time?.value || 0) - (b.time?.value || 0));
+
+  const fermentationAdditions = [
+    ...(hops?.filter(h => ['Dry Hop', 'Fermentation', 'Primary', 'Secondary'].includes(h.use)) || []),
+    ...(miscs?.filter(m => ['Dry Hop', 'Fermentation', 'Primary', 'Secondary'].includes(m.use)) || [])
+  ].sort((a, b) => (a.time?.value || 0) - (b.time?.value || 0)); // Sort by time/day
+
+  return (
+    <div className="space-y-6">
+      {mash?.mashSteps && mash.mashSteps.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <ThermoIcon size={20} /> Mash Schedule
+            </CardTitle>
+            {mash.name && mash.name !== 'Default Mash' && <CardDescription>{mash.name}</CardDescription>}
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Step</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Temperature</TableHead>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Description</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mash.mashSteps.map((step, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{step.name || `Step ${index + 1}`}</TableCell>
+                    <TableCell>{step.type}</TableCell>
+                    <TableCell>{step.stepTemp.value} {step.stepTemp.unit}</TableCell>
+                    <TableCell>{step.stepTime.value} {step.stepTime.unit}</TableCell>
+                    <TableCell>{step.description || '-'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl text-primary">
-            <ListChecks size={20} /> Recipe Steps
+            <CookingPot size={20} /> Boil Schedule
           </CardTitle>
+          {metadata?.boilTime && <CardDescription>Total Boil Time: {metadata.boilTime.value} {metadata.boilTime.unit}</CardDescription>}
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">No detailed steps provided for this recipe.</p>
+          {boilAdditions.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Ingredient</TableHead>
+                  <TableHead>Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {boilAdditions.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{item.time?.value} {item.time?.unit}</TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-muted-foreground">No boil additions specified.</p>
+          )}
         </CardContent>
       </Card>
-    );
-  }
+      
+      {whirlpoolAdditions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <Wind size={20} /> Whirlpool / Aroma Additions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Ingredient</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Time / Notes</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {whirlpoolAdditions.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
+                    <TableCell>{item.time ? `${item.time.value} ${item.time.unit}` : '-'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-xl text-primary">
-          <ListChecks size={20} /> Recipe Steps
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdownContent}</ReactMarkdown>
-        </article>
-      </CardContent>
-    </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-primary">
+            <FlaskConical size={20} /> Fermentation
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {yeasts && yeasts.length > 0 && (
+            <div>
+              <h4 className="font-semibold text-md mb-2">Yeast Profile:</h4>
+              {yeasts.map((yeast, index) => (
+                <p key={index} className="text-sm">
+                  {yeast.name} ({yeast.type}, {yeast.form})
+                  {yeast.attenuation && ` - Attenuation: ${yeast.attenuation.value}${yeast.attenuation.unit}`}
+                </p>
+              ))}
+            </div>
+          )}
+          {fermentationAdditions.length > 0 && (
+            <div>
+              <h4 className="font-semibold text-md mb-2 mt-3">Dry Hops & Other Fermentation Additions:</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Time / Event</TableHead>
+                    <TableHead>Ingredient</TableHead>
+                    <TableHead>Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {fermentationAdditions.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.time ? `${item.time.value} ${item.time.unit || 'days'}` : 'Primary'}</TableCell>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+          {(!yeasts || yeasts.length === 0) && fermentationAdditions.length === 0 && (
+            <p className="text-muted-foreground">No specific fermentation details provided beyond primary fermentation.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {stepsMarkdown && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <BookOpen size={20} /> Brewer's Detailed Procedure
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{stepsMarkdown}</ReactMarkdown>
+            </article>
+          </CardContent>
+        </Card>
+      )}
+
+      {notes && !stepsMarkdown && ( // Show general notes if no specific stepsMarkdown
+         <Card>
+         <CardHeader>
+           <CardTitle className="flex items-center gap-2 text-xl text-primary"><FileTextIcon size={20} /> Brewer's Notes</CardTitle>
+         </CardHeader>
+         <CardContent>
+           <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
+             {notes}
+           </div>
+         </CardContent>
+       </Card>
+      )}
+
+
+    </div>
   );
 };
 
@@ -240,7 +408,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
                   />
                 )}
                 
-                {recipe.notes && (
+                {recipe.notes && !stepsMarkdown && ( // Only show general notes if no dedicated steps markdown
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-xl text-primary"><BookOpen size={20} /> Notes</CardTitle>
@@ -255,7 +423,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
               </div>
             </TabsContent>
             <TabsContent value="steps">
-              <RecipeStepsDisplay markdownContent={recipe.stepsMarkdown} />
+              <RecipeStepsDisplay recipe={recipe} />
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -263,3 +431,5 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
+
+    
