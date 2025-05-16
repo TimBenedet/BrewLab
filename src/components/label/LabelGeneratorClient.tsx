@@ -77,8 +77,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        // setVolume(recipe.metadata.batchSize ? `${recipe.metadata.batchSize.value}${recipe.metadata.batchSize.unit}` : SIZES[labelSizeKey].defaultVolume);
-        setVolume(SIZES[labelSizeKey].defaultVolume); // Volume should be primarily driven by label size choice
+        setVolume(SIZES[labelSizeKey].defaultVolume);
         
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
@@ -107,21 +106,12 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIngredientsSummaryForLabel('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRecipeSlug, recipes, labelSizeKey]); // Added labelSizeKey to ensure volume updates if recipe selected then size changed
+  }, [selectedRecipeSlug, recipes, labelSizeKey]);
 
   useEffect(() => {
-    // Update volume if label size changes, unless a recipe is loaded (which might have its own volume logic)
-    if (!selectedRecipeSlug) {
-      setVolume(SIZES[labelSizeKey].defaultVolume);
-    } else {
-      // If a recipe is loaded, re-set the volume based on the new label size.
-      const recipe = recipes.find(r => r.slug === selectedRecipeSlug);
-      // If recipe provides batch size, potentially use it. Otherwise default to selected label size.
-      // For now, we prioritize the label size's default volume for simplicity.
-      setVolume(SIZES[labelSizeKey].defaultVolume);
-    }
+    setVolume(SIZES[labelSizeKey].defaultVolume);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [labelSizeKey, selectedRecipeSlug]); // Ensure selectedRecipeSlug is a dependency
+  }, [labelSizeKey]);
 
   const handleDownloadImage = async () => {
     const element = previewRef.current;
@@ -130,7 +120,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const originalPadding = element.style.padding;
     element.style.padding = '0'; 
 
-    await new Promise(resolve => setTimeout(resolve, 0)); // Ensure styles are applied
+    await new Promise(resolve => setTimeout(resolve, 0));
 
     const canvas = await html2canvas(element, {
       scale: 2, 
@@ -292,6 +282,4 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
-    
-
     
