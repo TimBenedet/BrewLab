@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input"; // Added this import
+import { Input } from "@/components/ui/input";
 import html2canvas from 'html2canvas';
 import type { Recipe } from '@/types/recipe';
 import { Beer } from 'lucide-react';
@@ -62,7 +62,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         const miscsList = recipe.miscs?.slice(0, 1).map(m => m.NAME) || [];
         
         const allIngredients = [...hopsList, ...fermentablesList, ...miscsList];
-        setIngredientsSummaryForLabel(allIngredients.length > 0 ? allIngredients.join(', ') : 'N/A');
+        const validIngredientNames = allIngredients.filter(name => typeof name === 'string' && name.trim() !== '');
+        setIngredientsSummaryForLabel(validIngredientNames.length > 0 ? validIngredientNames.join(', ') : 'N/A');
 
       } else {
         setBeerName('Recipe Not Found');
@@ -212,11 +213,9 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                   IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
                 </p>
               )}
-              {ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A' && (
-                <p className="text-[7px] text-primary mt-0.5">
-                  <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
-                </p>
-              )}
+              <p className="text-[7px] text-primary mt-0.5">
+                <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
+              </p>
             </div>
             )}
             
@@ -288,3 +287,4 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
+
