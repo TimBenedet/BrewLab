@@ -408,7 +408,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
                   />
                 )}
                 
-                {recipe.notes && !stepsMarkdown && ( // Only show general notes if no dedicated steps markdown
+                {recipe.notes && !recipe.stepsMarkdown && ( // Only show general notes if no dedicated steps markdown
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2 text-xl text-primary"><BookOpen size={20} /> Notes</CardTitle>
@@ -431,5 +431,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
+
+    
 
     
