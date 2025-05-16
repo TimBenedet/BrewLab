@@ -5,19 +5,15 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-// import { Textarea } from "@/components/ui/textarea"; // No longer needed
-// import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"; // No longer needed
-// import { Button } from '@/components/ui/button'; // No longer needed for download
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-// import { Ruler, Download } from 'lucide-react'; // No longer needed
 import type { Recipe } from '@/types/recipe';
 
 interface LabelGeneratorClientProps {
   recipes: Recipe[];
 }
 
-const PREVIEW_WIDTH_PX = '150px'; // Approx 10cm
-const PREVIEW_HEIGHT_PX = '300px'; // Approx 20cm
+const PREVIEW_WIDTH_PX = '200px'; // Approx 10cm, increased width
+const PREVIEW_HEIGHT_PX = '400px'; // Approx 20cm, increased height
 
 export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [selectedRecipeSlug, setSelectedRecipeSlug] = useState<string | null>(null);
@@ -75,34 +71,32 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         <CardHeader>
           <CardTitle className="text-xl">Simplified Preview</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[350px]">
+        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[450px]"> {/* Increased min-height */}
           <div
             ref={previewRef}
-            className="bg-primary text-primary-foreground shadow-lg rounded-md"
+            className="bg-card border-2 border-primary text-primary shadow-lg rounded-md" // Changed to border-primary and bg-card
             style={{
               width: PREVIEW_WIDTH_PX,
               height: PREVIEW_HEIGHT_PX,
               position: 'relative',
-              // Centering the blue rectangle itself if CardContent is larger
-              // margin: 'auto' 
             }}
           >
             {beerName && (
               <div
+                className="text-primary" // Changed text color
                 style={{
                   position: 'absolute',
-                  top: '50%', // Center along the main axis of the rectangle
-                  right: '1rem', // Distance from the right edge
-                  transform: 'translateY(-50%) rotate(180deg)', // Vertical center + rotate text
+                  top: '50%',
+                  left: '0.5rem', // Moved to left, reduced space
+                  transform: 'translateY(-50%) rotate(180deg)',
                   writingMode: 'vertical-rl',
-                  fontSize: '1.25rem', // Example font size
+                  fontSize: '1.25rem', 
                   fontWeight: 'bold',
-                  textAlign: 'center', // Centers text along its new "horizontal" (now vertical) flow
-                  // Prevent text from overflowing and allow ellipsis for very long names
-                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 2rem)`, // Respect top/bottom padding of the text area
+                  textAlign: 'center',
+                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 1rem)`, // Adjusted maxHeight slightly
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap', // Ensures text stays on a single vertical line
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {beerName}
@@ -110,7 +104,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             )}
           </div>
           <div className="mt-4 text-sm text-muted-foreground text-center">
-            <p>Preview: 10cm (W) x 20cm (H) representation.</p>
+            <p>Abstract Preview Representation.</p>
           </div>
         </CardContent>
       </Card>
