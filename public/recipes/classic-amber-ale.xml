@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<recipe>
+  <metadata>
+    <name>Classic Amber Ale</name>
+    <author>BrewLab AI</author>
+    <style>Amber Ale</style>
+    <batchSize unit="L">20</batchSize>
+    <boilTime unit="min">60</boilTime>
+    <efficiency unit="%">75</efficiency>
+  </metadata>
+  <stats>
+    <og>1.052</og>
+    <fg>1.012</fg>
+    <abv>5.3%</abv>
+    <ibu>30</ibu>
+    <colorSrm>12</colorSrm>
+  </stats>
+  <fermentables>
+    <fermentable>
+      <name>Pale Malt (2 Row)</name>
+      <amount unit="kg">3.5</amount>
+      <type>Grain</type>
+    </fermentable>
+    <fermentable>
+      <name>Crystal Malt (60L)</name>
+      <amount unit="kg">0.5</amount>
+      <type>Grain</type>
+    </fermentable>
+    <fermentable>
+      <name>Munich Malt</name>
+      <amount unit="kg">0.5</amount>
+      <type>Grain</type>
+    </fermentable>
+  </fermentables>
+  <hops>
+    <hop>
+      <name>Cascade</name>
+      <amount unit="g">30</amount>
+      <use>Boil</use>
+      <time unit="min">60</time>
+      <alpha unit="%">5.5</alpha>
+    </hop>
+    <hop>
+      <name>Willamette</name>
+      <amount unit="g">20</amount>
+      <use>Boil</use>
+      <time unit="min">15</time>
+      <alpha unit="%">5.0</alpha>
+    </hop>
+    <hop>
+      <name>Cascade</name>
+      <amount unit="g">20</amount>
+      <use>Aroma</use>
+      <time unit="min">0</time>
+      <alpha unit="%">5.5</alpha>
+    </hop>
+  </hops>
+  <yeasts>
+    <yeast>
+      <name>SafAle US-05</name>
+      <type>Ale</type>
+      <form>Dry</form>
+      <attenuation unit="%">75</attenuation>
+    </yeast>
+  </yeasts>
+  <miscs>
+    <misc>
+      <name>Irish Moss</name>
+      <amount unit="tsp">1</amount>
+      <use>Boil</use>
+      <time unit="min">15</time>
+    </misc>
+  </miscs>
+  <mash>
+    <name>Single Infusion Mash</name>
+    <mashSteps>
+      <mashStep>
+        <name>Saccharification</name>
+        <type>Infusion</type>
+        <stepTemp unit="C">67</stepTemp>
+        <stepTime unit="min">60</stepTime>
+        <description>Hold at 67°C for 60 minutes.</description>
+      </mashStep>
+    </mashSteps>
+  </mash>
+  <notes>
+A well-balanced American Amber Ale with a pleasant malt character and a refreshing hop aroma. Perfect for any occasion.
+  </notes>
+</recipe>
