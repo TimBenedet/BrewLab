@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Ruler, Download, PackageOpen, Palette as PaletteIcon } from 'lucide-react'; // Added PaletteIcon for header
+import { Ruler, Download, PackageOpen } from 'lucide-react';
 import type { Recipe } from '@/types/recipe';
 
 interface LabelDimensions {
@@ -19,8 +19,9 @@ interface LabelDimensions {
   heightMm: number;
   widthCmText: string;
   heightCmText: string;
-  widthPx: string;
-  heightPx: string;
+  // Scaled dimensions for the content if it were displayed horizontally
+  previewContentWidthPx: string;
+  previewContentHeightPx: string;
   defaultVolume: string;
 }
 
@@ -31,8 +32,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 70,
     widthCmText: '20.0',
     heightCmText: '7.0',
-    widthPx: '380px', // Max width for preview
-    heightPx: '133px', // 380 * (70/200)
+    previewContentWidthPx: '420px', // Label content actual width
+    previewContentHeightPx: '147px', // Label content actual height (420 * 70 / 200)
     defaultVolume: '330ml'
   },
   '75cl': {
@@ -41,8 +42,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 90,
     widthCmText: '26.0',
     heightCmText: '9.0',
-    widthPx: '380px', // Max width for preview
-    heightPx: '132px', // 380 * (90/260)
+    previewContentWidthPx: '420px', // Label content actual width
+    previewContentHeightPx: '145px', // Label content actual height (420 * 90 / 260)
     defaultVolume: '750ml'
   },
 };
@@ -67,6 +68,11 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const previewRef = useRef<HTMLDivElement>(null);
   const currentDimensions = SIZES[labelSizeKey];
 
+  // Calculate dimensions for the rotated preview's container
+  const previewContainerWidth = currentDimensions.previewContentHeightPx;
+  const previewContainerHeight = currentDimensions.previewContentWidthPx;
+
+
   useEffect(() => {
     if (selectedRecipeSlug) {
       const recipe = recipes.find(r => r.slug === selectedRecipeSlug);
@@ -76,7 +82,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates with label size too
+        setVolume(SIZES[labelSizeKey].defaultVolume);
 
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
@@ -95,7 +101,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
       }
     } else {
-      // Reset to defaults if no recipe is selected
       setBeerName('My Awesome Beer');
       setStyle('IPA - India Pale Ale');
       setAbv('6.5');
@@ -105,7 +110,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIngredientsSummaryForLabel('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRecipeSlug, recipes, labelSizeKey]); // Added labelSizeKey to dependencies
+  }, [selectedRecipeSlug, recipes, labelSizeKey]);
 
   useEffect(() => {
     setVolume(SIZES[labelSizeKey].defaultVolume);
@@ -119,19 +124,19 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const originalPadding = element.style.padding;
     element.style.padding = '0'; 
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 0)); // Ensure styles are applied
 
     const canvas = await html2canvas(element, {
       scale: 2, 
       backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff', 
-      width: element.offsetWidth, 
-      height: element.offsetHeight, 
+      width: parseInt(currentDimensions.previewContentWidthPx), // Use content width for capture
+      height: parseInt(currentDimensions.previewContentHeightPx),// Use content height for capture
       x: 0,
       y: 0,
       scrollX: 0, 
       scrollY: 0,
-      windowWidth: element.scrollWidth, 
-      windowHeight: element.scrollHeight, 
+      windowWidth: parseInt(currentDimensions.previewContentWidthPx), 
+      windowHeight: parseInt(currentDimensions.previewContentHeightPx),
       useCORS: true, 
     });
 
@@ -221,21 +226,22 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         <CardHeader>
           <CardTitle className="text-xl">Label Preview</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center p-4">
+        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[550px]">
           <div
-            className="relative" 
+            className="relative flex items-center justify-center" // Container for the rotated label
             style={{
-              width: currentDimensions.widthPx,
-              height: currentDimensions.heightPx,
+              width: previewContainerWidth,
+              height: previewContainerHeight,
             }}
           >
             <div
               ref={previewRef}
-              className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out overflow-hidden"
+              className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out overflow-hidden origin-center"
               style={{
-                fontFamily: 'serif', // Changed font family for a more classic label look
-                width: '100%', 
-                height: '100%',
+                fontFamily: 'serif',
+                width: currentDimensions.previewContentWidthPx, 
+                height: currentDimensions.previewContentHeightPx,
+                transform: 'rotate(90deg)',
                 boxSizing: 'border-box',
               }}
             >
@@ -247,7 +253,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
               {/* Middle Icon Block */}
               <div className="w-full my-auto flex justify-center items-center">
-                 <PackageOpen size={Math.min(parseInt(currentDimensions.widthPx)*0.2, parseInt(currentDimensions.heightPx)*0.2)} className="text-muted-foreground" data-ai-hint="beer logo" />
+                 <PackageOpen size={Math.min(parseInt(currentDimensions.previewContentWidthPx)*0.2, parseInt(currentDimensions.previewContentHeightPx)*0.2)} className="text-muted-foreground" data-ai-hint="beer logo" />
               </div>
 
               {/* Bottom Text Block */}
@@ -256,23 +262,23 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 <p className="font-semibold text-primary break-words mt-1">{breweryName}</p>
                 <p className="text-muted-foreground">ABV: {abv}% | Vol: {volume}</p>
               </div>
-            </div>
-
-            {/* Vertical Text Block - Aligned to left, with small offset */}
-            <div
-              className="absolute top-0 left-1 h-full flex flex-col justify-start items-start text-muted-foreground text-[7px]"
-              style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
-            >
-              {(ibu || srm) && (
-                <span className="block whitespace-nowrap">
-                    IBU : {ibu || 'N/A'}, SRM : {srm || 'N/A'}
-                </span>
-              )}
-              {ingredientsSummaryForLabel && (
-                <span className="block whitespace-nowrap mt-1"> 
-                    <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
-                </span>
-              )}
+            
+              {/* Vertical Text Block - Now positioned relative to the rotated label's new "left" (which was its top) */}
+              <div
+                className="absolute top-1 h-full flex flex-col justify-start items-start text-muted-foreground text-[7px]"
+                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', left: '0.25rem' }} // Small offset from the new "left" edge
+              >
+                {(ibu || srm) && (
+                  <span className="block whitespace-nowrap">
+                      IBU : {ibu || 'N/A'}, SRM : {srm || 'N/A'}
+                  </span>
+                )}
+                {ingredientsSummaryForLabel && (
+                  <span className="block whitespace-nowrap mt-1"> 
+                      <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <div className="mt-4 text-sm text-muted-foreground flex items-center">
