@@ -22,23 +22,23 @@ interface LabelDimensions {
 }
 
 const SIZES: Record<string, LabelDimensions> = {
-  '33cl': { 
-    name: '33CL', 
-    widthMm: 85, 
-    heightMm: 70, 
-    widthCmText: '8.0 - 10.0', 
-    heightCmText: '7.0 - 9.0', 
-    widthPx: '321px',
-    heightPx: '265px'
+  '33cl': {
+    name: '33CL',
+    widthMm: 200,      // 20cm
+    heightMm: 70,       // 7cm
+    widthCmText: '20.0',
+    heightCmText: '7.0',
+    widthPx: '380px',   // Proportional preview width
+    heightPx: '133px'   // Proportional preview height (380 * 70 / 200)
   },
-  '75cl': { 
-    name: '75CL', 
-    widthMm: 100, 
-    heightMm: 90, 
-    widthCmText: '10.0 - 12.0', 
-    heightCmText: '9.0 - 11.0', 
-    widthPx: '378px',
-    heightPx: '340px'
+  '75cl': {
+    name: '75CL',
+    widthMm: 260,      // 26cm
+    heightMm: 90,       // 9cm
+    widthCmText: '26.0',
+    heightCmText: '9.0',
+    widthPx: '380px',   // Proportional preview width
+    heightPx: '132px'   // Proportional preview height (380 * 90 / 260)
   },
 };
 
@@ -112,13 +112,13 @@ export default function LabelGeneratorPage() {
               <Textarea id="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label className="text-sm font-medium text-muted-foreground">Label Size</Label>
+              <Label className="text-sm font-medium text-muted-foreground">Label Size (Print Dimensions)</Label>
               <RadioGroup value={labelSizeKey} onValueChange={setLabelSizeKey} className="mt-2 space-y-2">
                 {Object.keys(SIZES).map((key) => (
                   <div key={key} className="flex items-center space-x-2">
                     <RadioGroupItem value={key} id={`size-${key}`} />
                     <Label htmlFor={`size-${key}`} className="font-normal">
-                      {SIZES[key].name} (W: {SIZES[key].widthCmText}cm, H: {SIZES[key].heightCmText}cm)
+                      {SIZES[key].name} ({SIZES[key].widthCmText}cm x {SIZES[key].heightCmText}cm)
                     </Label>
                   </div>
                 ))}
@@ -136,8 +136,8 @@ export default function LabelGeneratorPage() {
             <div
               ref={previewRef}
               className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out"
-              style={{ 
-                fontFamily: 'serif', 
+              style={{
+                fontFamily: 'serif',
                 width: currentDimensions.widthPx,
                 height: currentDimensions.heightPx,
               }}
@@ -146,11 +146,11 @@ export default function LabelGeneratorPage() {
                 <h2 className="text-2xl font-bold text-primary break-words">{beerName}</h2>
                 <p className="text-xs text-muted-foreground italic break-words">{style}</p>
               </div>
-              
+
               <div className="w-full my-4">
                 <div className="w-16 h-16 bg-muted mx-auto rounded-full flex items-center justify-center text-muted-foreground text-2xl" data-ai-hint="beer logo">🍻</div>
               </div>
-              
+
               <div className="w-full text-xs">
                 <p className="break-words">{tagline}</p>
                 <div className="border-t border-muted-foreground my-2"></div>
@@ -160,10 +160,7 @@ export default function LabelGeneratorPage() {
             </div>
             <div className="mt-4 text-sm text-muted-foreground flex items-center">
               <Ruler size={16} className="mr-2 text-primary" />
-              <span>Selected Preview: {currentDimensions.widthMm}mm x {currentDimensions.heightMm}mm</span>
-            </div>
-             <div className="mt-1 text-xs text-muted-foreground">
-              <span>(Recommended range for {currentDimensions.name}: Width {currentDimensions.widthCmText}cm, Height {currentDimensions.heightCmText}cm)</span>
+              <span>Preview for {currentDimensions.name} label ({currentDimensions.widthMm}mm x {currentDimensions.heightMm}mm print)</span>
             </div>
             <Button onClick={handleDownloadImage} className="mt-6">
               <Download size={18} className="mr-2" />
