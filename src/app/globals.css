@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -83,5 +84,153 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@media print {
+  body {
+    font-family: sans-serif; /* Use a common sans-serif font for print */
+    font-size: 10pt; /* Adjust base font size for print */
+    color: #000 !important; /* Ensure text is black for print */
+    background-color: #fff !important; /* Ensure background is white */
+    margin: 0;
+    padding: 0;
+  }
+
+  header, footer, .no-print, [role="tablist"], .print\:hidden {
+    display: none !important;
+  }
+  
+  .print\:block {
+    display: block !important;
+  }
+  
+  .print\:space-y-2 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+  }
+
+  .print\:text-lg {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.75rem; /* 28px */
+  }
+  .print\:text-base {
+    font-size: 1rem; /* 16px */
+    line-height: 1.5rem; /* 24px */
+  }
+   .print\:text-xs {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1rem; /* 16px */
+  }
+
+
+  main {
+    padding: 1cm !important; /* Adjust padding for print layout */
+    margin: 0 !important;
+    width: auto !important;
+    min-height: auto !important;
+  }
+
+  .container { /* Reset container constraints for print */
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Ensure all content is visible, override any overflow hidden */
+  .overflow-hidden {
+    overflow: visible !important;
+  }
+  
+  /* Card styling for print */
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+  .print\:border-none {
+     border: none !important;
+  }
+  
+  .print\:p-0 {
+    padding: 0 !important;
+  }
+  .print\:pb-1 {
+    padding-bottom: 0.25rem !important;
+  }
+   .print\:pt-1 {
+    padding-top: 0.25rem !important;
+  }
+  .print\:pb-4 {
+    padding-bottom: 1rem !important;
+  }
+
+  .print\:bg-transparent {
+    background-color: transparent !important;
+  }
+
+  .print\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  
+  /* Ensure progress bars don't print with odd backgrounds if not needed */
+  .progress-bar-container-class { /* Add a specific class to the container of Progress if needed */
+     background: none !important;
+     border: 1px solid #ccc !important; /* Simple border for progress bar container */
+  }
+  .progress-bar-indicator-class { /* Add a specific class to Progress.Indicator if needed */
+     background-color: #666 !important; /* Dark gray for printed progress */
+  }
+
+  /* Table styling for print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto !important;
+  }
+  tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+  th, td {
+    border: 1px solid #ddd !important;
+    padding: 4px !important;
+    text-align: left !important;
+  }
+  thead {
+    display: table-header-group !important; /* Ensures header repeats on each page for long tables */
+  }
+  
+  /* Prose (Markdown) styling for print */
+  .prose {
+    font-size: 10pt !important;
+    max-width: none !important;
+  }
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #000 !important;
+    margin-top: 0.5em !important;
+    margin-bottom: 0.25em !important;
+  }
+  .prose a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+  .prose code {
+    background-color: #f0f0f0 !important;
+    color: #000 !important;
+    padding: 0.1em 0.3em !important;
+  }
+  .prose pre {
+    background-color: #f0f0f0 !important;
+    padding: 0.5em !important;
+  }
+
+  /* Remove any interactive elements that don't make sense on paper */
+  button, input, select, textarea {
+    /* visibility: hidden; */ /* Hides but keeps space, use display:none if space should collapse */
+  }
+  
+  /* Better page break handling */
+  h1, h2, h3, h4, h5, h6, p, ul, ol, table, figure {
+    page-break-inside: avoid;
   }
 }
