@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input"; // Ensure Input is imported
+import { Input } from "@/components/ui/input";
 import html2canvas from 'html2canvas';
 import type { Recipe } from '@/types/recipe';
 import { Beer } from 'lucide-react';
@@ -31,7 +31,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [breweryName, setBreweryName] = useState('Your Craft Brewery');
   const [tagline, setTagline] = useState('Handcrafted Beer');
   const [labelSizeKey, setLabelSizeKey] = useState<keyof typeof SIZES>('33cl');
-  const [volume, setVolume] = useState<string>(SIZES['33cl'].displayVolume);
+  const [volume, setVolume] = useState<string>(SIZES['33cl'].defaultVolume); // Stores "330ml" or "750ml"
+  const [displayVolume, setDisplayVolume] = useState<string>(SIZES['33cl'].displayVolume); // Stores "33CL" or "75CL"
   const [abv, setAbv] = useState<string>('N/A');
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
@@ -61,7 +62,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
           .map(f => f.name) || [];
         const miscsList = recipe.miscs?.slice(0, 1).map(m => m.name) || [];
         
-        const allIngredients = [...hopsList, ...fermentablesList, ...miscsList];
+        const allIngredients = [...hopsList, ...fermentablesList, ...miscsList].filter(Boolean);
         const validIngredientNames = allIngredients.filter(name => typeof name === 'string' && name.trim() !== '');
         setIngredientsSummaryForLabel(validIngredientNames.length > 0 ? validIngredientNames.join(', ') : 'N/A');
 
@@ -84,7 +85,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   }, [selectedRecipeSlug, recipes]);
 
   useEffect(() => {
-    setVolume(SIZES[labelSizeKey].displayVolume);
+    setVolume(SIZES[labelSizeKey].defaultVolume);
+    setDisplayVolume(SIZES[labelSizeKey].displayVolume);
   }, [labelSizeKey]);
 
   const handleDownloadImage = async () => {
@@ -125,7 +127,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     } catch (error) {
       console.error("Error generating label image:", error);
     } finally {
-      if (element) { // Check if element still exists
+      if (element) { 
         element.style.transform = originalTransform;
         element.style.padding = originalPadding;
         element.style.overflow = originalOverflow;
@@ -208,14 +210,14 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             }}
           >
             {/* Top Information Block */}
-            {(ibu !== 'N/A' || srm !== 'N/A' || ingredientsSummaryForLabel) && (
+            {(ibu !== 'N/A' || srm !== 'N/A' || (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A')) && (
               <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
                 {(ibu !== 'N/A' || srm !== 'N/A') && (
                   <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
                     IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
                   </p>
                 )}
-                {ingredientsSummaryForLabel && (
+                {ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A' && (
                     <p className="text-[7px] text-primary mt-0.5">
                         <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
                     </p>
@@ -259,19 +261,19 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 textOverflow: 'ellipsis',
               }}
             >
-              <span>{volume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
+              <span>{displayVolume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
             </div>
 
             {/* Central Beer Icon */}
             <div className="absolute inset-0 flex items-center justify-center my-auto">
               <Beer
-                size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4} 
+                size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4}
+                fill={currentSrmHexColor}
+                stroke={'hsl(var(--primary))'}
+                strokeWidth={1.5}
                 style={{
                   transform: 'rotate(-90deg)',
-                  fill: currentSrmHexColor,
-                  stroke: 'hsl(var(--primary))',
                 }}
-                strokeWidth={1.5}
               />
             </div>
 
@@ -291,3 +293,4 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
+
