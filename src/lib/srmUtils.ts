@@ -1,3 +1,4 @@
+
 import fs from 'fs';
 import path from 'path';
 
@@ -24,8 +25,7 @@ function parseSrmCsv(csvContent: string): Map<number, SrmColorEntry> {
       if (srmString.endsWith('+')) {
         const srmValue = parseInt(srmString.slice(0, -1), 10);
         if (!isNaN(srmValue)) {
-          // For "20+", we'll store it as 20, and handle lookups for >=20
-           map.set(srmValue, { srm: srmValue, hex, description });
+          map.set(srmValue, { srm: srmValue, hex, description });
         }
       } else {
         const srmValue = parseInt(srmString, 10);
@@ -65,46 +65,49 @@ export function getHexForSrm(srm: number | string | undefined): string {
     return '#CCCCCC'; // Default if map is empty
   }
 
-  // Find the closest SRM value in the map
-  let closestSrmKey = -1;
-  let minDiff = Infinity;
-  let maxSrmKey = -1;
-
-  for (const key of colorMap.keys()) {
-    if (key > maxSrmKey) {
-        maxSrmKey = key;
-    }
-    if (key === srmValue) {
-      closestSrmKey = key;
-      break;
-    }
-    const diff = Math.abs(key - srmValue);
-    if (key <= srmValue && diff < minDiff) {
-      minDiff = diff;
-      closestSrmKey = key;
-    }
-  }
-  
-  // Handle "20+" case and values greater than max defined SRM
-  // If srmValue is greater than or equal to the highest defined SRM key (e.g. 20 for "20+")
-  // and that key exists, use that color.
+  // Handle "20+" case first
   const twentyPlusEntry = colorMap.get(20); // Assuming 20 is the key for "20+"
   if (twentyPlusEntry && srmValue >= 20) {
     return twentyPlusEntry.hex;
   }
 
+  let closestSrmKey = -1;
+  let minDiff = Infinity;
+  
+  const sortedKeys = Array.from(colorMap.keys()).sort((a, b) => a - b);
+
+  // Find the largest key in the map that is less than or equal to srmValue
+  for (const key of sortedKeys) {
+    if (key <= srmValue) {
+      const diff = srmValue - key;
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestSrmKey = key;
+      }
+    } else {
+      // Since keys are sorted, if key > srmValue, no further keys will be <= srmValue
+      break; 
+    }
+  }
 
   if (closestSrmKey !== -1) {
     return colorMap.get(closestSrmKey)?.hex || '#CCCCCC';
   }
-  
-  // Fallback if no suitable key found (e.g., SRM is lower than any defined value)
-  // Or if srmValue is very high and no "20+" like rule matched
-  if (srmValue > maxSrmKey && maxSrmKey !== -1) {
-      const maxEntry = colorMap.get(maxSrmKey);
-      if (maxEntry) return maxEntry.hex;
-  }
 
+  // If srmValue is less than all keys in the map (e.g., srmValue = 0.5, map starts at 1)
+  // Use the color of the smallest SRM value in the map.
+  if (sortedKeys.length > 0 && srmValue < sortedKeys[0]) {
+    return colorMap.get(sortedKeys[0])?.hex || '#CCCCCC';
+  }
+  
+  // If srmValue is greater than all keys but not covered by 20+ (should be rare if 20+ exists)
+  // Use the color of the largest SRM value in the map (that isn't the 20+ key itself if it's distinct).
+  if (sortedKeys.length > 0) {
+    const largestNonSpecialKey = sortedKeys.filter(k => k < 20).pop() || sortedKeys[sortedKeys.length -1];
+     if (srmValue > largestNonSpecialKey && colorMap.has(largestNonSpecialKey) ) {
+        return colorMap.get(largestNonSpecialKey)?.hex || '#CCCCCC';
+     }
+  }
 
   return '#CCCCCC'; // Final fallback
 }
