@@ -84,20 +84,38 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const { mash, hops, miscs, yeasts, metadata, notes, stepsMarkdown } = recipe;
 
-  // This logic for dynamic additions might be needed if we reintroduce dynamic tables,
-  // but for now, the main content is static based on user request.
-  // const dryHops = hops.filter(h => h.use.toLowerCase() === 'dry hop');
-  // const fermentationMiscs = miscs?.filter(m => m.use.toLowerCase() === 'fermentation' || m.use.toLowerCase() === 'primary' || m.use.toLowerCase() === 'secondary');
-  // const aromaAdditions = hops.filter(h => h.use.toLowerCase() === 'aroma' || h.use.toLowerCase() === 'whirlpool');
-
-  // const fermentationAdditions = [
-  //   ...(dryHops.map(h => ({ ...h, type: 'Hop' }))),
-  //   ...(fermentationMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
-  // ].sort((a, b) => (a.time?.value ?? 0) - (b.time?.value ?? 0)); 
-
-
   return (
     <div className="space-y-6">
+      {recipe.stepsMarkdown && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl text-primary">
+              <BookOpen size={20} /> Brewer's Detailed Procedure
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.stepsMarkdown}</ReactMarkdown>
+            </article>
+          </CardContent>
+        </Card>
+      )}
+
+      {!recipe.stepsMarkdown && recipe.notes && (
+         <Card>
+           <CardHeader>
+             <CardTitle className="flex items-center gap-2 text-xl text-primary">
+               <FileTextIcon size={20} /> Brewer's Notes
+             </CardTitle>
+           </CardHeader>
+           <CardContent>
+             <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
+               <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.notes}</ReactMarkdown>
+             </div>
+           </CardContent>
+         </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl text-primary">
@@ -187,44 +205,6 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
             <p><strong>Chill & Enjoy:</strong> Once carbonated/conditioned, chill and enjoy your Classic Amber Ale!</p>
         </CardContent>
       </Card>
-
-      {recipe.stepsMarkdown && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl text-primary">
-              <BookOpen size={20} /> Brewer's Detailed Procedure
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.stepsMarkdown}</ReactMarkdown>
-            </article>
-          </CardContent>
-        </Card>
-      )}
-
-      {!recipe.stepsMarkdown && recipe.notes && (
-         <Card>
-           <CardHeader>
-             <CardTitle className="flex items-center gap-2 text-xl text-primary">
-               <FileTextIcon size={20} /> Brewer's Notes
-             </CardTitle>
-           </CardHeader>
-           <CardContent>
-             <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
-               <ReactMarkdown remarkPlugins={[remarkGfm]}>{recipe.notes}</ReactMarkdown>
-             </div>
-           </CardContent>
-         </Card>
-      )}
-      
-      {!recipe.stepsMarkdown && !recipe.notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && yeasts.length === 0 && (
-        <Card>
-          <CardContent>
-            <p className="text-muted-foreground py-4">No detailed steps or procedural notes provided for this recipe.</p>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
@@ -256,15 +236,13 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     <div className="space-y-8">
       <Card className="shadow-lg overflow-hidden">
         <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
-          {srmHexColor && (
-            <GlassWater
-              size={48}
-              fill={srmHexColor}
-              stroke="currentColor" 
-              strokeWidth={1.5}
-              className="text-foreground"
-            />
-          )}
+          <GlassWater
+            size={48}
+            fill={srmHexColor}
+            stroke="currentColor" 
+            strokeWidth={1.5}
+            className="text-foreground"
+          />
           <div className="flex-1">
             <CardTitle className="text-3xl font-bold text-primary">{recipe.metadata.name}</CardTitle>
             <CardDescription className="text-lg text-muted-foreground">{recipe.metadata.style}</CardDescription>
@@ -368,5 +346,3 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
-
-    
