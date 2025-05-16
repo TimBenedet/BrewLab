@@ -95,7 +95,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const notes = recipe.notes;
 
   return (
-    <div className="space-y-4"> {/* Reduced spacing from space-y-6 */}
+    <div className="space-y-4">
       {(sections?.brewersNotes || notes) && (
         <Card>
           <CardHeader>
@@ -200,6 +200,15 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     { label: "Bitterness (IBU)", valueText: recipe.stats.ibu?.toString() || '-', progressValue: Math.min(100,Math.max(0,ibuValue * 100 / 100)), icon: Leaf },
     { label: "Color (SRM)", valueText: recipe.stats.colorSrm?.toString() || '-', progressValue: Math.min(100,Math.max(0,colorSrmValue * 100 / 40)), icon: Palette },
   ];
+
+  const batchSizeForDisplay = recipe.metadata.batchSize
+  ? {
+      ...recipe.metadata.batchSize,
+      unit: (recipe.metadata.batchSize.unit.toLowerCase() === 'l' || recipe.metadata.batchSize.unit.toLowerCase() === 'liters' || recipe.metadata.batchSize.unit.toLowerCase() === 'liter')
+            ? 'L'
+            : recipe.metadata.batchSize.unit,
+    }
+  : undefined;
   
   return (
     <div className="space-y-8">
@@ -236,7 +245,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
                     <CardTitle className="flex items-center gap-2 text-xl text-primary"><Info size={20} /> Metadata</CardTitle>
                   </CardHeader>
                   <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
-                    <DetailItem label="Batch Volume" value={recipe.metadata.batchSize} icon={<Scale size={16}/>} />
+                    <DetailItem label="Batch Volume" value={batchSizeForDisplay} icon={<Scale size={16}/>} />
                     <DetailItem label="Boil Time" value={recipe.metadata.boilTime} icon={<Clock size={16}/>} />
                     <DetailItem label="Efficiency" value={recipe.metadata.efficiency} icon={<Percent size={16}/>} />
                   </CardContent>
@@ -315,4 +324,3 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
-
