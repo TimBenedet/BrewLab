@@ -76,7 +76,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates with recipe based on current size
+        setVolume(SIZES[labelSizeKey].defaultVolume);
 
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
@@ -95,7 +95,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
       }
     } else {
-      // Reset to defaults if no recipe is selected
       setBeerName('My Awesome Beer');
       setStyle('IPA - India Pale Ale');
       setAbv('6.5');
@@ -108,7 +107,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   }, [selectedRecipeSlug, recipes, labelSizeKey]);
 
   useEffect(() => {
-    // Update volume when label size changes, even if a recipe is selected
     setVolume(SIZES[labelSizeKey].defaultVolume);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labelSizeKey]);
@@ -151,7 +149,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      {/* Input Section */}
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="text-xl">Label Details</CardTitle>
@@ -219,7 +216,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         </CardContent>
       </Card>
 
-      {/* Preview Section */}
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="text-xl">Label Preview</CardTitle>
@@ -243,25 +239,24 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               }}
             >
               <div className="w-full">
-                <h2 className="text-2xl font-bold text-primary break-words">{beerName}</h2>
-                <p className="text-xs text-muted-foreground italic break-words">{style}</p>
+                <h2 className="text-xl font-bold text-primary break-words">{beerName}</h2>
+                <p className="text-[11px] text-muted-foreground italic break-words">{style}</p>
               </div>
 
               <div className="w-full my-auto flex justify-center items-center">
                  <PackageOpen size={Math.min(parseInt(currentDimensions.widthPx)*0.2, parseInt(currentDimensions.heightPx)*0.2)} className="text-muted-foreground" data-ai-hint="beer logo" />
               </div>
 
-              <div className="w-full text-xs">
+              <div className="w-full text-[10px]">
                 <p className="break-words">{tagline}</p>
                 <p className="font-semibold text-primary break-words mt-1">{breweryName}</p>
                 <p className="text-muted-foreground">ABV: {abv}% | Vol: {volume}</p>
               </div>
             </div>
 
-            {/* Vertical text for IBU, SRM, Ingredients */}
             {(ibu || srm || ingredientsSummaryForLabel) && (
               <div
-                className="absolute top-0 left-0 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px]"
+                className="absolute top-0 left-1 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px]"
                 style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
               >
                   {(ibu || srm) && (
@@ -270,7 +265,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                     </span>
                   )}
                   {ingredientsSummaryForLabel && (
-                    <span className="block mt-1"> {/* mt-1 creates a small gap between IBU/SRM line and Ingredients line */}
+                    <span className="block mt-1"> 
                         <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
                     </span>
                   )}
@@ -290,6 +285,4 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
-    
-
     
