@@ -1,52 +1,54 @@
 
-# Robust Coffee Stout - Recipe Steps
+## 📝 Brewer's Notes - Coffee Stout
 
+A rich, dark, and complex stout with a prominent coffee aroma and flavor. Expect notes of roasted malt, chocolate, and freshly brewed coffee. Full-bodied and satisfying.
+
+---
 ## 🌾 Mashing
-1.  **Prepare Equipment**: Ensure mash tun is clean and preheated.
-2.  **Strike Water**: Heat 18 liters of water to 74°C (165°F).
-3.  **Mash In**: Combine grains with strike water, aiming for a mash temperature of 68°C (154°F). Stir thoroughly.
-4.  **Rest**: Maintain mash at 68°C (154°F) for 60 minutes.
-5.  **Mash Out**: Increase temperature to 77°C (170°F) for 10 minutes.
+
+*   **Grain Preparation**: Ensure all grains, especially roasted malts, are well-crushed.
+*   **Strike Water**: Heat 18 liters of brewing water to 72°C (162°F).
+*   **Mash In**: Add crushed grains, stirring to avoid clumps. Aim for a mash temperature of 68°C (154°F) for a fuller body.
+*   **Saccharification Rest**: Hold mash at 68°C (154°F) for 75 minutes.
+*   **Mash Out**: Raise temperature to 77°C (170°F) and hold for 10 minutes.
+*   **Lauter & Sparge**: Recirculate, then lauter. Sparge with water at 77°C (170°F) to collect approximately 25 liters of wort.
 
 ---
-
 ## 🔥 Boil (75 minutes total)
-1.  **Lauter & Sparge**: Collect wort by sparging with 10 liters of 77°C (170°F) water, or until ~24 liters are collected.
-2.  **Bring to Boil**: Achieve a vigorous rolling boil.
-3.  **75 min - Bittering Hops**: Add 30g of Warrior hops.
-4.  **15 min - Flavor/Aroma Hops**: Add 15g of Willamette hops.
-5.  **10 min - Irish Moss**: Add 1 tsp of Irish Moss or 1 Whirlfloc tablet for clarity.
-6.  **0 min/Flameout - Coffee**: Add 50g of coarsely ground dark roast coffee (or cold brew concentrate equivalent). Steep for 10-15 minutes before chilling.
+
+*   **Bring to Boil**: Achieve a rolling boil.
+*   **75 min (Start of Boil)**: Add 30g of Warrior hops (Bittering).
+*   **30 min**: Add 1 tsp Irish Moss or 1 Whirlfloc tablet.
+*   **10 min**: Add 15g of Willamette hops (Aroma/Flavor).
 
 ---
+## 🌪️ Whirlpool/Aroma Additions
 
-## 🌪️ Whirlpool (Recommended with Coffee)
-1.  **Steep Coffee**: After flameout and adding coffee, gently stir or whirlpool for 10-15 minutes.
-2.  **Settle**: Allow trub and coffee grounds to settle.
+*   **Flameout**: Turn off heat.
+*   **Coffee Addition**: Add 50g of coarsely ground dark roast coffee beans (in a sanitized muslin bag) OR 200ml of cold brew coffee concentrate.
+*   **Whirlpool**: Stir gently for 10 minutes, then let settle for 20 minutes. The goal is to extract coffee aroma without excessive bitterness.
 
 ---
-
 ## 🥶 Cooling
-1.  **Rapid Cool**: Cool the wort quickly to 19-21°C (66-70°F) for ale yeast.
+
+*   **Cool Wort**: Rapidly cool the wort to 18-20°C (64-68°F). Ensure everything from this point is sanitized.
 
 ---
-
 ## 🧪 Fermentation
-1.  **Sanitize**: All post-boil equipment must be sanitized.
-2.  **Transfer & Aerate**: Transfer wort to the sanitized fermenter, then aerate thoroughly.
-3.  **Pitch Yeast**: Add 1 sachet of SafAle S-04 yeast.
-4.  **Primary Fermentation**: Ferment at 19-21°C (66-70°F) for 10-14 days, or until gravity is stable.
-5.  **(Optional) Secondary Fermentation**: Consider adding 25g of cacao nibs or 1 vanilla bean (split and scraped) for 5-7 days after active fermentation.
+
+*   **Transfer & Aerate**: Transfer cooled wort to a sanitized fermenter, aerating well.
+*   **Pitch Yeast**: Pitch a robust ale yeast strain suitable for stouts (e.g., SafAle S-04 or a liquid Irish Ale yeast).
+*   **Primary Fermentation**: Ferment at 19°C (66°F) for 10-14 days, or until FG is stable.
+*   **Secondary (Optional Coffee Boost)**: After primary fermentation, you can rack to a secondary fermenter and add another small dose of cold brew concentrate or whole coffee beans for a few days if a stronger coffee profile is desired. Monitor carefully.
 
 ---
-
 ## 🍾 Bottling/Kegging
-1.  **Verify FG**: Confirm stable final gravity.
-2.  **Prime (if bottling)**: Use ~90g of corn sugar for a 19L batch.
-3.  **Bottle/Keg**: Transfer carefully to avoid oxidizing the beer.
-4.  **Condition**:
-    *   Bottles: 2-4 weeks at room temperature. Stouts often benefit from longer conditioning.
-    *   Keg: Carbonate to desired level (e.g., 2.2-2.4 vols CO2).
-5.  **Serve & Savor**: Enjoy your homemade Coffee Stout! ☕🍺
 
-Cheers to your brew!
+*   **Check Final Gravity**: Ensure fermentation is complete.
+*   **Priming/Carbonation**:
+    *   **Bottles**: Use slightly less priming sugar than for lighter ales (e.g., ~80-90g dextrose for 19L) for a creamier mouthfeel.
+    *   **Keg**: Carbonate to around 2.0-2.2 volumes of CO2.
+*   **Condition**: Allow 2-4 weeks for flavors to meld and mature.
+*   **Serve**: Best served not too cold (e.g., 10-13°C or 50-55°F) to appreciate the complex flavors. Enjoy your rich Coffee Stout! ☕🍺
+
+Happy Brewing!
