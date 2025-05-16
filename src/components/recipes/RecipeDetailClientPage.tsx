@@ -10,9 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { 
-  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Flame, Wind, Snowflake
+  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Flame, Wind, Snowflake, Package
 } from 'lucide-react';
-import CustomBeerGlassIcon from '@/components/icons/CustomBeerGlassIcon';
 
 
 const DetailItem: React.FC<{ label: string; value?: string | number | ValueUnit; icon?: React.ReactNode }> = ({ label, value, icon }) => {
@@ -85,13 +84,16 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const { mash, hops, miscs, yeasts, metadata, notes, stepsMarkdown } = recipe;
 
-  const dryHops = hops.filter(h => h.use.toLowerCase() === 'dry hop');
-  const fermentationMiscs = miscs?.filter(m => m.use.toLowerCase() === 'fermentation' || m.use.toLowerCase() === 'primary' || m.use.toLowerCase() === 'secondary');
+  // This logic for dynamic additions might be needed if we reintroduce dynamic tables,
+  // but for now, the main content is static based on user request.
+  // const dryHops = hops.filter(h => h.use.toLowerCase() === 'dry hop');
+  // const fermentationMiscs = miscs?.filter(m => m.use.toLowerCase() === 'fermentation' || m.use.toLowerCase() === 'primary' || m.use.toLowerCase() === 'secondary');
+  // const aromaAdditions = hops.filter(h => h.use.toLowerCase() === 'aroma' || h.use.toLowerCase() === 'whirlpool');
 
-  const fermentationAdditions = [
-    ...(dryHops.map(h => ({ ...h, type: 'Hop' }))),
-    ...(fermentationMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
-  ].sort((a, b) => (a.time?.value ?? 0) - (b.time?.value ?? 0)); 
+  // const fermentationAdditions = [
+  //   ...(dryHops.map(h => ({ ...h, type: 'Hop' }))),
+  //   ...(fermentationMiscs?.map(m => ({ ...m, type: 'Misc' })) || [])
+  // ].sort((a, b) => (a.time?.value ?? 0) - (b.time?.value ?? 0)); 
 
 
   return (
@@ -152,47 +154,39 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
         </CardContent>
       </Card>
 
-      {(yeasts.length > 0 || fermentationAdditions.length > 0) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl text-primary">
-              <FlaskConical size={20} /> Fermentation
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {yeasts.map((yeast, index) => (
-              <div key={`yeast-${index}`}>
-                <p className="font-semibold">{yeast.name}</p>
-                <p className="text-sm text-muted-foreground">Type: {yeast.type}, Form: {yeast.form}</p>
-                {yeast.attenuation && <p className="text-sm text-muted-foreground">Attenuation: {yeast.attenuation.value}{yeast.attenuation.unit}</p>}
-              </div>
-            ))}
-            {fermentationAdditions.length > 0 && (
-              <div>
-                <h4 className="font-semibold mt-2 mb-1">Additions during Fermentation:</h4>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Day / Time</TableHead>
-                      <TableHead>Ingredient</TableHead>
-                      <TableHead>Amount</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {fermentationAdditions.map((item, index) => (
-                      <TableRow key={`ferm-add-${index}`}>
-                        <TableCell>{item.time?.value ?? '-'} {item.time?.unit}</TableCell>
-                        <TableCell>{item.name} ({item.type})</TableCell>
-                        <TableCell>{item.amount.value} {item.amount.unit}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-primary">
+            <FlaskConical size={20} /> Fermentation
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-foreground">
+            <p><strong>Sanitize:</strong> Ensure your fermenter and any equipment touching the cooled wort is thoroughly sanitized.</p>
+            <p><strong>Transfer Wort:</strong> Transfer the cooled wort to the fermenter, avoiding excessive splashing (after initial aeration if done pre-transfer).</p>
+            <p><strong>Aerate Wort:</strong> Aerate the wort well by shaking the fermenter or using an oxygenation stone.</p>
+            <p><strong>Pitch Yeast:</strong> Add 1 sachet of SafAle US-05 yeast.</p>
+            <p><strong>Ferment:</strong> Ferment at 18-20°C (64-68°F) for 7-14 days, or until final gravity is stable.</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-primary">
+            <Package size={20} /> Bottling/Kegging
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-foreground">
+            <p><strong>Check Final Gravity:</strong> Ensure fermentation is complete by taking gravity readings a few days apart.</p>
+            <p><strong>Prime (if bottling):</strong> If bottling, prepare a priming sugar solution (e.g., ~100g dextrose for 19L batch, dissolved in boiled water). Gently mix into the beer.</p>
+            <p><strong>Bottle/Keg:</strong> Transfer beer to sanitized bottles or keg.</p>
+            <p><strong>Condition:</strong></p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Bottles: Store at room temperature for 2-3 weeks for carbonation.</li>
+              <li>Keg: Force carbonate as per your setup.</li>
+            </ul>
+            <p><strong>Chill & Enjoy:</strong> Once carbonated/conditioned, chill and enjoy your Classic Amber Ale!</p>
+        </CardContent>
+      </Card>
 
       {recipe.stepsMarkdown && (
         <Card>
@@ -224,7 +218,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
          </Card>
       )}
       
-      {!recipe.stepsMarkdown && !recipe.notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && yeasts.length === 0 && fermentationAdditions.length === 0 && (
+      {!recipe.stepsMarkdown && !recipe.notes && (!mash?.mashSteps || mash.mashSteps.length === 0) && yeasts.length === 0 && (
         <Card>
           <CardContent>
             <p className="text-muted-foreground py-4">No detailed steps or procedural notes provided for this recipe.</p>
@@ -375,3 +369,4 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
   );
 }
 
+    
