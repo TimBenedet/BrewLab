@@ -7,15 +7,16 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input"; // Added import
 import html2canvas from 'html2canvas';
 import type { Recipe } from '@/types/recipe';
-import { Beer } from 'lucide-react';
+import { Beer } from 'lucide-react'; // Changed from PackageOpen
 
 interface LabelGeneratorClientProps {
   recipes: Recipe[];
 }
 
+// On-screen dimensions for the rotated preview container
 const PREVIEW_WIDTH_PX = '200px';
 const PREVIEW_HEIGHT_PX = '400px';
 
@@ -28,16 +29,17 @@ const SIZES = {
 export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [selectedRecipeSlug, setSelectedRecipeSlug] = useState<string | null>(null);
   const [beerName, setBeerName] = useState('Select a Recipe');
+  const [style, setStyle] = useState('Beer Style');
   const [breweryName, setBreweryName] = useState('Your Craft Brewery');
   const [tagline, setTagline] = useState('Handcrafted Beer');
   const [labelSizeKey, setLabelSizeKey] = useState<keyof typeof SIZES>('33cl');
-  const [volume, setVolume] = useState<string>(SIZES['33cl'].defaultVolume); // Stores "330ml" or "750ml"
-  const [displayVolume, setDisplayVolume] = useState<string>(SIZES['33cl'].displayVolume); // Stores "33CL" or "75CL"
+  const [volume, setVolume] = useState<string>(SIZES['33cl'].displayVolume);
   const [abv, setAbv] = useState<string>('N/A');
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
-  const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('N/A');
   const [currentSrmHexColor, setCurrentSrmHexColor] = useState<string>('#CCCCCC');
+  const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('N/A');
+
 
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -46,11 +48,12 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       const recipe = recipes.find(r => r.slug === selectedRecipeSlug);
       if (recipe) {
         setBeerName(recipe.metadata.name || 'Untitled Beer');
+        setStyle(recipe.metadata.style || 'Beer Style');
         setAbv(recipe.stats.abv?.toString() || 'N/A');
         setIbu(recipe.stats.ibu?.toString() || 'N/A');
         setSrm(recipe.stats.colorSrm?.toString() || 'N/A');
         setCurrentSrmHexColor(recipe.srmHexColor || '#CCCCCC');
-        
+
         const hopsList = recipe.hops?.slice(0, 2).map(h => h.name) || [];
         const fermentablesList = recipe.fermentables
           ?.filter(f =>
@@ -65,43 +68,47 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         const allIngredients = [...hopsList, ...fermentablesList, ...miscsList].filter(Boolean);
         const validIngredientNames = allIngredients.filter(name => typeof name === 'string' && name.trim() !== '');
         setIngredientsSummaryForLabel(validIngredientNames.length > 0 ? validIngredientNames.join(', ') : 'N/A');
-
       } else {
         setBeerName('Recipe Not Found');
+        setStyle('Beer Style');
         setAbv('N/A');
         setIbu('N/A');
         setSrm('N/A');
-        setIngredientsSummaryForLabel('N/A'); 
         setCurrentSrmHexColor('#CCCCCC');
+        setIngredientsSummaryForLabel('N/A');
       }
     } else {
       setBeerName('Select a Recipe');
+      setStyle('Beer Style');
       setAbv('N/A');
       setIbu('N/A');
       setSrm('N/A');
-      setIngredientsSummaryForLabel('N/A'); 
       setCurrentSrmHexColor('#CCCCCC');
+      setIngredientsSummaryForLabel('N/A');
     }
   }, [selectedRecipeSlug, recipes]);
 
   useEffect(() => {
-    setVolume(SIZES[labelSizeKey].defaultVolume);
-    setDisplayVolume(SIZES[labelSizeKey].displayVolume);
+    setVolume(SIZES[labelSizeKey].displayVolume);
   }, [labelSizeKey]);
 
   const handleDownloadImage = async () => {
     const element = previewRef.current;
     if (!element) return;
 
+    // Store original styles to restore them later
     const originalTransform = element.style.transform;
     const originalPadding = element.style.padding;
     const originalOverflow = element.style.overflow;
 
     try {
+      // Temporarily reset styles for accurate capture of the unrotated content
+      // This helps html2canvas capture the element as if it were laid out flat
       element.style.transform = 'none'; 
       element.style.padding = '0'; 
       element.style.overflow = 'visible'; 
 
+      // Wait for the browser to apply style changes
       await new Promise(resolve => requestAnimationFrame(resolve));
       
       const currentDimensions = SIZES[labelSizeKey];
@@ -126,7 +133,9 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       document.body.removeChild(link);
     } catch (error) {
       console.error("Error generating label image:", error);
+      // Consider adding a user-facing error message here, e.g., using a toast
     } finally {
+      // Restore original styles
       if (element) { 
         element.style.transform = originalTransform;
         element.style.padding = originalPadding;
@@ -136,6 +145,10 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   };
   
   const currentDimensions = SIZES[labelSizeKey];
+
+  // Determine container dimensions for the rotated preview
+  const PREVIEW_CONTAINER_WIDTH_PX = currentDimensions.previewContentHeightPx; // Becomes width when rotated
+  const PREVIEW_CONTAINER_HEIGHT_PX = currentDimensions.previewContentWidthPx; // Becomes height when rotated
 
   return (
     <div className="grid md:grid-cols-2 gap-8">
@@ -199,94 +212,105 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         <CardHeader>
           <CardTitle className="text-xl">Label Preview</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[450px]">
+        <CardContent className="flex flex-col items-center justify-center p-4 min-h-[550px]"> {/* Increased min-height for taller preview */}
+          {/* Container for the rotated label preview */}
           <div
-            ref={previewRef}
-            className="bg-card border-2 border-primary text-primary shadow-lg rounded-md relative overflow-hidden p-4 flex flex-col justify-between items-center text-center"
+            className="relative flex items-center justify-center"
             style={{
-              width: PREVIEW_WIDTH_PX,
-              height: PREVIEW_HEIGHT_PX,
-              fontFamily: 'serif',
+              width: PREVIEW_CONTAINER_WIDTH_PX, // e.g., 175px (content height becomes container width)
+              height: PREVIEW_CONTAINER_HEIGHT_PX, // e.g., 500px (content width becomes container height)
             }}
           >
-            {/* Top Information Block */}
-            {(ibu !== 'N/A' || srm !== 'N/A' || (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A')) && (
-              <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
-                {(ibu !== 'N/A' || srm !== 'N/A') && (
-                  <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
-                    IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
-                  </p>
-                )}
-                {ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A' && (
-                    <p className="text-[7px] text-primary mt-0.5">
-                        <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
+            <div
+              ref={previewRef}
+              className="bg-card border-2 border-primary text-primary shadow-lg rounded-md relative overflow-hidden p-4 flex flex-col justify-between items-center text-center"
+              style={{
+                width: currentDimensions.previewContentWidthPx, // e.g., 500px (actual content width)
+                height: currentDimensions.previewContentHeightPx, // e.g., 175px (actual content height)
+                fontFamily: 'serif',
+                transformOrigin: 'center center',
+                transform: 'rotate(90deg)',
+              }}
+            >
+              {/* Top Information Block - Horizontal */}
+               {(ibu !== 'N/A' || srm !== 'N/A' || (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A')) && (
+                <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
+                  {(ibu !== 'N/A' || srm !== 'N/A') && (
+                    <p className="text-[7px] text-primary">
+                      IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
                     </p>
-                )}
-              </div>
-            )}
-            
-            {/* Beer Name on the Left */}
-            {beerName !== 'Select a Recipe' && beerName && (
+                  )}
+                  { (ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A') && (
+                      <p className="text-[7px] text-primary mt-0.5">
+                          <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
+                      </p>
+                  )}
+                </div>
+              )}
+              
+              {/* Beer Name on the Left (Visually Top after rotation) */}
+              {beerName !== 'Select a Recipe' && beerName && (
+                <div
+                  className="text-primary whitespace-nowrap flex flex-col items-start justify-start" // Changed from justify-center
+                  style={{
+                    position: 'absolute',
+                    top: '50%', // Center along the original height
+                    left: '0.5rem', // Keep some padding from the edge
+                    transform: 'translateY(-50%) rotate(180deg)', // Rotate to read top-to-bottom
+                    writingMode: 'vertical-rl',
+                    fontSize: '1.25rem', 
+                    fontWeight: 'bold',
+                    maxHeight: `calc(${currentDimensions.previewContentHeightPx} - 70px)`, // Max height relative to content's original height
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {beerName}
+                </div>
+              )}
+              
+              {/* Volume and ABV on the Right (Visually Bottom after rotation) */}
               <div
-                className="text-primary whitespace-nowrap"
+                className="text-primary whitespace-nowrap flex flex-col items-start justify-start"
                 style={{
                   position: 'absolute',
-                  top: '50%',
-                  left: '0.5rem', 
-                  transform: 'translateY(-50%) rotate(180deg)',
+                  top: '50%', // Center along the original height
+                  right: '0.5rem', // Keep some padding from the edge
+                  transform: 'translateY(-50%) rotate(180deg)', // Rotate to read top-to-bottom
                   writingMode: 'vertical-rl',
-                  fontSize: '1.25rem', 
-                  fontWeight: 'bold',
-                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`, 
+                  fontSize: '0.75rem', 
+                  maxHeight: `calc(${currentDimensions.previewContentHeightPx} - 70px)`, // Max height relative to content's original height
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
               >
-                {beerName}
+                <span>{volume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
               </div>
-            )}
-            
-            {/* Volume and ABV on the Right */}
-            <div
-              className="text-primary whitespace-nowrap"
-              style={{
-                position: 'absolute',
-                top: '50%',
-                right: '0.5rem',
-                transform: 'translateY(-50%) rotate(180deg)',
-                writingMode: 'vertical-rl',
-                fontSize: '0.75rem', 
-                maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              <span>{displayVolume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
-            </div>
 
-            {/* Central Beer Icon */}
-            <div className="absolute inset-0 flex items-center justify-center my-auto">
-              <Beer
-                size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4}
-                fill={currentSrmHexColor}
-                stroke={'hsl(var(--primary))'}
-                strokeWidth={1.5}
-                style={{
-                  transform: 'rotate(-90deg)',
-                }}
-              />
-            </div>
+              {/* Central Beer Icon */}
+              <div className="absolute inset-0 flex items-center justify-center my-auto">
+                <Beer
+                  size={Math.min(parseInt(currentDimensions.previewContentWidthPx,10), parseInt(currentDimensions.previewContentHeightPx,10)) * 0.4}
+                  fill={currentSrmHexColor}
+                  stroke={'hsl(var(--primary))'}
+                  strokeWidth={1.5}
+                  style={{
+                    transform: 'rotate(-90deg)', // Rotate icon to be upright in horizontal label
+                  }}
+                />
+              </div>
 
-             {/* Bottom Centered Text (Brewery & Tagline) */}
-            <div className="w-full absolute bottom-2 left-0 right-0 px-2">
-                <p className="text-[10px] font-semibold text-primary">{breweryName}</p>
-                <p className="text-[10px] text-muted-foreground">{tagline}</p>
+              {/* Bottom Centered Text (Brewery & Tagline) */}
+              <div className="w-full absolute bottom-2 left-0 right-0 px-2">
+                  <p className="text-[10px] font-semibold text-primary">{breweryName}</p>
+                  <p className="text-[10px] text-muted-foreground">{tagline}</p>
+              </div>
             </div>
           </div>
           <Button onClick={handleDownloadImage} className="mt-4">Download Label</Button>
           <div className="mt-4 text-sm text-muted-foreground text-center">
-            <p>Abstract Preview Representation.</p>
-            <p className="text-xs">(Simulated for {currentDimensions.displayVolume}: {currentDimensions.widthCmText}cm W x {currentDimensions.heightCmText}cm H)</p>
+            <p>Rotated Preview for Vertical Display.</p>
+            <p className="text-xs">(Target print: {currentDimensions.widthCmText}cm W x {currentDimensions.heightCmText}cm H)</p>
           </div>
         </CardContent>
       </Card>
