@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep, Fermentable, ParsedMarkdownSections } from '@/types/recipe';
+import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep, ParsedMarkdownSections } from '@/types/recipe';
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -84,7 +84,7 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
 const MarkdownSection: React.FC<{ content?: string }> = ({ content }) => {
   if (!content) return null;
   return (
-    <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
+    <article className="prose prose-sm max-w-none text-foreground dark:prose-invert whitespace-pre-wrap">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
     </article>
   );
@@ -92,22 +92,19 @@ const MarkdownSection: React.FC<{ content?: string }> = ({ content }) => {
 
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const sections = recipe.parsedMarkdownSections;
+  const notes = recipe.notes;
 
   return (
     <div className="space-y-6">
-      {(sections?.brewersNotes || recipe.notes) && (
+      {(sections?.brewersNotes || notes) && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl text-primary">
-              <BookOpen size={20} /> Brewer's Notes
+              <BookOpen size={20} /> {sections?.brewersNotes ? "Brewer's Detailed Procedure" : "Brewer's Notes"}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {sections?.brewersNotes ? (
-              <MarkdownSection content={sections.brewersNotes} />
-            ) : recipe.notes ? ( // Fallback to XML notes if no MD Brewer's Notes
-              <MarkdownSection content={recipe.notes} />
-            ) : null}
+            <MarkdownSection content={sections?.brewersNotes || notes} />
           </CardContent>
         </Card>
       )}
@@ -152,7 +149,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-foreground">
-          <MarkdownSection content={sections?.cooling} />
+            <MarkdownSection content={sections?.cooling} />
         </CardContent>
       </Card>
 
