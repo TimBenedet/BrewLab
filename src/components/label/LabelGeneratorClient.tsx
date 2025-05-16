@@ -4,13 +4,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import html2canvas from 'html2canvas';
 import type { Recipe } from '@/types/recipe';
-import { Beer } from 'lucide-react'; // Import Beer icon
+import { Beer } from 'lucide-react';
 
 interface LabelGeneratorClientProps {
   recipes: Recipe[];
@@ -20,8 +19,8 @@ const PREVIEW_WIDTH_PX = '200px';
 const PREVIEW_HEIGHT_PX = '400px';
 
 const SIZES = {
-  '33cl': { displayVolume: '33CL', widthMm: 200, heightMm: 70, widthCmText: '20.0', heightCmText: '7.0', previewContentWidthPx: '500px', previewContentHeightPx: '175px' },
-  '75cl': { displayVolume: '75CL', widthMm: 260, heightMm: 90, widthCmText: '26.0', heightCmText: '9.0', previewContentWidthPx: '500px', previewContentHeightPx: '173px' },
+  '33cl': { displayVolume: '33CL', defaultVolume: '330ml', widthMm: 200, heightMm: 70, widthCmText: '20.0', heightCmText: '7.0', previewContentWidthPx: '500px', previewContentHeightPx: '175px' },
+  '75cl': { displayVolume: '75CL', defaultVolume: '750ml', widthMm: 260, heightMm: 90, widthCmText: '26.0', heightCmText: '9.0', previewContentWidthPx: '500px', previewContentHeightPx: '173px' },
 };
 
 
@@ -35,8 +34,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [abv, setAbv] = useState<string>('N/A');
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
-  const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('');
-  const [currentSrmHexColor, setCurrentSrmHexColor] = useState<string>('#CCCCCC'); // Default color
+  const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('N/A'); // Initialize to N/A
+  const [currentSrmHexColor, setCurrentSrmHexColor] = useState<string>('#CCCCCC');
 
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -50,32 +49,37 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setSrm(recipe.stats.colorSrm?.toString() || 'N/A');
         setCurrentSrmHexColor(recipe.srmHexColor || '#CCCCCC');
         
-        const ingredientsList = [];
-        if (recipe.hops && recipe.hops.length > 0) {
-          ingredientsList.push(...recipe.hops.slice(0, 2).map(h => h.NAME));
-        }
-        if (recipe.fermentables && recipe.fermentables.length > 0) {
-          // Filter for key fermentables like malts/grains
-          const keyFermentables = recipe.fermentables.filter(f => 
-            f.TYPE?.toLowerCase().includes('grain') || 
+        const hopsList = recipe.hops?.slice(0, 2).map(h => h.NAME) || [];
+        const fermentablesList = recipe.fermentables
+          ?.filter(f =>
+            f.TYPE?.toLowerCase().includes('grain') ||
             f.TYPE?.toLowerCase().includes('malt') ||
-            f.TYPE?.toLowerCase().includes('extract') 
-          ).slice(0, 3).map(f => f.NAME);
-          ingredientsList.push(...keyFermentables);
-        }
-        if (recipe.miscs && recipe.miscs.length > 0) {
-          ingredientsList.push(...recipe.miscs.slice(0, 1).map(m => m.NAME));
-        }
-        setIngredientsSummaryForLabel(ingredientsList.join(', '));
+            f.TYPE?.toLowerCase().includes('extract')
+          )
+          .slice(0, 3)
+          .map(f => f.NAME) || [];
+        const miscsList = recipe.miscs?.slice(0, 1).map(m => m.NAME) || [];
+        
+        const allIngredients = [...hopsList, ...fermentablesList, ...miscsList];
+        setIngredientsSummaryForLabel(allIngredients.length > 0 ? allIngredients.join(', ') : 'N/A');
 
+      } else {
+        // Recipe with slug not found, reset fields
+        setBeerName('Recipe Not Found');
+        setAbv('N/A');
+        setIbu('N/A');
+        setSrm('N/A');
+        setIngredientsSummaryForLabel('N/A');
+        setCurrentSrmHexColor('#CCCCCC');
       }
     } else {
+      // No recipe selected
       setBeerName('Select a Recipe');
       setAbv('N/A');
       setIbu('N/A');
       setSrm('N/A');
-      setIngredientsSummaryForLabel('');
-      setCurrentSrmHexColor('#CCCCCC'); // Reset to default if no recipe selected
+      setIngredientsSummaryForLabel('N/A'); // Reset to N/A
+      setCurrentSrmHexColor('#CCCCCC');
     }
   }, [selectedRecipeSlug, recipes]);
 
@@ -202,15 +206,21 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             }}
           >
             {/* Top Information Block */}
+            {(ibu !== 'N/A' || srm !== 'N/A' || ingredientsSummaryForLabel !== 'N/A') && (
             <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
+              {(ibu !== 'N/A' || srm !== 'N/A') && (
                 <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
                   IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
                 </p>
+              )}
+              {ingredientsSummaryForLabel && (
                 <p className="text-[7px] text-primary mt-0.5">
-                  <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel || 'N/A'}
+                  <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
                 </p>
+              )}
             </div>
-
+            )}
+            
             {/* Beer Name on the Left */}
             {beerName !== 'Select a Recipe' && beerName && (
               <div
@@ -255,7 +265,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               <Beer
                 size={Math.min(parseInt(PREVIEW_WIDTH_PX,10), parseInt(PREVIEW_HEIGHT_PX,10)) * 0.4} 
                 style={{
-                  transform: 'rotate(-90deg)', // Handle pointing upwards
+                  transform: 'rotate(-90deg)',
                   fill: currentSrmHexColor,
                   stroke: 'hsl(var(--primary))',
                 }}
@@ -279,4 +289,3 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
-
