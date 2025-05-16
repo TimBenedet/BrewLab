@@ -56,12 +56,16 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [beerName, setBeerName] = useState('My Awesome Beer');
   const [style, setStyle] = useState('IPA - India Pale Ale');
   const [abv, setAbv] = useState('6.5');
-  const [ibu, setIbu] = useState<string | number | undefined>('40');
-  const [srm, setSrm] = useState<string | number | undefined>('10');
+  const [ibu, setIbu] = useState<string | number | undefined>('');
+  const [srm, setSrm] = useState<string | number | undefined>('');
   const [breweryName, setBreweryName] = useState('HomeBrew Hero Co.');
   const [tagline, setTagline] = useState('Crafted with passion, just for fun!');
-  const [volume, setVolume] = useState('330ml');
+  const [volume, setVolume] = useState(SIZES['33cl'].defaultVolume);
   const [labelSizeKey, setLabelSizeKey] = useState<string>('33cl');
+
+  const [hopsDisplay, setHopsDisplay] = useState<string>('');
+  const [yeastDisplay, setYeastDisplay] = useState<string>('');
+  const [miscDisplay, setMiscDisplay] = useState<string>('');
 
   const previewRef = useRef<HTMLDivElement>(null);
   const currentDimensions = SIZES[labelSizeKey];
@@ -75,14 +79,32 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        // Auto-set volume based on the currently selected label size if a recipe is loaded
-        setVolume(SIZES[labelSizeKey].defaultVolume);
+        
+        const mainHops = recipe.hops.map(h => h.name).filter(Boolean);
+        setHopsDisplay(mainHops.length > 0 ? mainHops.slice(0,2).join(', ') : '');
+        
+        const mainYeast = recipe.yeasts.map(y => y.name).filter(Boolean);
+        setYeastDisplay(mainYeast.length > 0 ? mainYeast[0] : '');
+        
+        const mainMisc = recipe.miscs?.map(m => m.name).filter(Boolean);
+        setMiscDisplay(mainMisc && mainMisc.length > 0 ? mainMisc.slice(0,1).join(', ') : '');
       }
+    } else {
+      // Reset to defaults if no recipe is selected
+      setBeerName('My Awesome Beer');
+      setStyle('IPA - India Pale Ale');
+      setAbv('6.5');
+      setIbu('');
+      setSrm('');
+      setHopsDisplay('');
+      setYeastDisplay('');
+      setMiscDisplay('');
     }
+    setVolume(SIZES[labelSizeKey].defaultVolume);
   }, [selectedRecipeSlug, recipes, labelSizeKey]);
 
   useEffect(() => {
-    // Auto-update volume when label size changes, regardless of recipe selection
+    // Auto-update volume when label size changes, if no recipe is selected or to override recipe volume
     setVolume(SIZES[labelSizeKey].defaultVolume);
   }, [labelSizeKey]);
 
@@ -90,29 +112,26 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const element = previewRef.current;
     if (!element) return;
 
-    // Temporarily remove padding for capture if it's causing issues, then re-add
     const originalPadding = element.style.padding;
-    element.style.padding = '0'; // Or set to a minimal value if required for internal spacing
+    element.style.padding = '0'; 
 
-    // Wait for the DOM to update if padding change needs to reflect
     await new Promise(resolve => setTimeout(resolve, 0));
 
-
     const canvas = await html2canvas(element, {
-      scale: 2, // Higher scale for better resolution
-      backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff', // Explicit background
-      width: element.offsetWidth, // Capture based on offsetWidth
-      height: element.offsetHeight, // Capture based on offsetHeight
+      scale: 2, 
+      backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff', 
+      width: element.offsetWidth, 
+      height: element.offsetHeight, 
       x: 0,
       y: 0,
-      scrollX: 0, // Ensure no scrolling interference
+      scrollX: 0, 
       scrollY: 0,
-      windowWidth: element.scrollWidth, // Tell html2canvas the full width
-      windowHeight: element.scrollHeight, // Tell html2canvas the full height
-      useCORS: true, // If you ever add external images
+      windowWidth: element.scrollWidth, 
+      windowHeight: element.scrollHeight, 
+      useCORS: true, 
     });
 
-    element.style.padding = originalPadding; // Restore padding
+    element.style.padding = originalPadding; 
 
     const data = canvas.toDataURL('image/png');
     const link = document.createElement('a');
@@ -135,11 +154,12 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="recipeSelect" className="text-sm font-medium text-muted-foreground">Load from My Recipes (Optional)</Label>
-            <Select onValueChange={setSelectedRecipeSlug} value={selectedRecipeSlug || undefined}>
+            <Select onValueChange={(value) => setSelectedRecipeSlug(value === 'none' ? null : value)} value={selectedRecipeSlug || 'none'}>
               <SelectTrigger id="recipeSelect" className="mt-1">
                 <SelectValue placeholder="Select a recipe to pre-fill..." />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">None (Manual Entry)</SelectItem>
                 {recipes.length > 0 ? (
                   recipes.map(recipe => (
                     <SelectItem key={recipe.slug} value={recipe.slug}>
@@ -169,6 +189,14 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             <Label htmlFor="volume" className="text-sm font-medium text-muted-foreground">Container Volume</Label>
             <Input id="volume" type="text" value={volume} onChange={(e) => setVolume(e.target.value)} className="mt-1" />
             <p className="text-xs text-muted-foreground mt-1">Auto-filled based on label size. You can override it.</p>
+          </div>
+           <div>
+            <Label htmlFor="ibuInput" className="text-sm font-medium text-muted-foreground">IBU (Optional)</Label>
+            <Input id="ibuInput" type="text" value={ibu} onChange={(e) => setIbu(e.target.value)} className="mt-1" placeholder="e.g., 40" />
+          </div>
+          <div>
+            <Label htmlFor="srmInput" className="text-sm font-medium text-muted-foreground">SRM (Optional)</Label>
+            <Input id="srmInput" type="text" value={srm} onChange={(e) => setSrm(e.target.value)} className="mt-1" placeholder="e.g., 10" />
           </div>
           <div>
             <Label htmlFor="breweryName" className="text-sm font-medium text-muted-foreground">Brewery Name</Label>
@@ -200,7 +228,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
           <CardTitle className="text-xl">Label Preview</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center p-4">
-          <div // Outer container for relative positioning of vertical text
+          <div
             className="relative"
             style={{
               width: currentDimensions.widthPx,
@@ -209,11 +237,11 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
           >
             <div
               ref={previewRef}
-              className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out overflow-hidden" // Added overflow-hidden
+              className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out overflow-hidden"
               style={{
                 fontFamily: 'serif',
-                width: '100%', // Fill the relative parent
-                height: '100%', // Fill the relative parent
+                width: '100%', 
+                height: '100%',
                 boxSizing: 'border-box',
               }}
             >
@@ -234,23 +262,23 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               </div>
             </div>
 
-            {/* Vertical IBU Text */}
-            {ibu && (
+            {/* Combined Vertical Info Text (IBU, SRM, Ingredients) */}
+            {(ibu || srm || hopsDisplay || yeastDisplay || miscDisplay) && (
               <div
-                className="absolute top-0 left-1 h-full flex items-center text-muted-foreground text-[8px] transform"
+                className="absolute top-0 left-1 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px] py-2 pr-1" // Added pr-1 for spacing from content
                 style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
               >
-                <span>IBU: {ibu}</span>
-              </div>
-            )}
-
-            {/* Vertical SRM Text */}
-            {srm && (
-              <div
-                className="absolute top-0 right-1 h-full flex items-center text-muted-foreground text-[8px]"
-                style={{ writingMode: 'vertical-rl' }}
-              >
-                <span>SRM: {srm}</span>
+                  {ibu && <span className="block">IBU: {ibu}</span>}
+                  {srm && <span className="block mt-0.5">SRM: {srm}</span>}
+                  
+                  {(hopsDisplay || yeastDisplay || miscDisplay) && (
+                    <>
+                      <span className="block mt-2 mb-0.5 font-semibold">Ingredients:</span>
+                      {hopsDisplay && <span className="block">H: {hopsDisplay}</span>}
+                      {yeastDisplay && <span className="block mt-0.5">Y: {yeastDisplay}</span>}
+                      {miscDisplay && <span className="block mt-0.5">O: {miscDisplay}</span>}
+                    </>
+                  )}
               </div>
             )}
           </div>
@@ -267,3 +295,5 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
+
+    
