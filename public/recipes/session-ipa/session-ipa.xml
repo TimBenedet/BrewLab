@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RECIPES>
+<RECIPE>
+  <NAME>Session IPA (Placeholder)</NAME>
+  <VERSION>1</VERSION>
+  <TYPE>All Grain</TYPE>
+  <BREWER>App Prototyper</BREWER>
+  <BATCH_SIZE>20</BATCH_SIZE>
+  <BOIL_SIZE>24</BOIL_SIZE>
+  <BOIL_TIME>60</BOIL_TIME>
+  <EFFICIENCY>72</EFFICIENCY>
+  <OG>1.045</OG>
+  <FG>1.010</FG>
+  <ABV>4.6</ABV>
+  <IBU>45</IBU>
+  <COLOR>6</COLOR>
+  <STYLE>
+    <NAME>Session IPA</NAME>
+  </STYLE>
+  <FERMENTABLES>
+  </FERMENTABLES>
+  <HOPS>
+  </HOPS>
+  <YEASTS>
+  </YEASTS>
+  <MISCS>
+  </MISCS>
+  <MASH>
+    <NAME>Single Infusion</NAME>
+    <MASH_STEPS>
+    </MASH_STEPS>
+  </MASH>
+</RECIPE>
+</RECIPES>
