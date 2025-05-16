@@ -98,23 +98,33 @@ function transformRecipeData(slug: string, xmlData: XmlRecipe): Recipe {
 
 export function getAllRecipeSlugs(): string[] {
   try {
-    const fileNames = fs.readdirSync(recipesDirectory);
-    return fileNames
-      .filter(fileName => fileName.endsWith('.xml') && !fileName.startsWith('.'))
-      .map(fileName => fileName.replace(/\.xml$/, ''));
+    if (!fs.existsSync(recipesDirectory)) {
+      console.warn(`Recipes directory not found: ${recipesDirectory}`);
+      return [];
+    }
+    const dirents = fs.readdirSync(recipesDirectory, { withFileTypes: true });
+    return dirents
+      .filter(dirent => dirent.isDirectory() && !dirent.name.startsWith('.'))
+      .map(dirent => dirent.name);
   } catch (error) {
+    // Log specific error codes differently, e.g. ENOENT if directory doesn't exist
     if (error && typeof error === 'object' && 'code' in error && error.code !== 'ENOENT') {
         console.error("Error reading recipes directory for slugs:", error);
+    } else if (error && typeof error === 'object' && !('code' in error)) {
+        console.error("An unexpected error occurred while reading recipes directory for slugs:", error);
     }
+    // For ENOENT, it's handled by the existsSync check or is a common case if no recipes folder exists yet
     return [];
   }
 }
 
 export async function getRecipeData(slug: string): Promise<Recipe | null> {
-  const fullPath = path.join(recipesDirectory, `${slug}.xml`);
+  const recipeDir = path.join(recipesDirectory, slug);
+  const fullPath = path.join(recipeDir, `${slug}.xml`);
 
   try {
     if (!fs.existsSync(fullPath)) {
+        // console.warn(`Recipe XML file not found: ${fullPath}`);
         return null;
     }
     const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -133,7 +143,6 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
       parseNodeValue: true,
       trimValues: true,
       isArray: (name: string, jpath: string, isLeafNode: boolean, isAttribute: boolean) => {
-        // Ensure these common list elements are always arrays, even if single
         if (jpath === "recipe.fermentables.fermentable") return true;
         if (jpath === "recipe.hops.hop") return true;
         if (jpath === "recipe.yeasts.yeast") return true;
@@ -150,7 +159,18 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
         return null;
     }
     
-    return transformRecipeData(slug, jsonObj);
+    // Check for markdown file
+    let stepsMarkdown: string | undefined = undefined;
+    const markdownPath = path.join(recipeDir, `${slug}.md`);
+    if (fs.existsSync(markdownPath)) {
+      stepsMarkdown = fs.readFileSync(markdownPath, 'utf8');
+    }
+    
+    const recipe = transformRecipeData(slug, jsonObj);
+    if (stepsMarkdown) {
+      recipe.stepsMarkdown = stepsMarkdown;
+    }
+    return recipe;
 
   } catch (error) {
     console.error(`Error reading or parsing recipe file ${fullPath}:`, error);
@@ -160,10 +180,12 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
 
 export async function getAllRecipes(): Promise<Recipe[]> {
   const slugsRaw = getAllRecipeSlugs();
+  // Deduplicate slugs just in case, though readdir should provide unique names
   const uniqueSlugs = Array.from(new Set(slugsRaw)); 
 
   const recipesPromises = uniqueSlugs.map(slug => getRecipeData(slug));
-  const recipes = await Promise.all(recipesPromises);
+  const recipesResults = await Promise.all(recipesPromises);
   
-  return recipes.filter(recipe => recipe !== null) as Recipe[];
+  // Filter out null results (e.g., if a directory existed but didn't contain a valid slug.xml)
+  return recipesResults.filter(recipe => recipe !== null) as Recipe[];
 }
