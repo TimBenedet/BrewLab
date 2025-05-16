@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+// Input removed as it's no longer used for beerName
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Recipe } from '@/types/recipe';
 
@@ -12,12 +12,12 @@ interface LabelGeneratorClientProps {
   recipes: Recipe[];
 }
 
-const PREVIEW_WIDTH_PX = '200px'; // Approx 10cm, increased width
-const PREVIEW_HEIGHT_PX = '400px'; // Approx 20cm, increased height
+const PREVIEW_WIDTH_PX = '200px'; 
+const PREVIEW_HEIGHT_PX = '400px';
 
 export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [selectedRecipeSlug, setSelectedRecipeSlug] = useState<string | null>(null);
-  const [beerName, setBeerName] = useState('Beer Name');
+  const [beerName, setBeerName] = useState('Select a Recipe');
   
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setBeerName(recipe.metadata.name);
       }
     } else {
-      setBeerName('Beer Name'); // Reset if no recipe selected
+      setBeerName('Select a Recipe'); // Reset if no recipe selected
     }
   }, [selectedRecipeSlug, recipes]);
 
@@ -46,7 +46,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 <SelectValue placeholder="Select a recipe..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None (Enter Name Manually)</SelectItem>
+                <SelectItem value="none">None (Show Placeholder)</SelectItem>
                 {recipes.length > 0 ? (
                   recipes.map(recipe => (
                     <SelectItem key={recipe.slug} value={recipe.slug}>
@@ -59,11 +59,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               </SelectContent>
             </Select>
           </div>
-
-          <div>
-            <Label htmlFor="beerNameInput" className="text-sm font-medium text-muted-foreground">Beer Name (for preview)</Label>
-            <Input id="beerNameInput" value={beerName} onChange={(e) => setBeerName(e.target.value)} className="mt-1" placeholder="Enter Beer Name"/>
-          </div>
+          {/* Beer Name input field removed */}
         </CardContent>
       </Card>
 
@@ -74,26 +70,27 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         <CardContent className="flex flex-col items-center justify-center p-4 min-h-[450px]"> {/* Increased min-height */}
           <div
             ref={previewRef}
-            className="bg-card border-2 border-primary text-primary shadow-lg rounded-md" // Changed to border-primary and bg-card
+            className="bg-card border-2 border-primary text-primary shadow-lg rounded-md"
             style={{
               width: PREVIEW_WIDTH_PX,
               height: PREVIEW_HEIGHT_PX,
               position: 'relative',
+              overflow: 'hidden', // Added to ensure text doesn't spill if too long
             }}
           >
             {beerName && (
               <div
-                className="text-primary" // Changed text color
+                className="text-primary" 
                 style={{
                   position: 'absolute',
                   top: '50%',
-                  left: '0.5rem', // Moved to left, reduced space
+                  left: '0.5rem', 
                   transform: 'translateY(-50%) rotate(180deg)',
                   writingMode: 'vertical-rl',
                   fontSize: '1.25rem', 
                   fontWeight: 'bold',
                   textAlign: 'center',
-                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 1rem)`, // Adjusted maxHeight slightly
+                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 1rem)`, 
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
