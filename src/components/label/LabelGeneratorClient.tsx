@@ -134,8 +134,20 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
       await new Promise(resolve => requestAnimationFrame(resolve));
       
+      const cardBgValue = getComputedStyle(element).getPropertyValue('background-color').trim();
+      let L_backgroundColor = '#ffffff'; // Default fallback
+      if (cardBgValue) {
+          if (cardBgValue.startsWith('hsl')) { // e.g. hsl(0 0% 100%)
+              L_backgroundColor = cardBgValue;
+          } else if (cardBgValue.includes(' ')) { // e.g. 0 0% 100%
+              L_backgroundColor = `hsl(${cardBgValue})`;
+          } else { // hex, rgb, etc.
+              L_backgroundColor = cardBgValue;
+          }
+      }
+      
       const canvas = await html2canvas(element, {
-        backgroundColor: getComputedStyle(element).getPropertyValue('background-color').trim() || 'hsl(var(--card))' || '#ffffff',
+        backgroundColor: L_backgroundColor,
         scale: scaleFactor,
         width: parseInt(currentDimensions.previewContentWidthPx, 10), // Capture based on content dimensions
         height: parseInt(currentDimensions.previewContentHeightPx, 10),
@@ -346,3 +358,5 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
+
+    
