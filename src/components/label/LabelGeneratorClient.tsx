@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input"; // Added this import
 import html2canvas from 'html2canvas';
 import type { Recipe } from '@/types/recipe';
 import { Beer } from 'lucide-react';
@@ -34,7 +35,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [abv, setAbv] = useState<string>('N/A');
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
-  const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('N/A'); // Initialize to N/A
+  const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('N/A');
   const [currentSrmHexColor, setCurrentSrmHexColor] = useState<string>('#CCCCCC');
 
   const previewRef = useRef<HTMLDivElement>(null);
@@ -64,7 +65,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setIngredientsSummaryForLabel(allIngredients.length > 0 ? allIngredients.join(', ') : 'N/A');
 
       } else {
-        // Recipe with slug not found, reset fields
         setBeerName('Recipe Not Found');
         setAbv('N/A');
         setIbu('N/A');
@@ -73,12 +73,11 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setCurrentSrmHexColor('#CCCCCC');
       }
     } else {
-      // No recipe selected
       setBeerName('Select a Recipe');
       setAbv('N/A');
       setIbu('N/A');
       setSrm('N/A');
-      setIngredientsSummaryForLabel('N/A'); // Reset to N/A
+      setIngredientsSummaryForLabel('N/A'); 
       setCurrentSrmHexColor('#CCCCCC');
     }
   }, [selectedRecipeSlug, recipes]);
@@ -213,7 +212,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                   IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
                 </p>
               )}
-              {ingredientsSummaryForLabel && (
+              {ingredientsSummaryForLabel && ingredientsSummaryForLabel !== 'N/A' && (
                 <p className="text-[7px] text-primary mt-0.5">
                   <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
                 </p>
