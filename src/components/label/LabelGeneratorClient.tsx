@@ -30,12 +30,11 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [beerName, setBeerName] = useState('Select a Recipe');
   const [breweryName, setBreweryName] = useState('Your Craft Brewery');
   const [tagline, setTagline] = useState('Handcrafted Beer');
-
+  const [labelSizeKey, setLabelSizeKey] = useState<keyof typeof SIZES>('33cl');
+  const [volume, setVolume] = useState<string>(SIZES['33cl'].displayVolume);
+  const [abv, setAbv] = useState<string>('N/A');
   const [ibu, setIbu] = useState<string>('N/A');
   const [srm, setSrm] = useState<string>('N/A');
-  const [abv, setAbv] = useState<string>('N/A');
-  const [volume, setVolume] = useState<string>(SIZES['33cl'].displayVolume); // Default to 33CL display
-  const [labelSizeKey, setLabelSizeKey] = useState<keyof typeof SIZES>('33cl');
   const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('');
 
   const previewRef = useRef<HTMLDivElement>(null);
@@ -48,7 +47,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv?.toString() || 'N/A');
         setIbu(recipe.stats.ibu?.toString() || 'N/A');
         setSrm(recipe.stats.colorSrm?.toString() || 'N/A');
-
+        
         const ingredients = [];
         if (recipe.hops && recipe.hops.length > 0) {
           ingredients.push(...recipe.hops.slice(0, 2).map(h => h.name));
@@ -60,6 +59,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
           ingredients.push(...recipe.miscs.slice(0, 1).map(m => m.name));
         }
         setIngredientsSummaryForLabel(ingredients.join(', '));
+
       }
     } else {
       setBeerName('Select a Recipe');
@@ -83,19 +83,20 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const originalOverflow = element.style.overflow;
 
     try {
-      element.style.transform = 'none';
-      element.style.padding = '0';
-      element.style.overflow = 'visible';
+      element.style.transform = 'none'; // Temporarily reset transform for capture
+      element.style.padding = '0'; // Temporarily remove padding
+      element.style.overflow = 'visible'; // Ensure all content is visible
 
+      // Wait for the browser to apply style changes
       await new Promise(resolve => requestAnimationFrame(resolve));
-
+      
       const currentDimensions = SIZES[labelSizeKey];
       const canvas = await html2canvas(element, {
         backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff',
-        scale: 2,
+        scale: 2, // Higher scale for better resolution
         width: parseInt(currentDimensions.previewContentWidthPx, 10),
         height: parseInt(currentDimensions.previewContentHeightPx, 10),
-        x: 0,
+        x: 0, 
         y: 0,
         scrollX: 0,
         scrollY: 0,
@@ -112,12 +113,13 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     } catch (error) {
       console.error("Error generating label image:", error);
     } finally {
+      // Restore original styles
       element.style.transform = originalTransform;
       element.style.padding = originalPadding;
       element.style.overflow = originalOverflow;
     }
   };
-
+  
   const currentDimensions = SIZES[labelSizeKey];
 
   return (
@@ -193,25 +195,28 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             }}
           >
             {/* Top Information Block */}
-            <div className="absolute top-2 left-1 right-0 w-full px-1 text-left text-[7px] text-primary" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}>
-                <span className="block whitespace-nowrap">IBU : {ibu}, SRM : {srm}</span>
-                <span className="block whitespace-nowrap font-semibold mt-1">Ingrédients :</span>
-                <span className="block">{ingredientsSummaryForLabel || 'N/A'}</span>
+            <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
+                <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
+                  IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
+                </p>
+                <p className="text-[7px] text-primary mt-0.5">
+                  <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel || 'N/A'}
+                </p>
             </div>
 
-            {/* Beer Name on the Left (but visually appears on the left of the content after rotation) */}
-            {beerName && (
+            {/* Beer Name on the Left */}
+            {beerName !== 'Select a Recipe' && beerName && (
               <div
                 className="text-primary whitespace-nowrap"
                 style={{
                   position: 'absolute',
                   top: '50%',
-                  left: '0.5rem',
+                  left: '0.5rem', 
                   transform: 'translateY(-50%) rotate(180deg)',
                   writingMode: 'vertical-rl',
-                  fontSize: '1.25rem', // text-xl
+                  fontSize: '1.25rem', 
                   fontWeight: 'bold',
-                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 50px)`, // Adjust to avoid overlap
+                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`, // Adjusted for top/bottom clearance
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -229,15 +234,14 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 right: '0.5rem',
                 transform: 'translateY(-50%)',
                 writingMode: 'vertical-rl',
-                fontSize: '0.75rem', // text-xs
-                maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 50px)`, // Adjust to avoid overlap
+                fontSize: '0.75rem', 
+                maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`, // Adjusted for top/bottom clearance
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}
             >
-              <span>{volume} - {abv}% alc.</span>
+              <span>{volume} - {abv !== 'N/A' ? `${abv}% alc.` : ''}</span>
             </div>
-
 
             {/* Placeholder for a central logo/icon */}
             <div className="absolute inset-0 flex items-center justify-center opacity-10 my-auto">
