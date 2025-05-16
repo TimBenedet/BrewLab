@@ -34,7 +34,8 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         <CardDescription className="text-sm text-muted-foreground">{recipe.metadata.style}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow text-sm">
-        <div className="grid grid-cols-1 xs:grid-cols-2 gap-x-3 gap-y-2 sm:gap-y-1.5">
+        {/* Updated grid class here for consistent two columns */}
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
           <div className="space-y-1.5"> {/* Left Column */}
             <StatItem icon={Beer} label="Volume" value={formatValueUnit(recipe.metadata.batchSize)} />
             <StatItem icon={Palette} label="Color" value={recipe.stats.colorSrm ? `${recipe.stats.colorSrm} SRM` : '-'} />
