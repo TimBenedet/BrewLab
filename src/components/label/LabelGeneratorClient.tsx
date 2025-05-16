@@ -31,8 +31,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 70,
     widthCmText: '20.0',
     heightCmText: '7.0',
-    widthPx: '380px', // Approx. for 200mm at a decent preview width
-    heightPx: '133px', // 380 * (70/200)
+    widthPx: '380px',
+    heightPx: '133px',
     defaultVolume: '330ml'
   },
   '75cl': {
@@ -41,8 +41,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 90,
     widthCmText: '26.0',
     heightCmText: '9.0',
-    widthPx: '380px', // Approx. for 260mm, maintaining consistent preview width
-    heightPx: '132px', // 380 * (90/260)
+    widthPx: '380px',
+    heightPx: '132px',
     defaultVolume: '750ml'
   },
 };
@@ -62,7 +62,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   const [tagline, setTagline] = useState('Crafted with passion, just for fun!');
   const [volume, setVolume] = useState(SIZES['33cl'].defaultVolume);
   const [labelSizeKey, setLabelSizeKey] = useState<string>('33cl');
-  
   const [ingredientsSummaryForLabel, setIngredientsSummaryForLabel] = useState<string>('');
 
   const previewRef = useRef<HTMLDivElement>(null);
@@ -77,8 +76,8 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume);
-        
+        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates with recipe based on current size
+
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
           .filter(f => f.type && (f.type.toLowerCase().includes('malt') || f.type.toLowerCase().includes('grain')))
@@ -109,6 +108,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
   }, [selectedRecipeSlug, recipes, labelSizeKey]);
 
   useEffect(() => {
+    // Update volume when label size changes, even if a recipe is selected
     setVolume(SIZES[labelSizeKey].defaultVolume);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labelSizeKey]);
@@ -258,14 +258,22 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               </div>
             </div>
 
+            {/* Vertical text for IBU, SRM, Ingredients */}
             {(ibu || srm || ingredientsSummaryForLabel) && (
               <div
-                className="absolute top-0 left-0 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px] py-2"
+                className="absolute top-0 left-0 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px]"
                 style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
               >
-                  {(ibu || srm) && <span className="block">IBU : {ibu || 'N/A'}, SRM : {srm || 'N/A'}</span>}
-                  {ingredientsSummaryForLabel && <span className="block mt-1 font-semibold">Ingrédients :</span>}
-                  {ingredientsSummaryForLabel && <span className="block">{ingredientsSummaryForLabel}</span>}
+                  {(ibu || srm) && (
+                    <span className="block">
+                        IBU : {ibu || 'N/A'}, SRM : {srm || 'N/A'}
+                    </span>
+                  )}
+                  {ingredientsSummaryForLabel && (
+                    <span className="block mt-1"> {/* mt-1 creates a small gap between IBU/SRM line and Ingredients line */}
+                        <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
+                    </span>
+                  )}
               </div>
             )}
           </div>
@@ -282,4 +290,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
+    
+
     
