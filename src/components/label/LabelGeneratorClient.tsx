@@ -31,8 +31,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 70,
     widthCmText: '20.0',
     heightCmText: '7.0',
-    widthPx: '380px',
-    heightPx: '133px',
+    widthPx: '380px', // Approx. for 200mm at a decent preview width
+    heightPx: '133px', // 380 * (70/200)
     defaultVolume: '330ml'
   },
   '75cl': {
@@ -41,8 +41,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 90,
     widthCmText: '26.0',
     heightCmText: '9.0',
-    widthPx: '380px',
-    heightPx: '132px',
+    widthPx: '380px', // Approx. for 260mm, maintaining consistent preview width
+    heightPx: '132px', // 380 * (90/260)
     defaultVolume: '750ml'
   },
 };
@@ -77,11 +77,12 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume);
+        // setVolume(recipe.metadata.batchSize ? `${recipe.metadata.batchSize.value}${recipe.metadata.batchSize.unit}` : SIZES[labelSizeKey].defaultVolume);
+        setVolume(SIZES[labelSizeKey].defaultVolume); // Volume should be primarily driven by label size choice
         
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
-          .filter(f => f.type.toLowerCase().includes('malt') || f.type.toLowerCase().includes('grain'))
+          .filter(f => f.type && (f.type.toLowerCase().includes('malt') || f.type.toLowerCase().includes('grain')))
           .map(f => f.name)
           .filter(Boolean)
           .slice(0, 3);
@@ -106,11 +107,21 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIngredientsSummaryForLabel('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRecipeSlug, recipes, labelSizeKey]);
+  }, [selectedRecipeSlug, recipes, labelSizeKey]); // Added labelSizeKey to ensure volume updates if recipe selected then size changed
 
   useEffect(() => {
-    setVolume(SIZES[labelSizeKey].defaultVolume);
-  }, [labelSizeKey]);
+    // Update volume if label size changes, unless a recipe is loaded (which might have its own volume logic)
+    if (!selectedRecipeSlug) {
+      setVolume(SIZES[labelSizeKey].defaultVolume);
+    } else {
+      // If a recipe is loaded, re-set the volume based on the new label size.
+      const recipe = recipes.find(r => r.slug === selectedRecipeSlug);
+      // If recipe provides batch size, potentially use it. Otherwise default to selected label size.
+      // For now, we prioritize the label size's default volume for simplicity.
+      setVolume(SIZES[labelSizeKey].defaultVolume);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [labelSizeKey, selectedRecipeSlug]); // Ensure selectedRecipeSlug is a dependency
 
   const handleDownloadImage = async () => {
     const element = previewRef.current;
@@ -119,7 +130,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const originalPadding = element.style.padding;
     element.style.padding = '0'; 
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 0)); // Ensure styles are applied
 
     const canvas = await html2canvas(element, {
       scale: 2, 
@@ -264,7 +275,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               >
                   {(ibu || srm) && <span className="block">IBU : {ibu || 'N/A'}, SRM : {srm || 'N/A'}</span>}
                   {ingredientsSummaryForLabel && <span className="block mt-1 font-semibold">Ingrédients :</span>}
-                  {ingredientsSummaryForLabel && <span className="block mt-0.5">{ingredientsSummaryForLabel}</span>}
+                  {ingredientsSummaryForLabel && <span className="block">{ingredientsSummaryForLabel}</span>}
               </div>
             )}
           </div>
@@ -281,4 +292,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
+    
+
     
