@@ -1,45 +1,58 @@
 
-# Amber Ale - Brewing Steps 🍻
+# Classic Amber Ale - Recipe Steps
 
-## I. Preparation & Mash 🌾
+## 🌾 Mashing
+1.  **Prepare Mash Tun**: Preheat your mash tun by adding hot water and letting it sit for a few minutes. Discard water.
+2.  **Strike Water**: Heat 15.73 liters of water to 73°C (163.4°F).
+3.  **Mash In**: Add grains to the strike water. Stir well to avoid dough balls. Target mash temperature: 67°C (152.6°F).
+4.  **Rest**: Hold mash at 67°C (152.6°F) for 60 minutes.
+5.  **Mash Out (Optional)**: Raise temperature to 76°C (168.8°F) for 10 minutes. This can help with lautering.
 
-1.  **Heat Strike Water**: Heat 15 liters of water to 72°C (162°F).
-2.  **Mash In**: Add crushed grains to the hot water. Stir well to avoid dough balls. Target mash temperature is 67°C (153°F).
-3.  **Mash Rest**: Hold mash temperature at 67°C (153°F) for 60 minutes.
-4.  **Mash Out**: Raise temperature to 76°C (169°F) and hold for 10 minutes.
-5.  **Sparge**: Slowly rinse grains with 12 liters of 76°C (169°F) water, collecting the wort.
+---
 
-## II. Boil & Hop Additions 🌿⏱️
+## 🔥 Boil (60 minutes total)
+1.  **Collect Wort**: Sparge grains with approximately 12.5 liters of water at 76°C (168.8°F), or until you collect about 23 liters of wort.
+2.  **Bring to Boil**: Bring the wort to a rolling boil.
+3.  **60 min - Bittering Hops**: Add 20g of Magnum hops.
+4.  **15 min - Flavor Hops**: Add 25g of Cascade hops.
+5.  **10 min - Whirlfloc/Irish Moss**: Add 1 Whirlfloc tablet or 1 tsp Irish Moss (optional, for clarity).
+6.  **0 min/Flameout - Aroma Hops**: Add 25g of Amarillo hops. Start whirlpool if desired.
 
-1.  **Bring to Boil**: Bring the collected wort to a rolling boil. Total boil time: 60 minutes.
-2.  **First Wort Hops (Optional)**: If using, add First Wort Hops as the wort heats.
-3.  **60 min (Start of Boil)**: Add 20g of Challenger hops.
-4.  **15 min (Remaining)**: Add 15g of East Kent Goldings hops and 1 tsp of Irish Moss (or other kettle finings).
-5.  **0 min (Flameout)**: Add 15g of East Kent Goldings hops for aroma.
+---
 
-## III. Cooling & Transfer ❄️➡️
+## 🌪️ Whirlpool (Optional)
+1.  **Cool to 80-85°C (176-185°F)**: If you added flameout hops and want a whirlpool, cool the wort slightly.
+2.  **Whirlpool**: Stir the wort gently for 15-20 minutes. This helps settle trub and enhances hop aroma.
 
-1.  **Cool Wort**: Rapidly cool the wort to 20°C (68°F). An immersion chiller or ice bath can be used.
-2.  **Transfer to Fermenter**: Carefully transfer the cooled wort to a sanitized fermenter, leaving trub behind.
-3.  **Aerate Wort**: Aerate the wort well (e.g., by shaking the fermenter or using an aeration stone) to provide oxygen for the yeast.
+---
 
-## IV. Fermentation & Conditioning 酵母✨
+## 🥶 Cooling
+1.  **Cool Wort**: Rapidly cool the wort to yeast pitching temperature (around 18-20°C or 64-68°F for ale yeast). Use an immersion chiller, counterflow chiller, or an ice bath.
 
-1.  **Pitch Yeast**: Add your chosen ale yeast.
-2.  **Primary Fermentation**: Ferment at 18-20°C (64-68°F) for 7-10 days, or until fermentation activity subsides and gravity readings are stable.
-3.  **Secondary Fermentation (Optional)**: Transfer to a secondary fermenter for 5-7 days for clarity.
-4.  **Cold Crash (Optional)**: Chill to 0-4°C (32-39°F) for 24-48 hours to help yeast and proteins settle.
+---
 
-## V. Bottling / Kegging & Carbonation 🍾📦
+## 🧪 Fermentation
+1.  **Sanitize**: Ensure your fermenter and any equipment touching the cooled wort is thoroughly sanitized.
+2.  **Transfer Wort**: Transfer the cooled wort to the fermenter, avoiding excessive splashing (after initial aeration if done pre-transfer).
+3.  **Aerate Wort**: Aerate the wort well by shaking the fermenter or using an oxygenation stone.
+4.  **Pitch Yeast**: Add 1 sachet of SafAle US-05 yeast.
+5.  **Ferment**: Ferment at 18-20°C (64-68°F) for 7-14 days, or until final gravity is stable.
 
-1.  **Prepare for Packaging**: Sanitize bottles or keg.
-2.  **Priming (if bottling)**: If bottling, prepare a priming sugar solution (e.g., 100g corn sugar in 200ml boiled water for a 20L batch). Gently mix into the beer.
-3.  **Package**: Fill bottles or keg.
-4.  **Carbonate**:
+---
+
+## 🌱 Dry Hopping (Optional, if desired for more aroma)
+1.  **After Primary Fermentation**: Once active fermentation subsides (typically 5-7 days), add 30g of Cascade hops directly to the fermenter.
+2.  **Duration**: Let dry hops sit for 3-5 days.
+
+---
+
+## 🍾 Bottling/Kegging
+1.  **Check Final Gravity**: Ensure fermentation is complete by taking gravity readings a few days apart.
+2.  **Prime (if bottling)**: If bottling, prepare a priming sugar solution (e.g., ~100g dextrose for 19L batch, dissolved in boiled water). Gently mix into the beer.
+3.  **Bottle/Keg**: Transfer beer to sanitized bottles or keg.
+4.  **Condition**:
     *   Bottles: Store at room temperature for 2-3 weeks for carbonation.
-    *   Keg: Force carbonate according to your kegging system.
-5.  **Condition**: Allow the beer to condition for at least 1-2 weeks (longer for higher gravity beers).
+    *   Keg: Force carbonate as per your setup.
+5.  **Chill & Enjoy**: Once carbonated/conditioned, chill and enjoy your Classic Amber Ale! 🍻
 
-## VI. Enjoy! 🎉
-
-Chill to your preferred serving temperature and enjoy your homemade Classic Amber Ale!
+Happy Brewing!

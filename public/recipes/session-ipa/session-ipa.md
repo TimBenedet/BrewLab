@@ -1,45 +1,58 @@
 
-# Session IPA - Brewing Steps 🍊🍋🌲
+# Easy Going Session IPA - Recipe Steps
 
-## I. Mash & Preparation 🌾
+## 🌾 Mashing
+1.  **Equipment Prep**: Clean and preheat your mash tun.
+2.  **Strike Water**: Heat 14 liters of water to 72°C (162°F).
+3.  **Mash In**: Mix grains with strike water. Aim for a mash temperature of 66°C (151°F). Ensure no dough balls.
+4.  **Rest**: Hold mash at 66°C (151°F) for 60 minutes.
+5.  **Mash Out**: Raise temperature to 76°C (168°F) and hold for 10 minutes.
 
-1.  **Water Profile**: Adjust brewing water for a balanced to slightly sulfate-forward profile to accentuate hop bitterness and aroma.
-2.  **Heat Strike Water**: Heat 18 liters of water to 70°C (158°F).
-3.  **Mash In**: Combine crushed grains with hot water. Aim for a lower mash temperature, around 65-66°C (149-151°F), for a more fermentable wort and a drier finish.
-4.  **Mash Rest**: Maintain mash temperature for 60 minutes.
-5.  **Mash Out & Sparge**: Raise to 76°C (169°F) for 10 minutes. Sparge with 10 liters of 76°C water to collect your target pre-boil volume.
+---
 
-## II. Boil & Hop Additions (Focus on Late Hops!) 🌿⏱️
+## 🔥 Boil (60 minutes total)
+1.  **Collect Wort**: Sparge with approximately 11 liters of 76°C (168°F) water, targeting a pre-boil volume of around 22 liters.
+2.  **Bring to Boil**: Get a good rolling boil.
+3.  **60 min - Bittering Hops**: Add 10g of Simcoe hops.
+4.  **15 min - Flavor Hops**: Add 15g of Citra hops and 15g of Mosaic hops.
+5.  **5 min - More Flavor/Aroma**: Add 10g of Galaxy hops.
+6.  **0 min/Flameout - Aroma Hops**: Add 20g of Citra hops and 20g of Mosaic hops.
 
-1.  **Collect & Boil**: Bring wort to a rolling boil. Total boil time: 60 minutes.
-2.  **60 min (Start of Boil)**: Add a small bittering charge, e.g., 10g of a clean bittering hop like Magnum or Warrior. The goal is moderate bitterness, not overwhelming.
-3.  **10 min (Remaining)**: Add 20g of Citra hops and 20g of Mosaic hops (or similar citrus/tropical aroma hops). Add 1 tsp Irish Moss.
-4.  **Flameout / Whirlpool (The Main Event!)**:
-    *   Turn off heat.
-    *   Cool wort to 80-85°C (176-185°F).
-    *   Add a large aroma/flavor charge: 30g Citra, 30g Mosaic, 20g Simcoe (or your favorite combo).
-    *   Steep/Whirlpool for 20-30 minutes.
+---
 
-## III. Cooling & Transfer ❄️➡️
+## 🌪️ Whirlpool (Highly Recommended for IPAs)
+1.  **Cool Slightly**: If desired, cool wort to around 82-88°C (180-190°F) before whirlpooling flameout hops.
+2.  **Whirlpool Hops**: Add flameout hops and stir/whirlpool for 20 minutes.
 
-1.  **Cool Wort**: Rapidly cool the wort to yeast pitching temperature, around 18-20°C (64-68°F).
-2.  **Transfer**: Carefully transfer to a sanitized fermenter, minimizing hot-side aeration.
-3.  **Aerate**: Oxygenate the wort well.
+---
 
-## IV. Fermentation & Dry Hopping 酵母🌿✨
+## 🥶 Cooling
+1.  **Cool Wort**: Rapidly cool the wort to 18-20°C (64-68°F) for yeast pitching.
 
-1.  **Pitch Yeast**: Pitch a clean, well-attenuating ale yeast (e.g., US-05, WLP001, WY1056).
-2.  **Primary Fermentation**: Ferment at 18-20°C (64-68°F).
-3.  **Dry Hop**: Add dry hops 3-5 days into fermentation (during active fermentation, or "biotransformation" dry hop) OR after primary fermentation is complete.
-    *   Typical Dry Hop Charge: 30g Citra, 30g Mosaic, 20g Amarillo (or other favorites).
-    *   Duration: 3-5 days. Avoid extended contact to prevent grassy flavors.
+---
 
-## V. Packaging & Carbonation 🍾📦
+## 🧪 Fermentation
+1.  **Sanitize Fermenter**: Ensure everything the cooled wort touches is sanitized.
+2.  **Transfer & Aerate**: Transfer wort to the fermenter and aerate well.
+3.  **Pitch Yeast**: Add 1 sachet of Fermentis SafAle US-05 or similar clean American ale yeast.
+4.  **Primary Fermentation**: Ferment at 18-20°C (64-68°F) for 7-10 days, or until final gravity is stable.
 
-1.  **Cold Crash (Recommended)**: After dry hopping, cold crash to 0-4°C (32-39°F) for 48 hours to settle hops and yeast.
-2.  **Package**: Carefully transfer to sanitized bottles or keg, avoiding oxygen pickup (crucial for IPAs!).
-3.  **Carbonate**: Aim for a moderate to high carbonation level (e.g., 2.4-2.6 vols CO2).
+---
 
-## VI. Drink Fresh! 🌟
+## 🌱 Dry Hopping (Essential for modern IPAs!)
+1.  **Timing**: Add dry hops 3-4 days before packaging, or when active fermentation slows (around day 5-7).
+2.  **Hops**: Add 30g of Citra hops and 30g of Galaxy hops directly to the fermenter.
+3.  **Contact Time**: Allow 3-4 days of contact time for dry hops. Avoid excessive oxygen exposure.
 
-Session IPAs are best enjoyed fresh to preserve their vibrant hop aromas. Cheers!
+---
+
+## 🍾 Bottling/Kegging
+1.  **Final Gravity Check**: Make sure fermentation is complete.
+2.  **Prime (if bottling)**: Use about 100-110g of dextrose for a 19L batch for moderate-high carbonation typical of IPAs.
+3.  **Bottle/Keg**: Transfer gently.
+4.  **Condition**:
+    *   Bottles: 1-2 weeks at room temperature. IPAs are best fresh, so don't age too long.
+    *   Keg: Carbonate to 2.4-2.6 vols CO2.
+5.  **Enjoy Fresh**: Drink your Session IPA fresh to enjoy the hop aromas! 🌿🍺
+
+Happy brewing this sessionable delight!
