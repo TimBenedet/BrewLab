@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input"; // Ensure Input is imported
 import html2canvas from 'html2canvas';
 import type { Recipe } from '@/types/recipe';
 import { Beer } from 'lucide-react';
@@ -50,16 +50,16 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setSrm(recipe.stats.colorSrm?.toString() || 'N/A');
         setCurrentSrmHexColor(recipe.srmHexColor || '#CCCCCC');
         
-        const hopsList = recipe.hops?.slice(0, 2).map(h => h.NAME) || [];
+        const hopsList = recipe.hops?.slice(0, 2).map(h => h.name) || [];
         const fermentablesList = recipe.fermentables
           ?.filter(f =>
-            f.TYPE?.toLowerCase().includes('grain') ||
-            f.TYPE?.toLowerCase().includes('malt') ||
-            f.TYPE?.toLowerCase().includes('extract')
+            f.type?.toLowerCase().includes('grain') ||
+            f.type?.toLowerCase().includes('malt') ||
+            f.type?.toLowerCase().includes('extract')
           )
           .slice(0, 3)
-          .map(f => f.NAME) || [];
-        const miscsList = recipe.miscs?.slice(0, 1).map(m => m.NAME) || [];
+          .map(f => f.name) || [];
+        const miscsList = recipe.miscs?.slice(0, 1).map(m => m.name) || [];
         
         const allIngredients = [...hopsList, ...fermentablesList, ...miscsList];
         const validIngredientNames = allIngredients.filter(name => typeof name === 'string' && name.trim() !== '');
@@ -70,7 +70,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv('N/A');
         setIbu('N/A');
         setSrm('N/A');
-        setIngredientsSummaryForLabel('N/A');
+        setIngredientsSummaryForLabel('N/A'); 
         setCurrentSrmHexColor('#CCCCCC');
       }
     } else {
@@ -118,16 +118,18 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       const data = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.href = data;
-      link.download = `${beerName.toLowerCase().replace(/\s+/g, '-') || 'beer'}-label.png`;
+      link.download = `${(beerName && beerName !== 'Select a Recipe' ? beerName.toLowerCase().replace(/\s+/g, '-') : 'beer')}-label.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
       console.error("Error generating label image:", error);
     } finally {
-      element.style.transform = originalTransform;
-      element.style.padding = originalPadding;
-      element.style.overflow = originalOverflow;
+      if (element) { // Check if element still exists
+        element.style.transform = originalTransform;
+        element.style.padding = originalPadding;
+        element.style.overflow = originalOverflow;
+      }
     }
   };
   
@@ -206,17 +208,19 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
             }}
           >
             {/* Top Information Block */}
-            {(ibu !== 'N/A' || srm !== 'N/A' || ingredientsSummaryForLabel !== 'N/A') && (
-            <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
-              {(ibu !== 'N/A' || srm !== 'N/A') && (
-                <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
-                  IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
-                </p>
-              )}
-              <p className="text-[7px] text-primary mt-0.5">
-                <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
-              </p>
-            </div>
+            {(ibu !== 'N/A' || srm !== 'N/A' || ingredientsSummaryForLabel) && (
+              <div className="absolute top-2 left-0 right-0 w-full px-1 text-center">
+                {(ibu !== 'N/A' || srm !== 'N/A') && (
+                  <p className="text-[7px] text-primary whitespace-nowrap overflow-hidden text-ellipsis">
+                    IBU : {ibu !== 'N/A' ? ibu : 'N/A'}, SRM : {srm !== 'N/A' ? srm : 'N/A'}
+                  </p>
+                )}
+                {ingredientsSummaryForLabel && (
+                    <p className="text-[7px] text-primary mt-0.5">
+                        <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
+                    </p>
+                )}
+              </div>
             )}
             
             {/* Beer Name on the Left */}
@@ -287,4 +291,3 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
-
