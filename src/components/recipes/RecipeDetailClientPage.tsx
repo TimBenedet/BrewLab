@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { 
-  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Flame, Wind 
+  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Flame, Wind, Snowflake
 } from 'lucide-react';
 import CustomBeerGlassIcon from '@/components/icons/CustomBeerGlassIcon';
 
@@ -136,6 +136,19 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
         <CardContent className="space-y-2 text-sm text-foreground">
           <p><strong>Cool to 80-85°C (176-185°F):</strong> If you added flameout hops and want a whirlpool, cool the wort slightly.</p>
           <p><strong>Whirlpool:</strong> Stir the wort gently for 15-20 minutes. This helps settle trub and enhances hop aroma.</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl text-primary">
+            <Snowflake size={20} /> Cooling
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm text-foreground">
+          <p>Cool the wort rapidly to your yeast's pitching temperature (e.g., 18-22°C or 64-72°F for most ales).</p>
+          <p>Use an immersion chiller, counterflow chiller, or an ice bath in your sanitized fermenter.</p>
+          <p>Ensure the wort is adequately aerated once cooled to provide oxygen for the yeast.</p>
         </CardContent>
       </Card>
 
@@ -361,3 +374,4 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
+
