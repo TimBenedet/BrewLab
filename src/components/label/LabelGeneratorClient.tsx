@@ -15,35 +15,35 @@ import type { Recipe } from '@/types/recipe';
 
 interface LabelDimensions {
   name: string;
-  widthMm: number;
-  heightMm: number;
+  widthMm: number; // Actual print width
+  heightMm: number; // Actual print height
   widthCmText: string;
   heightCmText: string;
   // Scaled dimensions for the content if it were displayed horizontally
-  previewContentWidthPx: string;
-  previewContentHeightPx: string;
+  previewContentWidthPx: string; // This is the label's actual width, scaled for preview
+  previewContentHeightPx: string; // This is the label's actual height, scaled for preview
   defaultVolume: string;
 }
 
 const SIZES: Record<string, LabelDimensions> = {
   '33cl': {
     name: '33CL',
-    widthMm: 200,
-    heightMm: 70,
+    widthMm: 200, // 20cm
+    heightMm: 70,  // 7cm
     widthCmText: '20.0',
     heightCmText: '7.0',
-    previewContentWidthPx: '420px', // Label content actual width
-    previewContentHeightPx: '147px', // Label content actual height (420 * 70 / 200)
+    previewContentWidthPx: '420px', // Scaled width of the label content
+    previewContentHeightPx: `${Math.round((70 / 200) * 420)}px`, // 147px. Proportional height
     defaultVolume: '330ml'
   },
   '75cl': {
     name: '75CL',
-    widthMm: 260,
-    heightMm: 90,
+    widthMm: 260, // 26cm
+    heightMm: 90,  // 9cm
     widthCmText: '26.0',
     heightCmText: '9.0',
-    previewContentWidthPx: '420px', // Label content actual width
-    previewContentHeightPx: '145px', // Label content actual height (420 * 90 / 260)
+    previewContentWidthPx: '420px', // Scaled width, consistent base for preview
+    previewContentHeightPx: `${Math.round((90 / 260) * 420)}px`, // Approx 145px. Proportional height
     defaultVolume: '750ml'
   },
 };
@@ -82,7 +82,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume);
+        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates with label size change too
 
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
@@ -101,6 +101,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
       }
     } else {
+      // Reset fields if no recipe is selected (or "None" is chosen)
       setBeerName('My Awesome Beer');
       setStyle('IPA - India Pale Ale');
       setAbv('6.5');
@@ -110,9 +111,10 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIngredientsSummaryForLabel('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRecipeSlug, recipes, labelSizeKey]);
+  }, [selectedRecipeSlug, recipes, labelSizeKey]); // Added labelSizeKey dependency
 
   useEffect(() => {
+    // Update volume if labelSizeKey changes, regardless of recipe selection
     setVolume(SIZES[labelSizeKey].defaultVolume);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labelSizeKey]);
@@ -121,26 +123,14 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const element = previewRef.current;
     if (!element) return;
 
-    const originalPadding = element.style.padding;
-    element.style.padding = '0'; 
-
-    await new Promise(resolve => setTimeout(resolve, 0)); // Ensure styles are applied
-
+    // Simpler capture for now to focus on on-screen preview.
+    // This will download the rotated view.
+    // More complex handling for unrotated download can be re-added later.
     const canvas = await html2canvas(element, {
-      scale: 2, 
-      backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff', 
-      width: parseInt(currentDimensions.previewContentWidthPx), // Use content width for capture
-      height: parseInt(currentDimensions.previewContentHeightPx),// Use content height for capture
-      x: 0,
-      y: 0,
-      scrollX: 0, 
-      scrollY: 0,
-      windowWidth: parseInt(currentDimensions.previewContentWidthPx), 
-      windowHeight: parseInt(currentDimensions.previewContentHeightPx),
-      useCORS: true, 
+        scale: 2,
+        backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff',
+        useCORS: true,
     });
-
-    element.style.padding = originalPadding; 
 
     const data = canvas.toDataURL('image/png');
     const link = document.createElement('a');
@@ -263,10 +253,10 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 <p className="text-muted-foreground">ABV: {abv}% | Vol: {volume}</p>
               </div>
             
-              {/* Vertical Text Block - Now positioned relative to the rotated label's new "left" (which was its top) */}
+              {/* Vertical Text Block */}
               <div
                 className="absolute top-1 h-full flex flex-col justify-start items-start text-muted-foreground text-[7px]"
-                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', left: '0.25rem' }} // Small offset from the new "left" edge
+                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', left: '0.25rem' }} 
               >
                 {(ibu || srm) && (
                   <span className="block whitespace-nowrap">
