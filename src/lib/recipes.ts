@@ -18,79 +18,85 @@ function parseValueUnit(xmlVal?: XmlValueUnit | number | string): ValueUnit | un
   if (typeof xmlVal === 'undefined' || xmlVal === null) {
     return undefined;
   }
-  // Handle cases where value might be a simple number/string (e.g. OG/FG from some XML formats)
-  if (typeof xmlVal === 'number' || typeof xmlVal === 'string') {
-    const numVal = Number(xmlVal);
-    return isNaN(numVal) ? undefined : { value: numVal, unit: '' };
+  if (typeof xmlVal === 'number') {
+    return { value: xmlVal, unit: '' };
   }
-  // Handle the structured XmlValueUnit
-  if (typeof xmlVal._value === 'undefined' || !xmlVal['@_unit']) {
-    return undefined;
+  if (typeof xmlVal === 'string') {
+    const numVal = parseFloat(xmlVal);
+    return isNaN(numVal) ? { value: 0, unit: xmlVal } : { value: numVal, unit: '' }; // Keep original string if not a number, or assume no unit
   }
-  return {
-    value: Number(xmlVal._value),
-    unit: xmlVal['@_unit'],
-  };
+  // Handle the structured XmlValueUnit { _value: ..., '@_unit': ... }
+  if (typeof xmlVal._value !== 'undefined' && typeof xmlVal['@_unit'] === 'string') {
+    const numVal = Number(xmlVal._value); // Ensure _value is treated as number
+    return {
+      value: isNaN(numVal) ? 0 : numVal, // Default to 0 if _value is not a number
+      unit: xmlVal['@_unit'] || '',
+    };
+  }
+   // Fallback for mis-structured objects or if only _value is present without unit
+   if (typeof xmlVal._value !== 'undefined') {
+    const numVal = Number(xmlVal._value);
+    return { value: isNaN(numVal) ? 0 : numVal, unit: '' };
+  }
+
+  return undefined;
 }
 
 
 function transformRecipeData(slug: string, xmlData: XmlRecipe): Recipe {
-  const rawRecipe = xmlData.recipe;
-
-  // Make sure to handle potentially missing top-level stat elements
-  const stats = rawRecipe.stats || {};
+  const rawRecipe = xmlData.recipe; // rawRecipe has UPPERCASE keys from BeerXML
 
   return {
     slug,
     metadata: {
-      name: rawRecipe.metadata.name,
-      author: rawRecipe.metadata.author,
-      style: rawRecipe.metadata.style,
-      batchSize: parseValueUnit(rawRecipe.metadata.batchSize),
-      boilTime: parseValueUnit(rawRecipe.metadata.boilTime),
-      efficiency: parseValueUnit(rawRecipe.metadata.efficiency),
+      name: rawRecipe.NAME,
+      author: rawRecipe.BREWER,
+      style: rawRecipe.STYLE?.NAME || "Unknown Style",
+      batchSize: parseValueUnit(rawRecipe.BATCH_SIZE),
+      boilTime: parseValueUnit(rawRecipe.BOIL_TIME),
+      efficiency: parseValueUnit(rawRecipe.EFFICIENCY),
     },
-    fermentables: ensureArray(rawRecipe.fermentables?.fermentable).map(f => ({
-      name: f.name,
-      amount: parseValueUnit(f.amount)!, // Assume amount is always present for a fermentable
-      type: f.type,
+    fermentables: ensureArray(rawRecipe.FERMENTABLES?.FERMENTABLE).map(f => ({
+      name: f.NAME,
+      amount: parseValueUnit(f.AMOUNT)!,
+      type: f.TYPE,
     })),
-    hops: ensureArray(rawRecipe.hops?.hop).map(h => ({
-      name: h.name,
-      amount: parseValueUnit(h.amount)!, // Assume amount is always present
-      use: h.use,
-      time: parseValueUnit(h.time)!,    // Assume time is always present
-      alpha: parseValueUnit(h.alpha),
+    hops: ensureArray(rawRecipe.HOPS?.HOP).map(h => ({
+      name: h.NAME,
+      amount: parseValueUnit(h.AMOUNT)!,
+      use: h.USE,
+      time: parseValueUnit(h.TIME)!,
+      alpha: parseValueUnit(h.ALPHA),
     })),
-    yeasts: ensureArray(rawRecipe.yeasts?.yeast).map(y => ({
-      name: y.name,
-      type: y.type,
-      form: y.form,
-      attenuation: parseValueUnit(y.attenuation),
+    yeasts: ensureArray(rawRecipe.YEASTS?.YEAST).map(y => ({
+      name: y.NAME,
+      type: y.TYPE,
+      form: y.FORM,
+      attenuation: parseValueUnit(y.ATTENUATION),
     })),
-    miscs: ensureArray(rawRecipe.miscs?.misc).map(m => ({
-      name: m.name,
-      amount: parseValueUnit(m.amount)!, // Assume amount is always present
-      use: m.use,
-      time: parseValueUnit(m.time),
+    miscs: ensureArray(rawRecipe.MISCS?.MISC).map(m => ({
+      name: m.NAME,
+      amount: parseValueUnit(m.AMOUNT)!,
+      use: m.USE,
+      time: parseValueUnit(m.TIME),
     })),
     mash: {
-      name: rawRecipe.mash?.name || 'Default Mash',
-      mashSteps: ensureArray(rawRecipe.mash?.mashSteps?.mashStep).map(ms => ({
-        name: ms.name,
-        type: ms.type,
-        stepTemp: parseValueUnit(ms.stepTemp)!, // Assume stepTemp is always present
-        stepTime: parseValueUnit(ms.stepTime)!, // Assume stepTime is always present
-        description: ms.description,
+      name: rawRecipe.MASH?.NAME || 'Default Mash',
+      mashSteps: ensureArray(rawRecipe.MASH?.MASH_STEPS?.MASH_STEP).map(ms => ({
+        name: ms.NAME,
+        type: ms.TYPE,
+        stepTemp: parseValueUnit(ms.STEP_TEMP)!,
+        stepTime: parseValueUnit(ms.STEP_TIME)!,
+        description: ms.DESCRIPTION || ms.NOTES,
       })),
     },
-    notes: rawRecipe.notes,
+    notes: rawRecipe.NOTES,
     stats: {
-      og: stats.og,
-      fg: stats.fg,
-      abv: stats.abv,
-      ibu: stats.ibu,
-      colorSrm: stats.colorSrm,
+      og: rawRecipe.OG, // Retain as string or number from XML
+      fg: rawRecipe.FG,
+      abv: rawRecipe.ABV ? (String(rawRecipe.ABV).includes('%') ? String(rawRecipe.ABV) : String(rawRecipe.ABV) + '%') : undefined,
+      ibu: rawRecipe.IBU,
+      colorSrm: rawRecipe.COLOR,
     },
   };
 }
@@ -99,7 +105,7 @@ function transformRecipeData(slug: string, xmlData: XmlRecipe): Recipe {
 export function getAllRecipeSlugs(): string[] {
   try {
     if (!fs.existsSync(recipesDirectory)) {
-      console.warn(`Recipes directory not found: ${recipesDirectory}`);
+      console.warn(`Recipes directory not found: ${recipesDirectory}. No recipes will be loaded.`);
       return [];
     }
     const dirents = fs.readdirSync(recipesDirectory, { withFileTypes: true });
@@ -107,13 +113,12 @@ export function getAllRecipeSlugs(): string[] {
       .filter(dirent => dirent.isDirectory() && !dirent.name.startsWith('.'))
       .map(dirent => dirent.name);
   } catch (error) {
-    // Log specific error codes differently, e.g. ENOENT if directory doesn't exist
-    if (error && typeof error === 'object' && 'code' in error && error.code !== 'ENOENT') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+        // This case is handled by the existsSync check above, but good to be aware of.
+        console.warn(`Recipes directory not found on attempt to read: ${recipesDirectory}`);
+    } else {
         console.error("Error reading recipes directory for slugs:", error);
-    } else if (error && typeof error === 'object' && !('code' in error)) {
-        console.error("An unexpected error occurred while reading recipes directory for slugs:", error);
     }
-    // For ENOENT, it's handled by the existsSync check or is a common case if no recipes folder exists yet
     return [];
   }
 }
@@ -124,7 +129,7 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
 
   try {
     if (!fs.existsSync(fullPath)) {
-        // console.warn(`Recipe XML file not found: ${fullPath}`);
+        // console.warn(`Recipe XML file not found: ${fullPath}`); // This can be noisy if many slugs are checked
         return null;
     }
     const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -139,34 +144,44 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
       ignoreAttributes: false,
       attributeNamePrefix: "@_",
       textNodeName: "_value",
-      parseAttributeValue: true,
-      parseNodeValue: true,
+      parseAttributeValue: true, // Parses "true" to true, "1.23" to 1.23
+      parseNodeValue: true,    // Parses "true" to true, "1.23" to 1.23 for text nodes
       trimValues: true,
+      // Ensure paths match the BeerXML structure (UPPERCASE)
       isArray: (name: string, jpath: string, isLeafNode: boolean, isAttribute: boolean) => {
-        if (jpath === "recipe.fermentables.fermentable") return true;
-        if (jpath === "recipe.hops.hop") return true;
-        if (jpath === "recipe.yeasts.yeast") return true;
-        if (jpath === "recipe.miscs.misc") return true;
-        if (jpath === "recipe.mash.mashSteps.mashStep") return true;
+        if (jpath.endsWith("FERMENTABLES.FERMENTABLE")) return true;
+        if (jpath.endsWith("HOPS.HOP")) return true;
+        if (jpath.endsWith("YEASTS.YEAST")) return true;
+        if (jpath.endsWith("MISCS.MISC")) return true;
+        if (jpath.endsWith("MASH.MASH_STEPS.MASH_STEP") || jpath.endsWith("MASH_STEPS.MASH_STEP")) return true; // Handle potential variations if MASH is not always present
         return false;
       }
     };
     const parser = new XMLParser(options);
-    const jsonObj = parser.parse(fileContents) as XmlRecipe;
+    const parsedXml = parser.parse(fileContents);
     
-    if (!jsonObj || !jsonObj.recipe || !jsonObj.recipe.metadata || !jsonObj.recipe.metadata.name) {
-        console.error(`Essential recipe data missing in ${fullPath} after parsing.`);
+    let actualRecipeObject: any;
+    if (parsedXml.RECIPES && parsedXml.RECIPES.RECIPE) {
+      actualRecipeObject = Array.isArray(parsedXml.RECIPES.RECIPE) ? parsedXml.RECIPES.RECIPE[0] : parsedXml.RECIPES.RECIPE;
+    } else if (parsedXml.RECIPE) {
+      actualRecipeObject = Array.isArray(parsedXml.RECIPE) ? parsedXml.RECIPE[0] : parsedXml.RECIPE;
+    }
+
+    if (!actualRecipeObject || !actualRecipeObject.NAME) {
+        console.error(`Essential recipe data (NAME) missing in ${fullPath} after parsing. Parsed object:`, JSON.stringify(actualRecipeObject || parsedXml, null, 2));
         return null;
     }
     
-    // Check for markdown file
+    // Create the object shape expected by transformRecipeData
+    const recipeContainerForTransform: XmlRecipe = { recipe: actualRecipeObject };
+    
     let stepsMarkdown: string | undefined = undefined;
     const markdownPath = path.join(recipeDir, `${slug}.md`);
     if (fs.existsSync(markdownPath)) {
       stepsMarkdown = fs.readFileSync(markdownPath, 'utf8');
     }
     
-    const recipe = transformRecipeData(slug, jsonObj);
+    const recipe = transformRecipeData(slug, recipeContainerForTransform);
     if (stepsMarkdown) {
       recipe.stepsMarkdown = stepsMarkdown;
     }
@@ -180,12 +195,10 @@ export async function getRecipeData(slug: string): Promise<Recipe | null> {
 
 export async function getAllRecipes(): Promise<Recipe[]> {
   const slugsRaw = getAllRecipeSlugs();
-  // Deduplicate slugs just in case, though readdir should provide unique names
   const uniqueSlugs = Array.from(new Set(slugsRaw)); 
 
   const recipesPromises = uniqueSlugs.map(slug => getRecipeData(slug));
   const recipesResults = await Promise.all(recipesPromises);
   
-  // Filter out null results (e.g., if a directory existed but didn't contain a valid slug.xml)
   return recipesResults.filter(recipe => recipe !== null) as Recipe[];
 }
