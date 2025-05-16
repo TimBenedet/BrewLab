@@ -1,0 +1,257 @@
+<RECIPES>
+  <RECIPE>
+    <NAME>Classic Amber Ale</NAME>
+    <VERSION>1</VERSION>
+    <TYPE>All Grain</TYPE>
+    <BREWER>BrewLab Assistant</BREWER>
+    <ASST_BREWER></ASST_BREWER>
+    <BATCH_SIZE>19.0</BATCH_SIZE>
+    <BOIL_SIZE>25.0</BOIL_SIZE>
+    <BOIL_TIME>60.0</BOIL_TIME>
+    <EFFICIENCY>72.0</EFFICIENCY>
+    <NOTES>A well-balanced American Amber Ale with a caramel malt sweetness and a firm hop bitterness and aroma.
+    </NOTES>
+    <HOPS>
+      <HOP>
+        <NAME>Cascade</NAME>
+        <VERSION>1</VERSION>
+        <ORIGIN>US</ORIGIN>
+        <ALPHA>5.5</ALPHA>
+        <AMOUNT>0.028</AMOUNT>
+        <USE>Boil</USE>
+        <TIME>60.0</TIME>
+        <NOTES>Bittering hop</NOTES>
+        <TYPE>Aroma</TYPE>
+        <FORM>Pellet</FORM>
+        <BETA>6.0</BETA>
+        <HSI>50</HSI>
+      </HOP>
+      <HOP>
+        <NAME>Centennial</NAME>
+        <VERSION>1</VERSION>
+        <ORIGIN>US</ORIGIN>
+        <ALPHA>10.0</ALPHA>
+        <AMOUNT>0.014</AMOUNT>
+        <USE>Boil</USE>
+        <TIME>15.0</TIME>
+        <NOTES>Flavor and aroma</NOTES>
+        <TYPE>Both</TYPE>
+        <FORM>Pellet</FORM>
+        <BETA>4.0</BETA>
+        <HSI>50</HSI>
+      </HOP>
+      <HOP>
+        <NAME>Amarillo</NAME>
+        <VERSION>1</VERSION>
+        <ORIGIN>US</ORIGIN>
+        <ALPHA>8.5</ALPHA>
+        <AMOUNT>0.014</AMOUNT>
+        <USE>Aroma</USE>
+        <TIME>5.0</TIME>
+        <NOTES>Aroma - add at flameout or steep</NOTES>
+        <TYPE>Aroma</TYPE>
+        <FORM>Pellet</FORM>
+        <BETA>6.5</BETA>
+        <HSI>50</HSI>
+      </HOP>
+    </HOPS>
+    <FERMENTABLES>
+      <FERMENTABLE>
+        <NAME>Pale Malt (2 Row) US</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>4.0</AMOUNT>
+        <YIELD>79.0</YIELD>
+        <COLOR>2.0</COLOR>
+        <ADD_AFTER>Mash</ADD_AFTER>
+        <ORIGIN>US</ORIGIN>
+        <SUPPLIER></SUPPLIER>
+        <NOTES>Base malt</NOTES>
+        <COARSE_FINE_DIFF>1.5</COARSE_FINE_DIFF>
+        <MOISTURE>4.0</MOISTURE>
+        <DIASTATIC_POWER>120</DIASTATIC_POWER>
+        <PROTEIN>10.2</PROTEIN>
+        <MAX_IN_BATCH>100.0</MAX_IN_BATCH>
+        <RECOMMEND_MASH>TRUE</RECOMMEND_MASH>
+        <IBU_GAL_PER_LB>0</IBU_GAL_PER_LB>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Caramel/Crystal Malt - 60L</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.5</AMOUNT>
+        <YIELD>74.0</YIELD>
+        <COLOR>60.0</COLOR>
+        <ADD_AFTER>Mash</ADD_AFTER>
+        <ORIGIN>US</ORIGIN>
+        <SUPPLIER></SUPPLIER>
+        <NOTES>For color, body, and caramel flavor</NOTES>
+        <COARSE_FINE_DIFF>1.5</COARSE_FINE_DIFF>
+        <MOISTURE>5.0</MOISTURE>
+        <DIASTATIC_POWER>0</DIASTATIC_POWER>
+        <PROTEIN>0.0</PROTEIN>
+        <MAX_IN_BATCH>20.0</MAX_IN_BATCH>
+        <RECOMMEND_MASH>TRUE</RECOMMEND_MASH>
+        <IBU_GAL_PER_LB>0</IBU_GAL_PER_LB>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Victory Malt</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.25</AMOUNT>
+        <YIELD>73.0</YIELD>
+        <COLOR>25.0</COLOR>
+        <ADD_AFTER>Mash</ADD_AFTER>
+        <ORIGIN>US</ORIGIN>
+        <SUPPLIER></SUPPLIER>
+        <NOTES>Toasty, biscuity notes</NOTES>
+        <MAX_IN_BATCH>15.0</MAX_IN_BATCH>
+        <RECOMMEND_MASH>TRUE</RECOMMEND_MASH>
+      </FERMENTABLE>
+    </FERMENTABLES>
+    <MISCS>
+      <MISC>
+        <NAME>Irish Moss</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Fining</TYPE>
+        <USE>Boil</USE>
+        <TIME>15.0</TIME>
+        <AMOUNT>0.0049</AMOUNT>
+        <AMOUNT_IS_WEIGHT>FALSE</AMOUNT_IS_WEIGHT>
+        <USE_FOR>Clarity</USE_FOR>
+        <NOTES>tsp</NOTES>
+      </MISC>
+    </MISCS>
+    <YEASTS>
+      <YEAST>
+        <NAME>Safale US-05</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Ale</TYPE>
+        <FORM>Dry</FORM>
+        <AMOUNT>0.023</AMOUNT>
+        <AMOUNT_IS_WEIGHT>FALSE</AMOUNT_IS_WEIGHT>
+        <LABORATORY>Fermentis</LABORATORY>
+        <PRODUCT_ID>US-05</PRODUCT_ID>
+        <MIN_TEMPERATURE>12.0</MIN_TEMPERATURE>
+        <MAX_TEMPERATURE>25.0</MAX_TEMPERATURE>
+        <FLOCCULATION>Medium</FLOCCULATION>
+        <ATTENUATION>78.0</ATTENUATION>
+        <NOTES>Clean, crisp American ale yeast.</NOTES>
+        <BEST_FOR>American Pale Ale, IPA, Stout, Porter</BEST_FOR>
+        <MAX_REUSE>5</MAX_REUSE>
+        <TIMES_CULTURED>0</TIMES_CULTURED>
+        <ADD_TO_SECONDARY>FALSE</ADD_TO_SECONDARY>
+        <DISPLAY_AMOUNT>1 pkt (11.5g)</DISPLAY_AMOUNT>
+        <DISP_MIN_TEMP>12.0 C</DISP_MIN_TEMP>
+        <DISP_MAX_TEMP>25.0 C</DISP_MAX_TEMP>
+        <INVENTORY>0 Pkgs</INVENTORY>
+        <CULTURE_DATE>01/01/2024</CULTURE_DATE>
+      </YEAST>
+    </YEASTS>
+    <WATERS>
+      <WATER>
+        <NAME>Generic Tap Water</NAME>
+        <VERSION>1</VERSION>
+        <AMOUNT>25.0</AMOUNT>
+        <CALCIUM>0.0</CALCIUM>
+        <BICARBONATE>0.0</BICARBONATE>
+        <SULFATE>0.0</SULFATE>
+        <CHLORIDE>0.0</CHLORIDE>
+        <SODIUM>0.0</SODIUM>
+        <MAGNESIUM>0.0</MAGNESIUM>
+        <PH>7.0</PH>
+        <NOTES></NOTES>
+      </WATER>
+    </WATERS>
+    <MASH>
+      <NAME>Single Infusion, Light Body</NAME>
+      <VERSION>1</VERSION>
+      <GRAIN_TEMP>22.2</GRAIN_TEMP>
+      <TUN_TEMP>22.2</TUN_TEMP>
+      <SPARGE_TEMP>75.6</SPARGE_TEMP>
+      <PH>5.4</PH>
+      <TUN_WEIGHT>4.5</TUN_WEIGHT>
+      <TUN_SPECIFIC_HEAT>0.12</TUN_SPECIFIC_HEAT>
+      <EQUIP_ADJUST>TRUE</EQUIP_ADJUST>
+      <NOTES>A standard single infusion mash.</NOTES>
+      <MASH_STEPS>
+        <MASH_STEP>
+          <NAME>Mash In</NAME>
+          <VERSION>1</VERSION>
+          <TYPE>Infusion</TYPE>
+          <STEP_TEMP>66.0</STEP_TEMP>
+          <STEP_TIME>60.0</STEP_TIME>
+          <INFUSE_AMOUNT>12.5</INFUSE_AMOUNT>
+          <INFUSE_TEMP>72.0</INFUSE_TEMP>
+          <DESCRIPTION>Add 12.50 l of water at 72.0 C</DESCRIPTION>
+        </MASH_STEP>
+      </MASH_STEPS>
+    </MASH>
+    <EQUIPMENT>
+      <NAME>Pot (7.5 gal) - Extract</NAME>
+      <VERSION>1</VERSION>
+      <BOIL_SIZE>28.39</BOIL_SIZE>
+      <BATCH_SIZE>18.93</BATCH_SIZE>
+      <TUN_VOLUME>28.39</TUN_VOLUME>
+      <TUN_WEIGHT>4.54</TUN_WEIGHT>
+      <TUN_SPECIFIC_HEAT>0.12</TUN_SPECIFIC_HEAT>
+      <TOP_UP_WATER>0.00</TOP_UP_WATER>
+      <TRUB_CHILLER_LOSS>1.89</TRUB_CHILLER_LOSS>
+      <EVAP_RATE>9.157752730</EVAP_RATE>
+      <BOIL_TIME>60.0</BOIL_TIME>
+      <CALC_BOIL_VOLUME>TRUE</CALC_BOIL_VOLUME>
+      <LAUTER_DEADSPACE>0.95</LAUTER_DEADSPACE>
+      <TOP_UP_KETTLE>0.00</TOP_UP_KETTLE>
+      <HOP_UTILIZATION>100.0</HOP_UTILIZATION>
+      <COOLING_LOSS_PCT>4.0</COOLING_LOSS_PCT>
+      <NOTES></NOTES>
+      <DISPLAY_BOIL_SIZE>28.39 l</DISPLAY_BOIL_SIZE>
+      <DISPLAY_BATCH_SIZE>18.93 l</DISPLAY_BATCH_SIZE>
+      <DISPLAY_TUN_VOLUME>28.39 l</DISPLAY_TUN_VOLUME>
+      <DISPLAY_TUN_WEIGHT>4.54 kg</DISPLAY_TUN_WEIGHT>
+      <DISPLAY_TOP_UP_WATER>0.00 l</DISPLAY_TOP_UP_WATER>
+      <DISPLAY_TRUB_CHILLER_LOSS>1.89 l</DISPLAY_TRUB_CHILLER_LOSS>
+      <DISPLAY_LAUTER_DEADSPACE>0.95 l</DISPLAY_LAUTER_DEADSPACE>
+      <DISPLAY_TOP_UP_KETTLE>0.00 l</DISPLAY_TOP_UP_KETTLE>
+    </EQUIPMENT>
+    <STYLE>
+      <NAME>American Amber Ale</NAME>
+      <VERSION>1</VERSION>
+      <CATEGORY>Amber Hybrid Beer</CATEGORY>
+      <CATEGORY_NUMBER>19</CATEGORY_NUMBER>
+      <STYLE_LETTER>A</STYLE_LETTER>
+      <STYLE_GUIDE>BJCP 2015</STYLE_GUIDE>
+      <TYPE>Ale</TYPE>
+      <OG_MIN>1.045</OG_MIN>
+      <OG_MAX>1.060</OG_MAX>
+      <FG_MIN>1.010</FG_MIN>
+      <FG_MAX>1.015</FG_MAX>
+      <IBU_MIN>25.0</IBU_MIN>
+      <IBU_MAX>40.0</IBU_MAX>
+      <COLOR_MIN>10.0</COLOR_MIN>
+      <COLOR_MAX>17.0</COLOR_MAX>
+      <CARB_MIN>2.3</CARB_MIN>
+      <CARB_MAX>2.8</CARB_MAX>
+      <ABV_MIN>4.5</ABV_MIN>
+      <ABV_MAX>6.2</ABV_MAX>
+      <NOTES>A moderate, hoppy beer with a distinct caramel richness. The balance can vary quite a bit, with some versions being fairly malty and others being aggressively hoppy. Hoppy and bitter versions should not have hop flavors that clash with the caramel malt.
+      </NOTES>
+      <PROFILE>Flavor: Moderate to high hop flavor with characteristics typical of American or New World hop varieties (citrus, floral, pine, resinous, spicy, tropical fruit, stone fruit, berry, or melon). Malt flavors are moderate to strong, and usually show an initial malty sweetness followed by a moderate caramel flavor (and sometimes other character malts in lesser amounts). Malt and hop bitterness are usually balanced and mutually supportive. Esters vary from moderate to none. Finish is medium to full.
+      Appearance: Amber to coppery-brown in color. Moderately large off-white head with good retention. Generally clear, although dry-hopped versions may be slightly hazy.
+      Mouthfeel: Medium to medium-full body. Medium to high carbonation. Overall smooth finish without astringency.
+      </PROFILE>
+      <INGREDIENTS>Pale ale malt, typically North American two-row. Crystal malts, medium to dark. May also contain specialty grains that add additional character and uniqueness. American hops are typical, often with citrusy qualities.
+      </INGREDIENTS>
+      <EXAMPLES>North Coast Red Seal Ale, Tröegs HopBack Amber Ale, Deschutes Cinder Cone Red, Full Sail Amber, Bell's Amber Ale, Lagunitas Imperial Red Ale, Mendocino Red Tail Ale, Anderson Valley Boont Amber Ale
+      </EXAMPLES>
+    </STYLE>
+    <OG>1.056</OG>
+    <FG>1.012</FG>
+    <CARBONATION>2.4</CARBONATION>
+    <EST_ABV>5.7</EST_ABV>
+    <EST_COLOR>11</EST_COLOR>
+    <IBU>35</IBU>
+    <DISPLAY_OG>1.056 SG</DISPLAY_OG>
+    <DISPLAY_FG>1.012 SG</DISPLAY_FG>
+  </RECIPE>
+</RECIPES>
