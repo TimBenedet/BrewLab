@@ -1,9 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Please replace this with the original content of your coffee-stout.xml -->
 <RECIPES>
   <RECIPE>
-    <NAME>Coffee Stout (Placeholder)</NAME>
+    <NAME>Coffee Stout</NAME>
     <VERSION>1</VERSION>
     <TYPE>All Grain</TYPE>
+    <BREWER>BrewLab User</BREWER>
+    <BATCH_SIZE>19.0</BATCH_SIZE>
+    <BOIL_SIZE>24.0</BOIL_SIZE>
+    <BOIL_TIME>60</BOIL_TIME>
+    <EFFICIENCY>70.0</EFFICIENCY>
+    <OG>1.060</OG>
+    <FG>1.015</FG>
+    <ABV>5.90</ABV>
+    <IBU>40</IBU>
+    <COLOR>40</COLOR>
+    <STYLE>
+      <NAME>American Stout</NAME>
+      <CATEGORY>Irish Beer</CATEGORY>
+      <CATEGORY_NUMBER>16</CATEGORY_NUMBER>
+      <STYLE_LETTER>A</STYLE_LETTER>
+      <STYLE_GUIDE>BJCP 2015</STYLE_GUIDE>
+      <TYPE>Ale</TYPE>
+      <OG_MIN>1.050</OG_MIN>
+      <OG_MAX>1.075</OG_MAX>
+      <FG_MIN>1.010</FG_MIN>
+      <FG_MAX>1.022</FG_MAX>
+      <IBU_MIN>30</IBU_MIN>
+      <IBU_MAX>60</IBU_MAX>
+      <COLOR_MIN>30</COLOR_MIN>
+      <COLOR_MAX>40</COLOR_MAX>
+    </STYLE>
+    <FERMENTABLES>
+      <FERMENTABLE>
+        <NAME>Pale Malt (2 Row) UK</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>5.0</AMOUNT>
+        <YIELD>78.0</YIELD>
+        <COLOR>3.0</COLOR>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Roasted Barley</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.5</AMOUNT>
+        <YIELD>55.0</YIELD>
+        <COLOR>500.0</COLOR>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Chocolate Malt</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.3</AMOUNT>
+        <YIELD>60.0</YIELD>
+        <COLOR>350.0</COLOR>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Flaked Oats</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Adjunct</TYPE>
+        <AMOUNT>0.5</AMOUNT>
+        <YIELD>80.0</YIELD>
+        <COLOR>1.0</COLOR>
+      </FERMENTABLE>
+    </FERMENTABLES>
+    <HOPS>
+      <HOP>
+        <NAME>Fuggles</NAME>
+        <VERSION>1</VERSION>
+        <ALPHA>4.5</ALPHA>
+        <AMOUNT>0.050</AMOUNT>
+        <USE>Boil</USE>
+        <TIME>60</TIME>
+        <FORM>Pellet</FORM>
+      </HOP>
+      <HOP>
+        <NAME>Willamette</NAME>
+        <VERSION>1</VERSION>
+        <ALPHA>5.0</ALPHA>
+        <AMOUNT>0.025</AMOUNT>
+        <USE>Boil</USE>
+        <TIME>15</TIME>
+        <FORM>Pellet</FORM>
+      </HOP>
+    </HOPS>
+    <YEASTS>
+      <YEAST>
+        <NAME>Safale S-04</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Ale</TYPE>
+        <FORM>Dry</FORM>
+        <AMOUNT>0.0115</AMOUNT>
+        <LABORATORY>Fermentis</LABORATORY>
+        <PRODUCT_ID>S-04</PRODUCT_ID>
+        <ATTENUATION>75.0</ATTENUATION>
+      </YEAST>
+    </YEASTS>
+    <MISCS>
+      <MISC>
+        <NAME>Coffee Beans (Cold Brew)</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Flavor</TYPE>
+        <USE>Secondary</USE>
+        <TIME>2</TIME>
+        <AMOUNT>0.050</AMOUNT>
+        <NOTES>Add 50g of coarsely ground coffee beans as a cold brew concentrate to secondary for 2 days.</NOTES>
+      </MISC>
+    </MISCS>
+    <MASH>
+      <NAME>Single Infusion</NAME>
+      <VERSION>1</VERSION>
+      <MASH_STEPS>
+        <MASH_STEP>
+          <NAME>Saccharification</NAME>
+          <VERSION>1</VERSION>
+          <TYPE>Infusion</TYPE>
+          <STEP_TEMP>68</STEP_TEMP>
+          <STEP_TIME>60</STEP_TIME>
+        </MASH_STEP>
+      </MASH_STEPS>
+    </MASH>
+    <NOTES>A rich stout with a prominent coffee aroma and flavor.</NOTES>
   </RECIPE>
 </RECIPES>

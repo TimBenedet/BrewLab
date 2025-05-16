@@ -1,9 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Please replace this with the original content of your session-ipa.xml -->
 <RECIPES>
   <RECIPE>
-    <NAME>Session IPA (Placeholder)</NAME>
+    <NAME>Session IPA</NAME>
     <VERSION>1</VERSION>
     <TYPE>All Grain</TYPE>
+    <BREWER>BrewLab User</BREWER>
+    <BATCH_SIZE>19.0</BATCH_SIZE>
+    <BOIL_SIZE>23.0</BOIL_SIZE>
+    <BOIL_TIME>60</BOIL_TIME>
+    <EFFICIENCY>75.0</EFFICIENCY>
+    <OG>1.045</OG>
+    <FG>1.010</FG>
+    <ABV>4.60</ABV>
+    <IBU>45</IBU>
+    <COLOR>6</COLOR>
+    <STYLE>
+      <NAME>Session IPA</NAME>
+      <CATEGORY>IPA</CATEGORY>
+      <CATEGORY_NUMBER>21</CATEGORY_NUMBER>
+      <STYLE_LETTER>B</STYLE_LETTER>
+      <STYLE_GUIDE>BJCP 2015 Specialty IPA</STYLE_GUIDE>
+      <TYPE>Ale</TYPE>
+      <OG_MIN>1.030</OG_MIN>
+      <OG_MAX>1.050</OG_MAX>
+      <FG_MIN>1.008</FG_MIN>
+      <FG_MAX>1.014</FG_MAX>
+      <IBU_MIN>30</IBU_MIN>
+      <IBU_MAX>50</IBU_MAX>
+      <COLOR_MIN>3</COLOR_MIN>
+      <COLOR_MAX>10</COLOR_MAX>
+    </STYLE>
+    <FERMENTABLES>
+      <FERMENTABLE>
+        <NAME>Pale Malt (2 Row) Maris Otter</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>3.5</AMOUNT>
+        <YIELD>82.5</YIELD>
+        <COLOR>3.0</COLOR>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Wheat Malt, Pale</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.5</AMOUNT>
+        <YIELD>84.0</YIELD>
+        <COLOR>2.0</COLOR>
+      </FERMENTABLE>
+      <FERMENTABLE>
+        <NAME>Carapils/Dextrine</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Grain</TYPE>
+        <AMOUNT>0.3</AMOUNT>
+        <YIELD>72.0</YIELD>
+        <COLOR>1.5</COLOR>
+      </FERMENTABLE>
+    </FERMENTABLES>
+    <HOPS>
+      <HOP>
+        <NAME>Citra</NAME>
+        <VERSION>1</VERSION>
+        <ALPHA>12.0</ALPHA>
+        <AMOUNT>0.020</AMOUNT>
+        <USE>Boil</USE>
+        <TIME>30</TIME>
+        <FORM>Pellet</FORM>
+      </HOP>
+      <HOP>
+        <NAME>Mosaic</NAME>
+        <VERSION>1</VERSION>
+        <ALPHA>12.5</ALPHA>
+        <AMOUNT>0.030</AMOUNT>
+        <USE>Whirlpool</USE>
+        <TIME>20</TIME>
+        <NOTES>Add at flameout, whirlpool for 20 minutes.</NOTES>
+        <FORM>Pellet</FORM>
+      </HOP>
+      <HOP>
+        <NAME>Citra</NAME>
+        <VERSION>1</VERSION>
+        <ALPHA>12.0</ALPHA>
+        <AMOUNT>0.050</AMOUNT>
+        <USE>Dry Hop</USE>
+        <TIME>4</TIME>
+        <NOTES>Dry hop for 4 days.</NOTES>
+        <FORM>Pellet</FORM>
+      </HOP>
+    </HOPS>
+    <YEASTS>
+      <YEAST>
+        <NAME>Verdant IPA</NAME>
+        <VERSION>1</VERSION>
+        <TYPE>Ale</TYPE>
+        <FORM>Liquid</FORM>
+        <AMOUNT>1.0</AMOUNT>
+        <NOTES>Use one pack/vial.</NOTES>
+        <LABORATORY>Lallemand</LABORATORY>
+        <PRODUCT_ID>Verdant IPA</PRODUCT_ID>
+        <ATTENUATION>78.0</ATTENUATION>
+      </YEAST>
+    </YEASTS>
+    <MISCS/>
+    <MASH>
+      <NAME>Single Infusion</NAME>
+      <VERSION>1</VERSION>
+      <MASH_STEPS>
+        <MASH_STEP>
+          <NAME>Saccharification</NAME>
+          <VERSION>1</VERSION>
+          <TYPE>Infusion</TYPE>
+          <STEP_TEMP>65</STEP_TEMP>
+          <STEP_TIME>60</STEP_TIME>
+        </MASH_STEP>
+      </MASH_STEPS>
+    </MASH>
+    <NOTES>A light, refreshing IPA packed with hop aroma and flavor, but with a lower ABV.</NOTES>
   </RECIPE>
 </RECIPES>
