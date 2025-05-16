@@ -77,7 +77,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates based on current label size
+        setVolume(SIZES[labelSizeKey].defaultVolume);
         
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
@@ -90,7 +90,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         const allIngredientNames: string[] = [];
         if (hopNames.length > 0) allIngredientNames.push(...hopNames);
         if (fermentableNames.length > 0) allIngredientNames.push(...fermentableNames);
-        if (miscNames.length > 0) allIngredientNames.push(...miscNames);
+        if (miscNames && miscNames.length > 0) allIngredientNames.push(...miscNames);
         
         setIngredientsSummaryForLabel(allIngredientNames.join(', '));
 
@@ -106,7 +106,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIngredientsSummaryForLabel('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRecipeSlug, recipes, labelSizeKey]); // labelSizeKey added to re-evaluate volume if size changes post recipe load
+  }, [selectedRecipeSlug, recipes, labelSizeKey]);
 
   useEffect(() => {
     setVolume(SIZES[labelSizeKey].defaultVolume);
@@ -252,20 +252,18 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
 
               <div className="w-full text-xs">
                 <p className="break-words">{tagline}</p>
-                {/* Removed gray line: <div className="border-t border-muted-foreground my-1"></div> */}
-                <p className="font-semibold text-primary break-words mt-1">{breweryName}</p> {/* Added mt-1 for spacing after removing line */}
+                <p className="font-semibold text-primary break-words mt-1">{breweryName}</p>
                 <p className="text-muted-foreground">ABV: {abv}% | Vol: {volume}</p>
               </div>
             </div>
 
-            {/* Vertical Info Text (IBU, SRM, Ingredients) - Positioned to the left, flush with edge */}
             {(ibu || srm || ingredientsSummaryForLabel) && (
               <div
-                className="absolute top-0 left-0 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px] py-2" // Changed left-1 to left-0
+                className="absolute top-0 left-0 h-full flex flex-col justify-center items-start text-muted-foreground text-[7px] py-2"
                 style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
               >
                   {(ibu || srm) && <span className="block">IBU : {ibu || 'N/A'}, SRM : {srm || 'N/A'}</span>}
-                  {ingredientsSummaryForLabel && <span className="block mt-2 font-semibold">Ingrédients :</span>}
+                  {ingredientsSummaryForLabel && <span className="block mt-1 font-semibold">Ingrédients :</span>}
                   {ingredientsSummaryForLabel && <span className="block mt-0.5">{ingredientsSummaryForLabel}</span>}
               </div>
             )}
@@ -283,6 +281,4 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
-    
-
     
