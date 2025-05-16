@@ -48,17 +48,17 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setIbu(recipe.stats.ibu?.toString() || 'N/A');
         setSrm(recipe.stats.colorSrm?.toString() || 'N/A');
         
-        const ingredients = [];
+        const ingredientsList = [];
         if (recipe.hops && recipe.hops.length > 0) {
-          ingredients.push(...recipe.hops.slice(0, 2).map(h => h.name));
+          ingredientsList.push(...recipe.hops.slice(0, 2).map(h => h.name));
         }
         if (recipe.fermentables && recipe.fermentables.length > 0) {
-          ingredients.push(...recipe.fermentables.slice(0, 3).map(f => f.name));
+          ingredientsList.push(...recipe.fermentables.slice(0, 3).map(f => f.name));
         }
         if (recipe.miscs && recipe.miscs.length > 0) {
-          ingredients.push(...recipe.miscs.slice(0, 1).map(m => m.name));
+          ingredientsList.push(...recipe.miscs.slice(0, 1).map(m => m.name));
         }
-        setIngredientsSummaryForLabel(ingredients.join(', '));
+        setIngredientsSummaryForLabel(ingredientsList.join(', '));
 
       }
     } else {
@@ -83,17 +83,16 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const originalOverflow = element.style.overflow;
 
     try {
-      element.style.transform = 'none'; // Temporarily reset transform for capture
-      element.style.padding = '0'; // Temporarily remove padding
-      element.style.overflow = 'visible'; // Ensure all content is visible
+      element.style.transform = 'none'; 
+      element.style.padding = '0'; 
+      element.style.overflow = 'visible'; 
 
-      // Wait for the browser to apply style changes
       await new Promise(resolve => requestAnimationFrame(resolve));
       
       const currentDimensions = SIZES[labelSizeKey];
       const canvas = await html2canvas(element, {
         backgroundColor: getComputedStyle(element).backgroundColor || '#ffffff',
-        scale: 2, // Higher scale for better resolution
+        scale: 2, 
         width: parseInt(currentDimensions.previewContentWidthPx, 10),
         height: parseInt(currentDimensions.previewContentHeightPx, 10),
         x: 0, 
@@ -113,7 +112,6 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     } catch (error) {
       console.error("Error generating label image:", error);
     } finally {
-      // Restore original styles
       element.style.transform = originalTransform;
       element.style.padding = originalPadding;
       element.style.overflow = originalOverflow;
@@ -216,7 +214,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                   writingMode: 'vertical-rl',
                   fontSize: '1.25rem', 
                   fontWeight: 'bold',
-                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`, // Adjusted for top/bottom clearance
+                  maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`, 
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -232,10 +230,10 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 position: 'absolute',
                 top: '50%',
                 right: '0.5rem',
-                transform: 'translateY(-50%)',
+                transform: 'translateY(-50%) rotate(180deg)', // Added rotate(180deg)
                 writingMode: 'vertical-rl',
                 fontSize: '0.75rem', 
-                maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`, // Adjusted for top/bottom clearance
+                maxHeight: `calc(${PREVIEW_HEIGHT_PX} - 70px)`,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}
