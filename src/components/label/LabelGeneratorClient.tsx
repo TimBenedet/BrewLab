@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Ruler, Download, PackageOpen } from 'lucide-react';
+import { Ruler, Download, PackageOpen, Palette as PaletteIcon } from 'lucide-react'; // Added PaletteIcon for header
 import type { Recipe } from '@/types/recipe';
 
 interface LabelDimensions {
@@ -31,8 +31,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 70,
     widthCmText: '20.0',
     heightCmText: '7.0',
-    widthPx: '380px',
-    heightPx: '133px',
+    widthPx: '380px', // Max width for preview
+    heightPx: '133px', // 380 * (70/200)
     defaultVolume: '330ml'
   },
   '75cl': {
@@ -41,8 +41,8 @@ const SIZES: Record<string, LabelDimensions> = {
     heightMm: 90,
     widthCmText: '26.0',
     heightCmText: '9.0',
-    widthPx: '380px',
-    heightPx: '132px',
+    widthPx: '380px', // Max width for preview
+    heightPx: '132px', // 380 * (90/260)
     defaultVolume: '750ml'
   },
 };
@@ -76,7 +76,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
         setAbv(recipe.stats.abv ? String(recipe.stats.abv).replace('%', '') : '0');
         setIbu(recipe.stats.ibu ?? '');
         setSrm(recipe.stats.colorSrm ?? '');
-        setVolume(SIZES[labelSizeKey].defaultVolume);
+        setVolume(SIZES[labelSizeKey].defaultVolume); // Ensure volume updates with label size too
 
         const hopNames = recipe.hops.map(h => h.name).filter(Boolean).slice(0, 2);
         const fermentableNames = recipe.fermentables
@@ -105,7 +105,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
       setIngredientsSummaryForLabel('');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRecipeSlug, recipes, labelSizeKey]);
+  }, [selectedRecipeSlug, recipes, labelSizeKey]); // Added labelSizeKey to dependencies
 
   useEffect(() => {
     setVolume(SIZES[labelSizeKey].defaultVolume);
@@ -119,7 +119,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     const originalPadding = element.style.padding;
     element.style.padding = '0'; 
 
-    await new Promise(resolve => setTimeout(resolve, 0)); // Ensure styles are applied
+    await new Promise(resolve => setTimeout(resolve, 0));
 
     const canvas = await html2canvas(element, {
       scale: 2, 
@@ -233,7 +233,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               ref={previewRef}
               className="border-2 border-primary rounded-lg p-4 flex flex-col justify-between items-center text-center bg-background shadow-lg transition-all duration-300 ease-in-out overflow-hidden"
               style={{
-                fontFamily: 'serif', 
+                fontFamily: 'serif', // Changed font family for a more classic label look
                 width: '100%', 
                 height: '100%',
                 boxSizing: 'border-box',
@@ -258,7 +258,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
               </div>
             </div>
 
-            {/* Vertical Text Block */}
+            {/* Vertical Text Block - Aligned to left, with small offset */}
             <div
               className="absolute top-0 left-1 h-full flex flex-col justify-start items-start text-muted-foreground text-[7px]"
               style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)'}}
@@ -269,7 +269,7 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
                 </span>
               )}
               {ingredientsSummaryForLabel && (
-                <span className="block whitespace-nowrap"> 
+                <span className="block whitespace-nowrap mt-1"> 
                     <span className="font-semibold">Ingrédients :</span> {ingredientsSummaryForLabel}
                 </span>
               )}
@@ -288,6 +288,4 @@ export function LabelGeneratorClient({ recipes }: LabelGeneratorClientProps) {
     </div>
   );
 }
-    
-
     

@@ -2,7 +2,7 @@
 import { getAllRecipes } from '@/lib/recipes';
 import type { Recipe } from '@/types/recipe';
 import { LabelGeneratorClient } from '@/components/label/LabelGeneratorClient';
-import { Palette } from 'lucide-react';
+import { Palette } from 'lucide-react'; // Changed Icon
 
 export default async function LabelGeneratorServerPage() {
   const recipes: Recipe[] = await getAllRecipes();
