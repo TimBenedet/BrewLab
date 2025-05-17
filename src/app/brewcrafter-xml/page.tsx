@@ -348,7 +348,7 @@ export default function BrewCrafterXmlPage() {
             Click on Generate & Download BeerXML to downloard the .xml file. Put this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab. <span className="text-primary"><strong>Please note that the name of the .xml file must match the name of the directory it is placed in.</strong></span>
           </p>
           <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
-            Example: a file named American-Stout.xml must be located in the public/recipes/American-Stout/ directory.
+            Example: a file named American-Stout.xml must be located in the /public/recipes/American-Stout/ directory.
           </p>
         </CardContent>
       </Card>
@@ -663,5 +663,7 @@ export default function BrewCrafterXmlPage() {
     </div>
   );
 }
+
+    
 
     
