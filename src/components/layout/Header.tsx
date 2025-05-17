@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Wrench, Menu, Lightbulb } from 'lucide-react';
+import { BookOpen, Menu, Lightbulb, Image as ImageIcon } from 'lucide-react'; // Wrench removed, Image as ImageIcon added
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -28,9 +28,8 @@ export function Header() {
 
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
-    // { href: '/creer-recette', label: 'Create Recipe', icon: Lightbulb }, // Removed this line
-    { href: '/equipements', label: 'Equipments', icon: Wrench },
     { href: '/brewcrafter-xml', label: 'BrewCrafter XML', icon: Lightbulb },
+    { href: '/label-generator', label: 'Label Generator', icon: ImageIcon },
   ];
 
   const LogoLink = () => (
