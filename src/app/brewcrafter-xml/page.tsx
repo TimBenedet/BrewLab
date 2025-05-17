@@ -339,12 +339,19 @@ export default function BrewCrafterXmlPage() {
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-foreground text-center mb-2">BrewCrafter XML</CardTitle>
         </CardHeader>
-        <CardContent> {/* Removed space-y-2, using default padding (p-6 pt-0 or p-6) */}
-          <p className="text-muted-foreground text-justify w-full mb-2"> {/* Added w-full and mb-2 */}
-            Click on <strong><span className="text-primary">Generate & Download BeerXML</span></strong> to downloard the <strong><span className="text-primary">.xml</span></strong> file. Put this file to the <strong><span className="text-primary">/public/recipes/your_beer_name/</span></strong> directory will make your recipe visible in the My Recipes tab. <strong className="text-primary">Please note that the name of the .xml file must match the name of the directory it is placed in.</strong>
+        <CardContent>
+          <p className="text-muted-foreground text-justify w-full mb-2">
+            Click on Generate & Download BeerXML to downloard the .xml file. Put this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab.
           </p>
-          <p className="text-muted-foreground text-justify w-full"> {/* Added w-full */}
-            Example: a file named <strong><span className="text-primary">American-Stout</span></strong>.xml must be located in the <strong><span className="text-primary">/public/recipes/American-Stout/</span></strong> directory on the github repository.
+          <p className="text-muted-foreground text-justify w-full mb-2">
+            <strong>
+              <span className="text-primary">
+                Please note that the name of the .xml file must match the name of the directory it is placed in.
+              </span>
+            </strong>
+          </p>
+          <p className="text-muted-foreground text-justify w-full">
+            Example: a file named American-Stout.xml must be located in the /public/recipes/American-Stout/ directory on the github repository.
           </p>
         </CardContent>
       </Card>
@@ -659,3 +666,5 @@ export default function BrewCrafterXmlPage() {
     </div>
   );
 }
+
+    
