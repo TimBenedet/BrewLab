@@ -317,10 +317,10 @@ export default function BrewCrafterXmlPage() {
         </CardHeader>
         <CardContent className="space-y-2">
           <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
-            Click on Generate &amp; Download BeerXML to downloard the .xml file. Put this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab. Please note that the name of the .xml file must match the name of the directory it is placed in.
+            Click on <strong><span className="text-primary">Generate & Download BeerXML</span></strong> to downloard the <strong><span className="text-primary">.xml</span></strong> file. Put this file to the <strong><span className="text-primary">/public/recipes/your_beer_name/</span></strong> directory will make your recipe visible in the My Recipes tab. <strong><span className="text-primary">Please note that the name of the .xml file must match the name of the directory it is placed in.</span></strong>
           </p>
           <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
-            Example: a file named American-Stout.xml must be located in the /public/recipes/American-Stout/ directory.
+            Example: a file named <strong><span className="text-primary">American-Stout</span></strong>.xml must be located in the <strong><span className="text-primary">public/recipes/American-Stout/</span></strong> directory.
           </p>
         </CardContent>
       </Card>
