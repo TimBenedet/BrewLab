@@ -3,7 +3,7 @@
 
 import type { Recipe, ValueUnit, Hop, Yeast, Misc, ParsedMarkdownSections, Fermentable } from '@/types/recipe';
 import { useState } from 'react';
-import Image from 'next/image';
+// No longer need Image from next/image for the beer glass
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
@@ -13,8 +13,7 @@ import remarkGfm from 'remark-gfm';
 import { 
  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Flame, Wind, Snowflake, Package
 } from 'lucide-react';
-import CustomBeerGlassIcon from '@/components/icons/CustomBeerGlassIcon';
-
+// Removed CustomBeerGlassIcon import, as we're using the standard GlassWater
 
 const DetailItem: React.FC<{ label: string; value?: string | number | ValueUnit; icon?: React.ReactNode }> = ({ label, value, icon }) => {
   if (!value && typeof value !== 'number') return null; 
@@ -225,12 +224,12 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     <div className="space-y-8">
       <Card className="shadow-lg overflow-hidden">
         <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
-          <CustomBeerGlassIcon
-            srmHexColor={srmHexColor}
+          <GlassWater
             size={48}
+            fill={srmHexColor}
+            stroke="currentColor"
             strokeWidth={1.5}
-            glassOutlineColor="currentColor" 
-            className="text-foreground"
+            className="text-foreground" // Ensures stroke color respects current text color
           />
           <div className="flex-1">
             <CardTitle className="text-3xl font-bold text-primary">{recipe.metadata.name}</CardTitle>
@@ -336,5 +335,6 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     </div>
   );
 }
+    
 
     
