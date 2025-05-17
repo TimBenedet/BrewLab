@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusCircle, Trash2, Beer, Info, Wheat, Hop as HopIconLucide, FlaskConical, Leaf, CookingPot, FileText, Download } from "lucide-react";
+import { PlusCircle, Trash2, Beer, Info, Wheat, Hop as HopIconLucide, FlaskConical, Leaf, CookingPot, Download } from "lucide-react";
 import { XMLBuilder } from 'fast-xml-parser';
 
 interface FermentableItem {
@@ -315,7 +315,6 @@ export default function BrewCrafterXmlPage() {
     <div className="container mx-auto py-8 px-4 md:px-0 space-y-6">
       <div className="flex flex-col items-center mb-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">BrewCrafter XML</h1>
-        <FileText size={32} className="text-primary" />
         <p className="text-muted-foreground text-center mt-2">Create your beer recipe and export it as a standard BeerXML file.</p>
       </div>
 
@@ -595,7 +594,7 @@ export default function BrewCrafterXmlPage() {
       
       {/* Recipe Notes & Taste Notes Card */}
       <Card className="shadow-md">
-        <CardHeader><CardTitle className="flex items-center text-xl"><FileText size={22} className="mr-2 text-primary" />Recipe & Taste Notes</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="flex items-center text-xl"><Info size={22} className="mr-2 text-primary" />Recipe & Taste Notes</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="recipeNotes">Recipe Notes</Label>
@@ -629,5 +628,3 @@ export default function BrewCrafterXmlPage() {
     </div>
   );
 }
-
-    
