@@ -260,7 +260,7 @@ export default function BrewCrafterXmlPage() {
                     STEP_TIME: parseInt(ms.stepTimeMinutes) || 0,
                     NOTES: ms.notes || '',
                 }))
-            } : '', // Produce empty MASH_STEPS if no steps, or omit if builder handles empty objects well with suppressEmtpyNode
+            } : undefined, // Produce undefined if no steps, relies on suppressEmptyNode
           },
           EQUIPMENT: { // Placeholder equipment profile
             NAME: "Default Equipment",
@@ -279,9 +279,7 @@ export default function BrewCrafterXmlPage() {
     };
     
     // Remove MASH_STEPS entirely if no steps, to avoid <MASH_STEPS/> empty tag
-    if (mashSteps.length === 0 && recipeJs.RECIPES.RECIPE.MASH) {
-        delete recipeJs.RECIPES.RECIPE.MASH.MASH_STEPS;
-    }
+    // This is already handled by setting MASH_STEPS to undefined and using suppressEmptyNode
     
     // Remove ingredient groups if they are empty
     if (fermentables.length === 0) delete recipeJs.RECIPES.RECIPE.FERMENTABLES;
@@ -319,7 +317,7 @@ export default function BrewCrafterXmlPage() {
         </CardHeader>
         <CardContent className="space-y-2">
           <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
-            BeerXML Crafter is a graphical interface that allows you to generate a recipe in BeerXML format. By clicking on Generate & Download BeerXML, you will download a .xml file containing your recipe. Simply adding this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab. Please note that the name of the .xml file must match the name of the directory it is placed in.
+            Click on Generate &amp; Download BeerXML to downloard the .xml file. Put this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab. Please note that the name of the .xml file must match the name of the directory it is placed in.
           </p>
           <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
             Example: a file named American-Stout.xml must be located in the /public/recipes/American-Stout/ directory.
