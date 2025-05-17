@@ -313,13 +313,19 @@ export default function BrewCrafterXmlPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-0 space-y-6">
-      <div className="flex flex-col items-center mb-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">BrewCrafter XML</h1>
-        <p className="text-muted-foreground text-center mt-2 max-w-2xl">
-          BeerXML Crafter is a graphical interface that allows you to generate a recipe in BeerXML format. By clicking on Generate & Download BeerXML, you will download a .xml file containing your recipe. Simply adding this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab. Please note that the name of the .xml file must match the name of the directory it is placed in.
-          Example: a file named American-Stout.xml must be located in the /public/recipes/American-Stout/ directory.
-        </p>
-      </div>
+      <Card className="shadow-md">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold text-foreground text-center mb-2">BrewCrafter XML</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
+            BeerXML Crafter is a graphical interface that allows you to generate a recipe in BeerXML format. By clicking on Generate & Download BeerXML, you will download a .xml file containing your recipe. Simply adding this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab. Please note that the name of the .xml file must match the name of the directory it is placed in.
+          </p>
+          <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
+            Example: a file named American-Stout.xml must be located in the /public/recipes/American-Stout/ directory.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Recipe Info Card */}
       <Card className="shadow-md">
@@ -586,7 +592,7 @@ export default function BrewCrafterXmlPage() {
                   </Select>
                 </div>
                 <div><Label htmlFor={`msTemp-${index}`}>Step Temp (°C)</Label><Input id={`msTemp-${index}`} type="number" value={item.stepTempCelsius} onChange={e => handleItemChange(mashSteps, setMashSteps, item.id, 'stepTempCelsius', e.target.value)} placeholder="67" className="mt-1" /></div>
-                <div><Label htmlFor={`msTime-${index}`}>Step Time (minutes)</Label><Input id={`msTime-${index}`} type="number" value={item.stepTimeMinutes} onChange={e => handleItemChange(mashSteps, setMashSteps, item.id, 'stepTimeMinutes', e.target.value)} placeholder="60" className="mt-1" /></div>
+                <div><Label htmlFor={`msTime-${index}`}>Step Time (minutes)</Label><Input id={`msTime-${index}`} type="number" value={item.timeMinutes} onChange={e => handleItemChange(mashSteps, setMashSteps, item.id, 'stepTimeMinutes', e.target.value)} placeholder="60" className="mt-1" /></div>
                 <div className="sm:col-span-2 md:col-span-2"><Label htmlFor={`msNotes-${index}`}>Notes</Label><Input id={`msNotes-${index}`} value={item.notes || ''} onChange={e => handleItemChange(mashSteps, setMashSteps, item.id, 'notes', e.target.value)} placeholder="Optional notes" className="mt-1" /></div>
                 <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 place-self-center md:place-self-end" onClick={() => handleRemoveItem(mashSteps, setMashSteps, item.id)}><Trash2 size={18} /></Button>
               </div>
