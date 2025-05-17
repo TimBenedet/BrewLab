@@ -18,6 +18,7 @@ interface FermentableItem {
   type: string; // Grain, Sugar, Extract, Adjunct
   yieldPercent: string;
   colorSrm: string;
+  notes?: string;
 }
 
 interface HopItem {
@@ -28,6 +29,7 @@ interface HopItem {
   use: string; // Boil, Aroma, Dry Hop
   timeMinutes: string;
   form: string; // Pellets, Plug, Leaf
+  notes?: string;
 }
 
 interface YeastItem {
@@ -37,6 +39,9 @@ interface YeastItem {
   form: string; // Liquid, Dry, Slant, Culture
   amount: string; // For dry yeast in g, for liquid in ml or starter size
   attenuationPercent: string;
+  notes?: string;
+  productId?: string;
+  laboratory?: string;
 }
 
 interface MiscItem {
@@ -46,6 +51,7 @@ interface MiscItem {
   use: string; // Boil, Mash, Primary, Secondary, Bottling
   timeMinutes: string; // If use is Boil or Mash
   amount: string; // e.g., "10 g", "1 tsp", "1 tablet"
+  notes?: string;
 }
 
 interface MashStepItem {
@@ -54,7 +60,7 @@ interface MashStepItem {
   type: string; // Infusion, Temperature, Decoction
   stepTempCelsius: string;
   stepTimeMinutes: string;
-  // More fields like infuse_amount, ramp_time for advanced steps
+  notes?: string;
 }
 
 export default function BrewCrafterXmlPage() {
@@ -69,13 +75,16 @@ export default function BrewCrafterXmlPage() {
 
   // Style
   const [styleName, setStyleName] = useState('');
+  const [styleCategory, setStyleCategory] = useState('');
+  const [styleGuide, setStyleGuide] = useState('BJCP 2015');
+
 
   // Target Stats (optional)
   const [og, setOg] = useState(''); // e.g., 1.050
   const [fg, setFg] = useState(''); // e.g., 1.010
   const [abv, setAbv] = useState(''); // e.g., 5.0
   const [ibu, setIbu] = useState(''); // e.g., 30
-  const [colorSrm, setColorSrm] = useState(''); // e.g., 10
+  const [colorSrmEst, setColorSrmEst] = useState(''); // e.g., 10
 
   // Ingredients
   const [fermentables, setFermentables] = useState<FermentableItem[]>([]);
@@ -89,6 +98,7 @@ export default function BrewCrafterXmlPage() {
 
   // Notes
   const [recipeNotes, setRecipeNotes] = useState('');
+  const [tasteNotes, setTasteNotes] = useState('');
 
   // Helper for dynamic lists
   const handleAddItem = <T extends { id: number }>(
@@ -118,6 +128,11 @@ export default function BrewCrafterXmlPage() {
   };
 
   const generateBeerXml = () => {
+    const parsedBatchSize = parseFloat(batchSizeLiters) || 0;
+    const parsedBoilSize = parseFloat(boilSizeLiters) || 0;
+    const parsedOg = og ? parseFloat(og) : undefined;
+    const parsedFg = fg ? parseFloat(fg) : undefined;
+    
     const recipeJs = {
       RECIPES: {
         RECIPE: {
@@ -125,27 +140,42 @@ export default function BrewCrafterXmlPage() {
           VERSION: 1,
           TYPE: recipeType,
           BREWER: brewer || 'N/A',
-          ASST_BREWER: '',
-          BATCH_SIZE: parseFloat(batchSizeLiters) || 0,
-          BOIL_SIZE: parseFloat(boilSizeLiters) || 0,
+          ASST_BREWER: '', // Placeholder
+          BATCH_SIZE: parsedBatchSize,
+          BOIL_SIZE: parsedBoilSize,
           BOIL_TIME: parseInt(boilTimeMinutes) || 0,
           EFFICIENCY: parseFloat(efficiencyPercent) || 0,
           NOTES: recipeNotes,
-          OG: og ? parseFloat(og) : undefined,
-          FG: fg ? parseFloat(fg) : undefined,
+          TASTE_NOTES: tasteNotes,
+          TASTE_RATING: 0, // Placeholder
+          OG: parsedOg,
+          FG: parsedFg,
+          FERMENTATION_STAGES: 1, // Default placeholder
+          PRIMARY_AGE: 0, // Placeholder
+          PRIMARY_TEMP: 0, // Placeholder
           IBU: ibu ? parseFloat(ibu) : undefined,
-          COLOR: colorSrm ? parseFloat(colorSrm) : undefined,
-          ABV: abv ? parseFloat(abv) : undefined, // BeerXML usually calculates this
+          COLOR: colorSrmEst ? parseFloat(colorSrmEst) : undefined,
+          ABV: abv ? parseFloat(abv) : undefined, 
+          ACTUAL_EFFICIENCY: parseFloat(efficiencyPercent) || 0, // Assuming target is actual for this form
+
+          DISPLAY_BATCH_SIZE: `${parsedBatchSize} L`,
+          DISPLAY_BOIL_SIZE: `${parsedBoilSize} L`,
+          DISPLAY_OG: parsedOg ? `${parsedOg.toFixed(3)} SG` : '',
+          DISPLAY_FG: parsedFg ? `${parsedFg.toFixed(3)} SG` : '',
+          DISPLAY_IBU: ibu ? `${parseFloat(ibu)} IBU` : '',
+          DISPLAY_COLOR: colorSrmEst ? `${parseFloat(colorSrmEst)} SRM` : '',
+
           STYLE: {
             NAME: styleName || 'Custom Style',
-            CATEGORY: '',
             VERSION: 1,
-            CATEGORY_NUMBER: '',
-            STYLE_LETTER: '',
-            STYLE_GUIDE: 'Custom',
-            TYPE: 'Ale', // Default, user could change if a style object is built
-            OG_MIN: undefined, OG_MAX: undefined, FG_MIN: undefined, FG_MAX: undefined,
-            IBU_MIN: undefined, IBU_MAX: undefined, COLOR_MIN: undefined, COLOR_MAX: undefined
+            CATEGORY: styleCategory || '',
+            CATEGORY_NUMBER: '', // Placeholder
+            STYLE_LETTER: '', // Placeholder
+            STYLE_GUIDE: styleGuide || 'Custom',
+            TYPE: recipeType === 'Extract' ? 'Extract' : 'All Grain', // Basic inference
+            OG_MIN: '', OG_MAX: '', FG_MIN: '', FG_MAX: '',
+            IBU_MIN: '', IBU_MAX: '', COLOR_MIN: '', COLOR_MAX: '',
+            NOTES: ''
           },
           FERMENTABLES: {
             FERMENTABLE: fermentables.map(f => ({
@@ -155,7 +185,8 @@ export default function BrewCrafterXmlPage() {
               AMOUNT: parseFloat(f.amount) || 0, // kg
               YIELD: parseFloat(f.yieldPercent) || 0,
               COLOR: parseFloat(f.colorSrm) || 0,
-              ADD_AFTER_BOIL: false,
+              ADD_AFTER_BOIL: 'FALSE', // Default
+              NOTES: f.notes || '',
             }))
           },
           HOPS: {
@@ -163,67 +194,107 @@ export default function BrewCrafterXmlPage() {
               NAME: h.name,
               VERSION: 1,
               ALPHA: parseFloat(h.alphaPercent) || 0,
-              AMOUNT: (parseFloat(h.amount) || 0) / 1000, // Convert g to kg for BeerXML
+              AMOUNT: (parseFloat(h.amount) || 0) / 1000, // Convert g to kg
               USE: h.use,
               TIME: parseInt(h.timeMinutes) || 0,
               FORM: h.form,
+              NOTES: h.notes || '',
+              TYPE: h.use === "Boil" ? "Bittering" : "Aroma", // Basic inference
             }))
           },
           YEASTS: {
-            YEAST: yeasts.map(y => ({
-              NAME: y.name,
-              VERSION: 1,
-              TYPE: y.type,
-              FORM: y.form,
-              AMOUNT: parseFloat(y.amount) || 0, // Needs unit context, BeerXML uses kg or L.
-                                                 // For simplicity, assuming user inputs a numeric value.
-                                                 // Might need amount_is_weight flag or smarter parsing.
-              AMOUNT_IS_WEIGHT: y.form.toLowerCase() === 'dry' || y.form.toLowerCase() === 'slant' || y.form.toLowerCase() === 'culture', // Heuristic
-              ATTENUATION: parseFloat(y.attenuationPercent) || 0,
-            }))
+            YEAST: yeasts.map(y => {
+              const amountKgOrL = (parseFloat(y.amount) || 0) / (y.form.toLowerCase() === 'dry' ? 1000 : 1); // g to kg, or ml to L (approx)
+              return {
+                NAME: y.name,
+                VERSION: 1,
+                TYPE: y.type,
+                FORM: y.form,
+                AMOUNT: amountKgOrL,
+                AMOUNT_IS_WEIGHT: y.form.toLowerCase() === 'dry' ? 'TRUE' : 'FALSE',
+                ATTENUATION: parseFloat(y.attenuationPercent) || 0,
+                NOTES: y.notes || '',
+                PRODUCT_ID: y.productId || '',
+                LABORATORY: y.laboratory || '',
+              };
+            })
           },
           MISCS: {
-            MISC: miscs.map(m => ({
-              NAME: m.name,
-              VERSION: 1,
-              TYPE: m.type,
-              USE: m.use,
-              TIME: parseInt(m.timeMinutes) || 0,
-              AMOUNT: parseFloat(m.amount) || 0, // Assuming user inputs numeric part, needs unit parsing for "1 tsp" etc.
-                                               // For now, let's assume a numeric value in standard unit (kg or L).
-              AMOUNT_IS_WEIGHT: !(m.type.toLowerCase().includes('flavor') && m.amount.toLowerCase().includes('ml')), // Heuristic
-            }))
+            MISC: miscs.map(m => {
+              // Attempt to parse amount for misc, highly heuristic
+              const rawAmount = parseFloat(m.amount);
+              let amountKgOrL = rawAmount || 0;
+              let amountIsWeight = 'TRUE'; // Default
+              if (m.amount.toLowerCase().includes('ml') || m.amount.toLowerCase().includes('tsp')) {
+                  amountIsWeight = 'FALSE';
+                  // Basic conversion for ml if unit is there, otherwise raw number
+                  if (m.amount.toLowerCase().includes('ml')) amountKgOrL = rawAmount / 1000; // ml to L
+                  // tsp is harder, typically small volume, assume L for calculation
+              } else if (m.amount.toLowerCase().includes('g')) {
+                amountIsWeight = 'TRUE';
+                amountKgOrL = rawAmount / 1000; // g to kg
+              }
+              
+              return {
+                NAME: m.name,
+                VERSION: 1,
+                TYPE: m.type,
+                USE: m.use,
+                TIME: parseInt(m.timeMinutes) || 0,
+                AMOUNT: amountKgOrL,
+                AMOUNT_IS_WEIGHT: amountIsWeight,
+                NOTES: m.notes || '',
+              };
+            })
           },
           MASH: {
             NAME: mashProfileName,
             VERSION: 1,
-            GRAIN_TEMP: 20.0, // Celsius
-            MASH_STEPS: {
-              MASH_STEP: mashSteps.map(ms => ({
-                NAME: ms.name,
-                VERSION: 1,
-                TYPE: ms.type,
-                STEP_TEMP: parseFloat(ms.stepTempCelsius) || 0,
-                STEP_TIME: parseInt(ms.stepTimeMinutes) || 0,
-                //INFUSE_AMOUNT: ms.infuseAmount ? parseFloat(ms.infuseAmount) : undefined,
-              }))
-            }
+            GRAIN_TEMP: 20.0, // Celsius, placeholder
+            MASH_STEPS: mashSteps.length > 0 ? { // Ensure MASH_STEPS tag is only present if there are steps
+                MASH_STEP: mashSteps.map(ms => ({
+                    NAME: ms.name,
+                    VERSION: 1,
+                    TYPE: ms.type,
+                    STEP_TEMP: parseFloat(ms.stepTempCelsius) || 0,
+                    STEP_TIME: parseInt(ms.stepTimeMinutes) || 0,
+                    NOTES: ms.notes || '',
+                }))
+            } : '', // Produce empty MASH_STEPS if no steps, or omit if builder handles empty objects well with suppressEmtpyNode
           },
-          // EQUIPMENT, WATER sections omitted for brevity but are part of full BeerXML
+          EQUIPMENT: { // Placeholder equipment profile
+            NAME: "Default Equipment",
+            VERSION: 1,
+            BOIL_SIZE: parsedBoilSize,
+            BATCH_SIZE: parsedBatchSize,
+            TRUB_CHILLER_LOSS: 0,
+            LAUTER_DEADSPACE: 0,
+            NOTES: "Default equipment profile from BrewCrafter XML",
+          },
+          WATERS: { // Placeholder waters (optional, can be omitted)
+            // WATER: [{ NAME: "Tap Water", VERSION:1, AMOUNT: parsedBoilSize }] // Example, needs more fields
+          }
         }
       }
     };
     
+    // Remove MASH_STEPS entirely if no steps, to avoid <MASH_STEPS/> empty tag
+    if (mashSteps.length === 0 && recipeJs.RECIPES.RECIPE.MASH) {
+        delete recipeJs.RECIPES.RECIPE.MASH.MASH_STEPS;
+    }
+    
+    // Remove ingredient groups if they are empty
+    if (fermentables.length === 0) delete recipeJs.RECIPES.RECIPE.FERMENTABLES;
+    if (hops.length === 0) delete recipeJs.RECIPES.RECIPE.HOPS;
+    if (yeasts.length === 0) delete recipeJs.RECIPES.RECIPE.YEASTS;
+    if (miscs.length === 0) delete recipeJs.RECIPES.RECIPE.MISCS;
+
+
     const builderOptions = {
-      ignoreAttributes: false, // Process attributes
-      attributeNamePrefix: "", // No prefix for attributes in JS object keys e.g. UNIT: "kg"
+      ignoreAttributes: true, // Changed to true to force elements
       format: true,
-      suppressEmptyNode: true, // Don't output empty tags like <NOTES></NOTES>
-      // BeerXML often has attributes directly, e.g. <BATCH_SIZE UNIT="L">20</BATCH_SIZE>
-      // To achieve this with fast-xml-parser, the structure in JS needs to be:
-      // BATCH_SIZE: { '#text': 20, '@_UNIT': 'L' } if attributeNamePrefix is '@_'.
-      // For now, the simplified version just outputs <BATCH_SIZE>20</BATCH_SIZE>.
-      // This might require making state more complex (value + unit fields) for true attribute generation.
+      suppressEmptyNode: true, 
+      arrayNodeName: "", // Important for lists like FERMENTABLE, HOP
     };
     const builder = new XMLBuilder(builderOptions);
     let xmlContent = builder.build(recipeJs);
@@ -293,12 +364,19 @@ export default function BrewCrafterXmlPage() {
       {/* Style Card */}
       <Card className="shadow-md">
         <CardHeader><CardTitle className="flex items-center text-xl"><Beer size={22} className="mr-2 text-primary" />Style</CardTitle></CardHeader>
-        <CardContent>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <div>
             <Label htmlFor="styleName">Style Name</Label>
             <Input id="styleName" value={styleName} onChange={(e) => setStyleName(e.target.value)} placeholder="e.g., American IPA" className="mt-1" />
           </div>
-          {/* Add more style fields here if needed: Category, Guide, etc. */}
+          <div>
+            <Label htmlFor="styleCategory">Style Category</Label>
+            <Input id="styleCategory" value={styleCategory} onChange={(e) => setStyleCategory(e.target.value)} placeholder="e.g., IPA" className="mt-1" />
+          </div>
+          <div>
+            <Label htmlFor="styleGuide">Style Guide</Label>
+            <Input id="styleGuide" value={styleGuide} onChange={(e) => setStyleGuide(e.target.value)} placeholder="e.g., BJCP 2015" className="mt-1" />
+          </div>
         </CardContent>
       </Card>
 
@@ -310,7 +388,7 @@ export default function BrewCrafterXmlPage() {
           <div><Label htmlFor="fg">Final Gravity (FG)</Label><Input id="fg" value={fg} onChange={e => setFg(e.target.value)} placeholder="1.010" className="mt-1" /></div>
           <div><Label htmlFor="abv">Alcohol (% ABV)</Label><Input id="abv" value={abv} onChange={e => setAbv(e.target.value)} placeholder="5.0" className="mt-1" /></div>
           <div><Label htmlFor="ibu">Bitterness (IBU)</Label><Input id="ibu" value={ibu} onChange={e => setIbu(e.target.value)} placeholder="40" className="mt-1" /></div>
-          <div><Label htmlFor="srm">Color (SRM)</Label><Input id="srm" value={colorSrm} onChange={e => setColorSrm(e.target.value)} placeholder="10" className="mt-1" /></div>
+          <div><Label htmlFor="srm">Est. Color (SRM)</Label><Input id="srm" value={colorSrmEst} onChange={e => setColorSrmEst(e.target.value)} placeholder="10" className="mt-1" /></div>
         </CardContent>
       </Card>
 
@@ -318,7 +396,7 @@ export default function BrewCrafterXmlPage() {
       <Card className="shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center text-xl"><Wheat size={22} className="mr-2 text-primary" />Fermentables</CardTitle>
-          <Button variant="outline" size="sm" onClick={() => handleAddItem(fermentables, setFermentables, { name: '', amount: '', type: 'Grain', yieldPercent: '75', colorSrm: '2' })}><PlusCircle size={16} className="mr-2" />Add Fermentable</Button>
+          <Button variant="outline" size="sm" onClick={() => handleAddItem(fermentables, setFermentables, { name: '', amount: '', type: 'Grain', yieldPercent: '75', colorSrm: '2', notes: '' })}><PlusCircle size={16} className="mr-2" />Add Fermentable</Button>
         </CardHeader>
         <CardContent className="space-y-4">
           {fermentables.map((item, index) => (
@@ -341,6 +419,7 @@ export default function BrewCrafterXmlPage() {
                 </div>
                 <div><Label htmlFor={`fermYield-${index}`}>Yield (%)</Label><Input id={`fermYield-${index}`} type="number" value={item.yieldPercent} onChange={e => handleItemChange(fermentables, setFermentables, item.id, 'yieldPercent', e.target.value)} placeholder="80" className="mt-1" /></div>
                 <div><Label htmlFor={`fermColor-${index}`}>Color (SRM/L)</Label><Input id={`fermColor-${index}`} type="number" value={item.colorSrm} onChange={e => handleItemChange(fermentables, setFermentables, item.id, 'colorSrm', e.target.value)} placeholder="2" className="mt-1" /></div>
+                <div className="sm:col-span-2 md:col-span-1"><Label htmlFor={`fermNotes-${index}`}>Notes</Label><Input id={`fermNotes-${index}`} value={item.notes || ''} onChange={e => handleItemChange(fermentables, setFermentables, item.id, 'notes', e.target.value)} placeholder="Optional notes" className="mt-1" /></div>
                 <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 place-self-center md:place-self-end" onClick={() => handleRemoveItem(fermentables, setFermentables, item.id)}><Trash2 size={18} /></Button>
               </div>
             </div>
@@ -352,7 +431,7 @@ export default function BrewCrafterXmlPage() {
       <Card className="shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center text-xl"><HopIconLucide size={22} className="mr-2 text-primary" />Hops</CardTitle>
-          <Button variant="outline" size="sm" onClick={() => handleAddItem(hops, setHops, { name: '', amount: '', alphaPercent: '5.0', use: 'Boil', timeMinutes: '60', form: 'Pellet' })}><PlusCircle size={16} className="mr-2" />Add Hop</Button>
+          <Button variant="outline" size="sm" onClick={() => handleAddItem(hops, setHops, { name: '', amount: '', alphaPercent: '5.0', use: 'Boil', timeMinutes: '60', form: 'Pellet', notes: '' })}><PlusCircle size={16} className="mr-2" />Add Hop</Button>
         </CardHeader>
         <CardContent className="space-y-4">
           {hops.map((item, index) => (
@@ -386,7 +465,8 @@ export default function BrewCrafterXmlPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 place-self-center md:place-self-end md:col-start-3" onClick={() => handleRemoveItem(hops, setHops, item.id)}><Trash2 size={18} /></Button>
+                <div className="sm:col-span-2 md:col-span-2"><Label htmlFor={`hopNotes-${index}`}>Notes</Label><Input id={`hopNotes-${index}`} value={item.notes || ''} onChange={e => handleItemChange(hops, setHops, item.id, 'notes', e.target.value)} placeholder="Optional notes" className="mt-1" /></div>
+                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 place-self-center md:place-self-end" onClick={() => handleRemoveItem(hops, setHops, item.id)}><Trash2 size={18} /></Button>
               </div>
             </div>
           ))}
@@ -397,7 +477,7 @@ export default function BrewCrafterXmlPage() {
       <Card className="shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center text-xl"><FlaskConical size={22} className="mr-2 text-primary" />Yeasts</CardTitle>
-          <Button variant="outline" size="sm" onClick={() => handleAddItem(yeasts, setYeasts, { name: '', type: 'Ale', form: 'Dry', amount: '11.5', attenuationPercent: '75' })}><PlusCircle size={16} className="mr-2" />Add Yeast</Button>
+          <Button variant="outline" size="sm" onClick={() => handleAddItem(yeasts, setYeasts, { name: '', type: 'Ale', form: 'Dry', amount: '11.5', attenuationPercent: '75', notes: '', productId: '', laboratory: '' })}><PlusCircle size={16} className="mr-2" />Add Yeast</Button>
         </CardHeader>
         <CardContent className="space-y-4">
           {yeasts.map((item, index) => (
@@ -426,6 +506,9 @@ export default function BrewCrafterXmlPage() {
                 </div>
                 <div><Label htmlFor={`yeastAmount-${index}`}>Amount (g for dry, ml for liquid)</Label><Input id={`yeastAmount-${index}`} type="number" value={item.amount} onChange={e => handleItemChange(yeasts, setYeasts, item.id, 'amount', e.target.value)} placeholder="11.5" className="mt-1" /></div>
                 <div><Label htmlFor={`yeastAtt-${index}`}>Attenuation (%)</Label><Input id={`yeastAtt-${index}`} type="number" value={item.attenuationPercent} onChange={e => handleItemChange(yeasts, setYeasts, item.id, 'attenuationPercent', e.target.value)} placeholder="75" className="mt-1" /></div>
+                <div><Label htmlFor={`yeastProdId-${index}`}>Product ID</Label><Input id={`yeastProdId-${index}`} value={item.productId || ''} onChange={e => handleItemChange(yeasts, setYeasts, item.id, 'productId', e.target.value)} placeholder="e.g., WLP001" className="mt-1" /></div>
+                <div><Label htmlFor={`yeastLab-${index}`}>Laboratory</Label><Input id={`yeastLab-${index}`} value={item.laboratory || ''} onChange={e => handleItemChange(yeasts, setYeasts, item.id, 'laboratory', e.target.value)} placeholder="e.g., White Labs" className="mt-1" /></div>
+                <div className="sm:col-span-2 md:col-span-1"><Label htmlFor={`yeastNotes-${index}`}>Notes</Label><Input id={`yeastNotes-${index}`} value={item.notes || ''} onChange={e => handleItemChange(yeasts, setYeasts, item.id, 'notes', e.target.value)} placeholder="Optional notes" className="mt-1" /></div>
                 <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 place-self-center md:place-self-end" onClick={() => handleRemoveItem(yeasts, setYeasts, item.id)}><Trash2 size={18} /></Button>
               </div>
             </div>
@@ -437,7 +520,7 @@ export default function BrewCrafterXmlPage() {
       <Card className="shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center text-xl"><Leaf size={22} className="mr-2 text-primary" />Miscellaneous Ingredients</CardTitle>
-          <Button variant="outline" size="sm" onClick={() => handleAddItem(miscs, setMiscs, { name: '', type: 'Fining', use: 'Boil', timeMinutes: '15', amount: '' })}><PlusCircle size={16} className="mr-2" />Add Misc</Button>
+          <Button variant="outline" size="sm" onClick={() => handleAddItem(miscs, setMiscs, { name: '', type: 'Fining', use: 'Boil', timeMinutes: '15', amount: '', notes: '' })}><PlusCircle size={16} className="mr-2" />Add Misc</Button>
         </CardHeader>
         <CardContent className="space-y-4">
           {miscs.map((item, index) => (
@@ -466,6 +549,7 @@ export default function BrewCrafterXmlPage() {
                 </div>
                 <div><Label htmlFor={`miscTime-${index}`}>Time (minutes, if boil/mash)</Label><Input id={`miscTime-${index}`} type="number" value={item.timeMinutes} onChange={e => handleItemChange(miscs, setMiscs, item.id, 'timeMinutes', e.target.value)} placeholder="15" className="mt-1" /></div>
                 <div><Label htmlFor={`miscAmount-${index}`}>Amount (e.g., 10g, 1tsp)</Label><Input id={`miscAmount-${index}`} value={item.amount} onChange={e => handleItemChange(miscs, setMiscs, item.id, 'amount', e.target.value)} placeholder="1 tsp" className="mt-1" /></div>
+                <div className="sm:col-span-2 md:col-span-1"><Label htmlFor={`miscNotes-${index}`}>Notes</Label><Input id={`miscNotes-${index}`} value={item.notes || ''} onChange={e => handleItemChange(miscs, setMiscs, item.id, 'notes', e.target.value)} placeholder="Optional notes" className="mt-1" /></div>
                 <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 place-self-center md:place-self-end" onClick={() => handleRemoveItem(miscs, setMiscs, item.id)}><Trash2 size={18} /></Button>
               </div>
             </div>
@@ -477,7 +561,7 @@ export default function BrewCrafterXmlPage() {
       <Card className="shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center text-xl"><CookingPot size={22} className="mr-2 text-primary"/>Mash Profile</CardTitle>
-          <Button variant="outline" size="sm" onClick={() => handleAddItem(mashSteps, setMashSteps, { name: 'Saccharification', type: 'Temperature', stepTempCelsius: '67', stepTimeMinutes: '60' })}><PlusCircle size={16} className="mr-2" />Add Mash Step</Button>
+          <Button variant="outline" size="sm" onClick={() => handleAddItem(mashSteps, setMashSteps, { name: 'Saccharification', type: 'Temperature', stepTempCelsius: '67', stepTimeMinutes: '60', notes: '' })}><PlusCircle size={16} className="mr-2" />Add Mash Step</Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -501,23 +585,38 @@ export default function BrewCrafterXmlPage() {
                 </div>
                 <div><Label htmlFor={`msTemp-${index}`}>Step Temp (°C)</Label><Input id={`msTemp-${index}`} type="number" value={item.stepTempCelsius} onChange={e => handleItemChange(mashSteps, setMashSteps, item.id, 'stepTempCelsius', e.target.value)} placeholder="67" className="mt-1" /></div>
                 <div><Label htmlFor={`msTime-${index}`}>Step Time (minutes)</Label><Input id={`msTime-${index}`} type="number" value={item.stepTimeMinutes} onChange={e => handleItemChange(mashSteps, setMashSteps, item.id, 'stepTimeMinutes', e.target.value)} placeholder="60" className="mt-1" /></div>
-                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 place-self-center md:place-self-end md:col-start-3" onClick={() => handleRemoveItem(mashSteps, setMashSteps, item.id)}><Trash2 size={18} /></Button>
+                <div className="sm:col-span-2 md:col-span-2"><Label htmlFor={`msNotes-${index}`}>Notes</Label><Input id={`msNotes-${index}`} value={item.notes || ''} onChange={e => handleItemChange(mashSteps, setMashSteps, item.id, 'notes', e.target.value)} placeholder="Optional notes" className="mt-1" /></div>
+                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 place-self-center md:place-self-end" onClick={() => handleRemoveItem(mashSteps, setMashSteps, item.id)}><Trash2 size={18} /></Button>
               </div>
             </div>
           ))}
         </CardContent>
       </Card>
       
-      {/* Notes Card */}
+      {/* Recipe Notes & Taste Notes Card */}
       <Card className="shadow-md">
-        <CardHeader><CardTitle className="flex items-center text-xl"><FileText size={22} className="mr-2 text-primary" />Recipe Notes</CardTitle></CardHeader>
-        <CardContent>
-          <Textarea
-            value={recipeNotes}
-            onChange={(e) => setRecipeNotes(e.target.value)}
-            placeholder="Enter any specific notes about this recipe..."
-            className="min-h-[100px]"
-          />
+        <CardHeader><CardTitle className="flex items-center text-xl"><FileText size={22} className="mr-2 text-primary" />Recipe & Taste Notes</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="recipeNotes">Recipe Notes</Label>
+            <Textarea
+              id="recipeNotes"
+              value={recipeNotes}
+              onChange={(e) => setRecipeNotes(e.target.value)}
+              placeholder="Enter any specific notes about this recipe..."
+              className="min-h-[100px]"
+            />
+          </div>
+           <div>
+            <Label htmlFor="tasteNotes">Taste Notes</Label>
+            <Textarea
+              id="tasteNotes"
+              value={tasteNotes}
+              onChange={(e) => setTasteNotes(e.target.value)}
+              placeholder="Describe the taste, aroma, and appearance after brewing..."
+              className="min-h-[100px]"
+            />
+          </div>
         </CardContent>
       </Card>
 
