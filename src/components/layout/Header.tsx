@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Menu, Lightbulb, Image as ImageIcon } from 'lucide-react'; // Wrench removed, Image as ImageIcon added
+import { BookOpen, Menu, Lightbulb, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,6 @@ export function Header() {
   const [activePath, setActivePath] = useState<string | null>(null);
 
   useEffect(() => {
-    // Ensure currentPathname is not null before setting activePath
     if (currentPathname !== null) {
       setActivePath(currentPathname);
     }
@@ -29,7 +28,7 @@ export function Header() {
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
     { href: '/brewcrafter-xml', label: 'BrewCrafter XML', icon: Lightbulb },
-    { href: '/label-generator', label: 'Label Generator', icon: ImageIcon },
+    // { href: '/label-generator', label: 'Label Generator', icon: ImageIcon }, // Removed Label Generator
   ];
 
   const LogoLink = () => (
@@ -42,7 +41,6 @@ export function Header() {
   const DesktopNav = () => (
     <nav className="flex justify-center items-center space-x-1 sm:space-x-2">
       {navLinks.map((link) => {
-        // Ensure activePath is not null before comparing
         const isActive = activePath !== null && activePath === link.href;
         return (
           <Button
