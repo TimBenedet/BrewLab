@@ -1,8 +1,9 @@
 
 'use client';
 
-import type { Recipe, ValueUnit, Hop, Yeast, Misc, MashStep, ParsedMarkdownSections, Fermentable } from '@/types/recipe';
+import type { Recipe, ValueUnit, Hop, Yeast, Misc, ParsedMarkdownSections, Fermentable } from '@/types/recipe';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
@@ -10,8 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { 
-  GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Flame, Wind, Snowflake, Package
+ GlassWater, FileText as FileTextIcon, ListChecks, BookOpen, Percent, Leaf, Info, Scale, Clock, Palette, Hop as HopIcon, Wheat, FlaskConical, BarChart, Thermometer as ThermoIcon, CookingPot, Flame, Wind, Snowflake, Package
 } from 'lucide-react';
+import CustomBeerGlassIcon from '@/components/icons/CustomBeerGlassIcon';
 
 
 const DetailItem: React.FC<{ label: string; value?: string | number | ValueUnit; icon?: React.ReactNode }> = ({ label, value, icon }) => {
@@ -48,7 +50,13 @@ const StatGaugeItem: React.FC<{ label: string; valueText: string; progressValue:
   </div>
 );
 
-const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: { key: keyof any; header: string; render?: (item: any) => React.ReactNode }[]; icon: React.ReactNode }> = ({ title, items, columns, icon }) => {
+interface IngredientTableColumn<T> {
+  key: keyof T | string; // Allow string for custom keys
+  header: string;
+  render?: (item: T) => React.ReactNode;
+}
+
+const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: IngredientTableColumn<any>[]; icon: React.ReactNode }> = ({ title, items, columns, icon }) => {
   if (!items || items.length === 0) return null;
   return (
     <Card>
@@ -69,7 +77,10 @@ const IngredientTableDisplay: React.FC<{ title: string; items: any[]; columns: {
               <TableRow key={index}>
                 {columns.map(col => (
                   <TableCell key={String(col.key)}>
-                    {col.render ? col.render(item) : item[col.key]?.value !== undefined ? `${item[col.key].value} ${item[col.key].unit}` : String(item[col.key] ?? '-')}
+                    {col.render ? col.render(item) : 
+                     item[col.key as keyof typeof item]?.value !== undefined && item[col.key as keyof typeof item]?.unit !== undefined 
+                       ? `${item[col.key as keyof typeof item].value} ${item[col.key as keyof typeof item].unit}` 
+                       : String(item[col.key as keyof typeof item] ?? '-')}
                   </TableCell>
                 ))}
               </TableRow>
@@ -92,11 +103,11 @@ const MarkdownSection: React.FC<{ content?: string }> = ({ content }) => {
 
 const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
   const sections = recipe.parsedMarkdownSections;
-  const notes = recipe.notes;
+  const notesFromXml = recipe.notes;
 
   return (
     <div className="space-y-4">
-      {(sections?.brewersNotes || (!sections?.brewersNotes && notes)) && (
+      {(sections?.brewersNotes || (!sections?.brewersNotes && notesFromXml)) && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl text-primary">
@@ -104,7 +115,7 @@ const RecipeStepsDisplay: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <MarkdownSection content={sections?.brewersNotes || notes} />
+            <MarkdownSection content={sections?.brewersNotes || notesFromXml} />
           </CardContent>
         </Card>
       )}
@@ -214,11 +225,11 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
     <div className="space-y-8">
       <Card className="shadow-lg overflow-hidden">
         <CardHeader className="bg-muted p-6 flex flex-row items-center gap-3">
-          <GlassWater
+          <CustomBeerGlassIcon
+            srmHexColor={srmHexColor}
             size={48}
-            fill={srmHexColor}
-            stroke="currentColor" 
             strokeWidth={1.5}
+            glassOutlineColor="currentColor" 
             className="text-foreground"
           />
           <div className="flex-1">
@@ -247,7 +258,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
                   <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
                     <DetailItem label="Batch Volume" value={batchSizeForDisplay} icon={<Scale size={16}/>} />
                     <DetailItem label="Boil Time" value={recipe.metadata.boilTime} icon={<Clock size={16}/>} />
-                    <DetailItem label="Efficiency" value={recipe.metadata.efficiency} icon={<Percent size={16}/>} />
+                    <DetailItem label="Efficiency" value={recipe.metadata.efficiency ? { value: recipe.metadata.efficiency.value, unit: '%' } : undefined} icon={<Percent size={16}/>} />
                   </CardContent>
                 </Card>
 
@@ -294,6 +305,7 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
                   items={recipe.yeasts}
                   columns={[
                     { key: 'name', header: 'Name' },
+                    { key: 'amount', header: 'Amount', render: (item: Yeast) => item.amount ? `${item.amount.value} ${item.amount.unit}` : '-' },
                     { key: 'type', header: 'Type' },
                     { key: 'form', header: 'Form' },
                     { key: 'attenuation', header: 'Attenuation', render: (item: Yeast) => item.attenuation ? `${item.attenuation.value} ${item.attenuation.unit}` : '-' },
@@ -325,3 +337,4 @@ export function RecipeDetailClientPage({ recipe, srmHexColor }: RecipeDetailClie
   );
 }
 
+    
