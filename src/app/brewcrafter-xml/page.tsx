@@ -291,10 +291,10 @@ export default function BrewCrafterXmlPage() {
 
 
     const builderOptions = {
-      ignoreAttributes: true, // Changed to true to force elements
+      ignoreAttributes: true, 
       format: true,
       suppressEmptyNode: true, 
-      arrayNodeName: "", // Important for lists like FERMENTABLE, HOP
+      arrayNodeName: "", 
     };
     const builder = new XMLBuilder(builderOptions);
     let xmlContent = builder.build(recipeJs);
@@ -315,7 +315,10 @@ export default function BrewCrafterXmlPage() {
     <div className="container mx-auto py-8 px-4 md:px-0 space-y-6">
       <div className="flex flex-col items-center mb-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">BrewCrafter XML</h1>
-        <p className="text-muted-foreground text-center mt-2">Create your beer recipe and export it as a standard BeerXML file.</p>
+        <p className="text-muted-foreground text-center mt-2 max-w-2xl">
+          BeerXML Crafter is a graphical interface that allows you to generate a recipe in BeerXML format. By clicking on Generate & Download BeerXML, you will download a .xml file containing your recipe. Simply adding this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab. Please note that the name of the .xml file must match the name of the directory it is placed in.
+          Example: a file named American-Stout.xml must be located in the /public/recipes/American-Stout/ directory.
+        </p>
       </div>
 
       {/* Recipe Info Card */}
@@ -628,3 +631,4 @@ export default function BrewCrafterXmlPage() {
     </div>
   );
 }
+
