@@ -28,7 +28,7 @@ export function Header() {
 
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
-    { href: '/creer-recette', label: 'Create Recipe', icon: Lightbulb }, // Changed icon and link for example
+    // { href: '/creer-recette', label: 'Create Recipe', icon: Lightbulb }, // Removed this line
     { href: '/equipements', label: 'Equipments', icon: Wrench },
     { href: '/brewcrafter-xml', label: 'BrewCrafter XML', icon: Lightbulb },
   ];
