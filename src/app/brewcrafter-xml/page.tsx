@@ -132,6 +132,9 @@ export default function BrewCrafterXmlPage() {
     const parsedBoilSize = parseFloat(boilSizeLiters) || 0;
     const parsedOg = og ? parseFloat(og) : undefined;
     const parsedFg = fg ? parseFloat(fg) : undefined;
+    const parsedIbu = ibu ? parseFloat(ibu) : undefined;
+    const parsedColorSrmEst = colorSrmEst ? parseFloat(colorSrmEst) : undefined;
+    const parsedAbv = abv ? parseFloat(abv) : undefined;
     
     const recipeJs = {
       RECIPES: {
@@ -140,39 +143,39 @@ export default function BrewCrafterXmlPage() {
           VERSION: 1,
           TYPE: recipeType,
           BREWER: brewer || 'N/A',
-          ASST_BREWER: '', // Placeholder
+          ASST_BREWER: '', 
           BATCH_SIZE: parsedBatchSize,
           BOIL_SIZE: parsedBoilSize,
           BOIL_TIME: parseInt(boilTimeMinutes) || 0,
           EFFICIENCY: parseFloat(efficiencyPercent) || 0,
           NOTES: recipeNotes,
           TASTE_NOTES: tasteNotes,
-          TASTE_RATING: 0, // Placeholder
+          TASTE_RATING: 0, 
           OG: parsedOg,
           FG: parsedFg,
-          FERMENTATION_STAGES: 1, // Default placeholder
-          PRIMARY_AGE: 0, // Placeholder
-          PRIMARY_TEMP: 0, // Placeholder
-          IBU: ibu ? parseFloat(ibu) : undefined,
-          COLOR: colorSrmEst ? parseFloat(colorSrmEst) : undefined,
-          ABV: abv ? parseFloat(abv) : undefined, 
-          ACTUAL_EFFICIENCY: parseFloat(efficiencyPercent) || 0, // Assuming target is actual for this form
+          FERMENTATION_STAGES: 1, 
+          PRIMARY_AGE: 0, 
+          PRIMARY_TEMP: 0, 
+          IBU: parsedIbu,
+          COLOR: parsedColorSrmEst,
+          ABV: parsedAbv, 
+          ACTUAL_EFFICIENCY: parseFloat(efficiencyPercent) || 0, 
 
           DISPLAY_BATCH_SIZE: `${parsedBatchSize} L`,
           DISPLAY_BOIL_SIZE: `${parsedBoilSize} L`,
           DISPLAY_OG: parsedOg ? `${parsedOg.toFixed(3)} SG` : '',
           DISPLAY_FG: parsedFg ? `${parsedFg.toFixed(3)} SG` : '',
-          DISPLAY_IBU: ibu ? `${parseFloat(ibu)} IBU` : '',
-          DISPLAY_COLOR: colorSrmEst ? `${parseFloat(colorSrmEst)} SRM` : '',
+          DISPLAY_IBU: parsedIbu ? `${parsedIbu} IBU` : '',
+          DISPLAY_COLOR: parsedColorSrmEst ? `${parsedColorSrmEst} SRM` : '',
 
           STYLE: {
             NAME: styleName || 'Custom Style',
             VERSION: 1,
             CATEGORY: styleCategory || '',
-            CATEGORY_NUMBER: '', // Placeholder
-            STYLE_LETTER: '', // Placeholder
+            CATEGORY_NUMBER: '', 
+            STYLE_LETTER: '', 
             STYLE_GUIDE: styleGuide || 'Custom',
-            TYPE: recipeType === 'Extract' ? 'Extract' : 'All Grain', // Basic inference
+            TYPE: recipeType === 'Extract' ? 'Extract' : recipeType === 'Partial Mash' ? 'Partial Mash' : 'All Grain',
             OG_MIN: '', OG_MAX: '', FG_MIN: '', FG_MAX: '',
             IBU_MIN: '', IBU_MAX: '', COLOR_MIN: '', COLOR_MAX: '',
             NOTES: ''
@@ -182,10 +185,10 @@ export default function BrewCrafterXmlPage() {
               NAME: f.name,
               VERSION: 1,
               TYPE: f.type,
-              AMOUNT: parseFloat(f.amount) || 0, // kg
+              AMOUNT: parseFloat(f.amount) || 0, 
               YIELD: parseFloat(f.yieldPercent) || 0,
               COLOR: parseFloat(f.colorSrm) || 0,
-              ADD_AFTER_BOIL: 'FALSE', // Default
+              ADD_AFTER_BOIL: 'FALSE', 
               NOTES: f.notes || '',
             }))
           },
@@ -193,18 +196,21 @@ export default function BrewCrafterXmlPage() {
             HOP: hops.map(h => ({
               NAME: h.name,
               VERSION: 1,
+              ORIGIN: '', // Placeholder
               ALPHA: parseFloat(h.alphaPercent) || 0,
-              AMOUNT: (parseFloat(h.amount) || 0) / 1000, // Convert g to kg
+              AMOUNT: (parseFloat(h.amount) || 0) / 1000, 
               USE: h.use,
               TIME: parseInt(h.timeMinutes) || 0,
-              FORM: h.form,
               NOTES: h.notes || '',
-              TYPE: h.use === "Boil" ? "Bittering" : "Aroma", // Basic inference
+              TYPE: (h.use === "Boil" || h.use === "First Wort") ? "Bittering" : "Aroma", // Basic inference
+              FORM: h.form,
+              BETA: 0, // Placeholder
+              HSI: 0 // Placeholder
             }))
           },
           YEASTS: {
             YEAST: yeasts.map(y => {
-              const amountKgOrL = (parseFloat(y.amount) || 0) / (y.form.toLowerCase() === 'dry' ? 1000 : 1); // g to kg, or ml to L (approx)
+              const amountKgOrL = (parseFloat(y.amount) || 0) / (y.form.toLowerCase() === 'dry' ? 1000 : 1); 
               return {
                 NAME: y.name,
                 VERSION: 1,
@@ -212,27 +218,34 @@ export default function BrewCrafterXmlPage() {
                 FORM: y.form,
                 AMOUNT: amountKgOrL,
                 AMOUNT_IS_WEIGHT: y.form.toLowerCase() === 'dry' ? 'TRUE' : 'FALSE',
+                LABORATORY: y.laboratory || '',
+                PRODUCT_ID: y.productId || '',
+                MIN_TEMPERATURE: '', // Placeholder
+                MAX_TEMPERATURE: '', // Placeholder
+                FLOCCULATION: '', // Placeholder
                 ATTENUATION: parseFloat(y.attenuationPercent) || 0,
                 NOTES: y.notes || '',
-                PRODUCT_ID: y.productId || '',
-                LABORATORY: y.laboratory || '',
+                BEST_FOR: '', // Placeholder
               };
             })
           },
           MISCS: {
             MISC: miscs.map(m => {
-              // Attempt to parse amount for misc, highly heuristic
               const rawAmount = parseFloat(m.amount);
               let amountKgOrL = rawAmount || 0;
-              let amountIsWeight = 'TRUE'; // Default
-              if (m.amount.toLowerCase().includes('ml') || m.amount.toLowerCase().includes('tsp')) {
+              let amountIsWeight = 'TRUE'; 
+              if (m.amount.toLowerCase().includes('ml') || m.amount.toLowerCase().includes('l')) {
                   amountIsWeight = 'FALSE';
-                  // Basic conversion for ml if unit is there, otherwise raw number
-                  if (m.amount.toLowerCase().includes('ml')) amountKgOrL = rawAmount / 1000; // ml to L
-                  // tsp is harder, typically small volume, assume L for calculation
-              } else if (m.amount.toLowerCase().includes('g')) {
+                  if (m.amount.toLowerCase().includes('ml')) amountKgOrL = rawAmount / 1000; 
+                  else amountKgOrL = rawAmount; // Assume L if 'l' is present
+              } else if (m.amount.toLowerCase().includes('g') || m.amount.toLowerCase().includes('kg')) {
                 amountIsWeight = 'TRUE';
-                amountKgOrL = rawAmount / 1000; // g to kg
+                if (m.amount.toLowerCase().includes('g')) amountKgOrL = rawAmount / 1000; 
+                else amountKgOrL = rawAmount; // Assume kg if 'kg' is present
+              } else if (m.amount.toLowerCase().includes('tsp') || m.amount.toLowerCase().includes('tbsp') || m.amount.toLowerCase().includes('item') || m.amount.toLowerCase().includes('tablet')) {
+                // These are typically volume or count, treat as volume for XML flexibility
+                amountIsWeight = 'FALSE'; 
+                amountKgOrL = rawAmount; // Keep the number, unit is lost but XML is flexible
               }
               
               return {
@@ -243,56 +256,71 @@ export default function BrewCrafterXmlPage() {
                 TIME: parseInt(m.timeMinutes) || 0,
                 AMOUNT: amountKgOrL,
                 AMOUNT_IS_WEIGHT: amountIsWeight,
+                USE_FOR: '', // Placeholder
                 NOTES: m.notes || '',
               };
             })
           },
+          WATERS: { // Placeholder for waters
+            // WATER: [{ NAME: "Tap Water", VERSION: 1, AMOUNT: parsedBoilSize }]
+          },
           MASH: {
             NAME: mashProfileName,
             VERSION: 1,
-            GRAIN_TEMP: 20.0, // Celsius, placeholder
-            MASH_STEPS: mashSteps.length > 0 ? { // Ensure MASH_STEPS tag is only present if there are steps
+            GRAIN_TEMP: 20.0, 
+            TUN_TEMP: 20.0, // Placeholder
+            SPARGE_TEMP: 75.6, // Placeholder
+            PH: 5.4, // Placeholder
+            NOTES: "Mash profile generated by BrewCrafter XML",
+            DISPLAY_GRAIN_TEMP: "20.0 C",
+            MASH_STEPS: mashSteps.length > 0 ? { 
                 MASH_STEP: mashSteps.map(ms => ({
                     NAME: ms.name,
                     VERSION: 1,
                     TYPE: ms.type,
                     STEP_TEMP: parseFloat(ms.stepTempCelsius) || 0,
                     STEP_TIME: parseInt(ms.stepTimeMinutes) || 0,
+                    INFUSE_AMOUNT: 0, // Placeholder
                     NOTES: ms.notes || '',
                 }))
-            } : undefined, // Produce undefined if no steps, relies on suppressEmptyNode
+            } : undefined, 
           },
-          EQUIPMENT: { // Placeholder equipment profile
+          EQUIPMENT: { 
             NAME: "Default Equipment",
             VERSION: 1,
             BOIL_SIZE: parsedBoilSize,
             BATCH_SIZE: parsedBatchSize,
+            TUN_VOLUME: 0, // Placeholder
+            TUN_WEIGHT: 0, // Placeholder
+            TUN_SPECIFIC_HEAT: 0, // Placeholder
+            TOP_UP_WATER: 0, // Placeholder
             TRUB_CHILLER_LOSS: 0,
+            EVAP_RATE: 0, // Placeholder
+            BOIL_OFF: 0, // Placeholder
             LAUTER_DEADSPACE: 0,
+            TOP_UP_KETTLE: 0, // Placeholder
+            HOP_UTILIZATION: 100.0, // Placeholder
             NOTES: "Default equipment profile from BrewCrafter XML",
           },
-          WATERS: { // Placeholder waters (optional, can be omitted)
-            // WATER: [{ NAME: "Tap Water", VERSION:1, AMOUNT: parsedBoilSize }] // Example, needs more fields
-          }
         }
       }
     };
     
-    // Remove MASH_STEPS entirely if no steps, to avoid <MASH_STEPS/> empty tag
-    // This is already handled by setting MASH_STEPS to undefined and using suppressEmptyNode
-    
-    // Remove ingredient groups if they are empty
     if (fermentables.length === 0) delete recipeJs.RECIPES.RECIPE.FERMENTABLES;
     if (hops.length === 0) delete recipeJs.RECIPES.RECIPE.HOPS;
     if (yeasts.length === 0) delete recipeJs.RECIPES.RECIPE.YEASTS;
     if (miscs.length === 0) delete recipeJs.RECIPES.RECIPE.MISCS;
+    if (mashSteps.length === 0 && recipeJs.RECIPES.RECIPE.MASH) {
+       delete recipeJs.RECIPES.RECIPE.MASH.MASH_STEPS; // Remove MASH_STEPS object if empty
+    }
 
 
     const builderOptions = {
       ignoreAttributes: true, 
       format: true,
       suppressEmptyNode: true, 
-      arrayNodeName: "", 
+      // Removed arrayNodeName, as it was causing issues with fast-xml-parser >= 4.2.0
+      // The default behavior for arrays (repeating the tag) is what BeerXML expects.
     };
     const builder = new XMLBuilder(builderOptions);
     let xmlContent = builder.build(recipeJs);
@@ -317,10 +345,10 @@ export default function BrewCrafterXmlPage() {
         </CardHeader>
         <CardContent className="space-y-2">
           <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
-            Click on <strong><span className="text-primary">Generate & Download BeerXML</span></strong> to downloard the <strong><span className="text-primary">.xml</span></strong> file. Put this file to the <strong><span className="text-primary">/public/recipes/your_beer_name/</span></strong> directory will make your recipe visible in the My Recipes tab. <strong><span className="text-primary">Please note that the name of the .xml file must match the name of the directory it is placed in.</span></strong>
+            Click on Generate & Download BeerXML to downloard the .xml file. Put this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab. <span className="text-primary"><strong>Please note that the name of the .xml file must match the name of the directory it is placed in.</strong></span>
           </p>
           <p className="text-muted-foreground text-justify mt-2 max-w-2xl mx-auto">
-            Example: a file named <strong><span className="text-primary">American-Stout</span></strong>.xml must be located in the <strong><span className="text-primary">public/recipes/American-Stout/</span></strong> directory.
+            Example: a file named American-Stout.xml must be located in the public/recipes/American-Stout/ directory.
           </p>
         </CardContent>
       </Card>
