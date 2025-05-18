@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { LabelFormSchema } from '@/types/label';
 import type * as z from 'zod';
-import { Download, Trash2 } from 'lucide-react'; // Removed Wand2
+import { Trash2 } from 'lucide-react';
 import type React from 'react';
 
 type LabelFormData = z.infer<typeof LabelFormSchema>;
@@ -21,8 +21,7 @@ interface LabelControlsProps {
   onClearImage: () => void;
   onBackgroundColorChange: (color: string) => void;
   onTextColorChange: (color: string) => void;
-  onSubmitAction: (e?: React.BaseSyntheticEvent) => Promise<void>;
-  onDownloadAction: () => void;
+  onSubmitAction: (e?: React.BaseSyntheticEvent) => Promise<void>; // For react-hook-form's onSubmit
   currentBackgroundImage: string | null;
 }
 
@@ -33,7 +32,6 @@ export function LabelControls({
   onBackgroundColorChange,
   onTextColorChange,
   onSubmitAction,
-  onDownloadAction,
   currentBackgroundImage
 }: LabelControlsProps) {
 
@@ -275,13 +273,7 @@ export function LabelControls({
           </CardContent>
         </Card>
 
-        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
-          {/* AI Suggestions Button removed */}
-          <Button type="button" onClick={onDownloadAction}>
-            <Download className="mr-2 h-4 w-4" />
-            Download Labels
-          </Button>
-        </div>
+        {/* Download button moved to the parent page */}
       </form>
     </Form>
   );

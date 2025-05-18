@@ -11,8 +11,8 @@ import { LabelControls } from '@/components/brewcrafter-label/LabelControls';
 import { LabelPreview } from '@/components/brewcrafter-label/LabelPreview';
 import { BackLabelPreview } from '@/components/brewcrafter-label/BackLabelPreview';
 import { useToast } from '@/hooks/use-toast';
-import type { Button } from '@/components/ui/button'; // Type import for Button if needed for other props
-import type { Download } from 'lucide-react'; // Type import for icons if needed
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 
 
 type LabelFormData = z.infer<typeof LabelFormSchema>;
@@ -42,7 +42,7 @@ export default function BrewLabelStudioPage() {
   const [labelProps, setLabelProps] = useState<LabelProps>({
     ...defaultValues,
     backgroundImage: null,
-    textColor: defaultValues.textColor || '#FFFFFF', // Ensure textColor has a default
+    textColor: defaultValues.textColor || '#FFFFFF', 
   });
 
   const frontLabelRef = useRef<HTMLDivElement>(null);
@@ -52,7 +52,7 @@ export default function BrewLabelStudioPage() {
 
   useEffect(() => {
     setLabelProps(prevProps => ({
-      ...prevProps, // Keep existing backgroundImage
+      ...prevProps, 
       beerName: watchedFormValues.beerName,
       ibu: watchedFormValues.ibu,
       alcohol: watchedFormValues.alcohol,
@@ -129,25 +129,24 @@ export default function BrewLabelStudioPage() {
       await handleDownloadLabel(frontLabelRef, 'etiquette-avant.png');
     }
     if (backLabelRef.current) {
-      setTimeout(async () => {
+      setTimeout(async () => { // Added a small delay to ensure the first download completes/prompts before the second
         await handleDownloadLabel(backLabelRef, 'etiquette-arriere.png');
-      }, 500);
+      }, 500); 
     }
   };
   
-  const handleAiSuggestions = (data: LabelFormData) => {
-    console.log("Form data submitted for AI Suggestions:", data);
-    // This function is no longer triggered by a dedicated button,
-    // but kept here in case another trigger is desired.
-    // For now, it's effectively unused from the UI.
-    toast({ title: "AI Feature Placeholder", description: "AI suggestions feature coming soon!" });
+  // This function is no longer explicitly triggered by a button from LabelControls
+  // but kept in case react-hook-form's onSubmit is used for other purposes.
+  const handleFormSubmit = (data: LabelFormData) => {
+    console.log("Form data submitted:", data);
+    // Placeholder for potential future use, e.g., AI suggestions if re-enabled.
   };
 
 
   return (
     <div className="container mx-auto py-8 px-4 space-y-8">
       <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold font-heading text-primary">Brew Label Studio</h1>
+        <h1 className="text-4xl font-bold font-heading text-primary">BrewCrafter Label</h1>
         <p className="text-lg text-muted-foreground mt-2 max-w-xl mx-auto">
           Design simplest front and back labels for your craft beer. Experiment with text, colors, and background images.
         </p>
@@ -160,8 +159,7 @@ export default function BrewLabelStudioPage() {
           onClearImage={handleClearImage}
           onBackgroundColorChange={(color) => form.setValue('backgroundColor', color, { shouldValidate: true })}
           onTextColorChange={(color) => form.setValue('textColor', color, { shouldValidate: true })}
-          onSubmitAction={form.handleSubmit(handleAiSuggestions)} // Generic submit for the form if needed
-          onDownloadAction={handleDownloadAllLabels}
+          onSubmitAction={form.handleSubmit(handleFormSubmit)}
           currentBackgroundImage={labelProps.backgroundImage}
         />
       </section>
@@ -177,6 +175,13 @@ export default function BrewLabelStudioPage() {
             <BackLabelPreview {...labelProps} ref={backLabelRef} />
           </div>
         </div>
+      </section>
+
+      <section className="flex justify-center mt-8">
+        <Button type="button" onClick={handleDownloadAllLabels} size="lg">
+          <Download className="mr-2 h-5 w-5" />
+          Download Labels
+        </Button>
       </section>
     </div>
   );
