@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Menu, Lightbulb, Palette } from 'lucide-react'; // Added Palette
+import { BookOpen, Menu, Lightbulb, Palette, BookImage } from 'lucide-react'; // Added BookImage, Palette might be removed if not used elsewhere
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ export function Header() {
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
     { href: '/brewcrafter-xml', label: 'BrewCrafter XML', icon: Lightbulb },
-    { href: '/brewcrafter-label', label: 'BrewCrafter Label', icon: Palette }, // Added BrewCrafter Label link
+    { href: '/brewcrafter-label', label: 'BrewCrafter Label', icon: BookImage }, 
   ];
 
   const LogoLink = () => (
@@ -70,7 +70,6 @@ export function Header() {
   );
   
   const DesktopSpacer = () => (
-    // This hidden div helps to truly center the navigation by occupying the same space as the logo.
     <div aria-hidden="true" className="flex items-center gap-2 invisible pointer-events-none">
       <Beer size={26} className="text-primary" />
       <h1 className="text-xl font-semibold text-foreground">BrewLab</h1>
