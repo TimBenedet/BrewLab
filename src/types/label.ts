@@ -11,6 +11,7 @@ export const LabelFormSchema = z.object({
   brewingDate: z.string().max(50, "Brewing date must be 50 characters or less").optional().or(z.literal('')),
   brewingLocation: z.string().max(100, "Brewing location must be 100 characters or less").optional().or(z.literal('')),
   backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color").optional().or(z.literal('')),
+  textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color").optional().or(z.literal('')),
   // backgroundImage is handled separately, not part of form validation directly
 });
 
@@ -24,6 +25,7 @@ export type LabelProps = {
   brewingDate?: string;
   brewingLocation?: string;
   backgroundColor?: string;
+  textColor?: string;
   backgroundImage?: string | null; // Data URL or path
 };
 

@@ -10,9 +10,9 @@ import { LabelFormSchema, type LabelProps } from '@/types/label';
 import { LabelControls } from '@/components/brewcrafter-label/LabelControls';
 import { LabelPreview } from '@/components/brewcrafter-label/LabelPreview';
 import { BackLabelPreview } from '@/components/brewcrafter-label/BackLabelPreview';
-import { useToast } from '@/hooks/use-toast'; // Corrected import path
-import { Button } from '@/components/ui/button'; 
-import { Wand2, Download } from 'lucide-react'; 
+import { useToast } from '@/hooks/use-toast';
+import type { Button } from '@/components/ui/button'; // Type import for Button if needed for other props
+import type { Wand2, Download } from 'lucide-react'; // Type import for icons if needed
 
 
 type LabelFormData = z.infer<typeof LabelFormSchema>;
@@ -27,6 +27,7 @@ const defaultValues: LabelFormData = {
   brewingDate: 'Brewed on: 15/07/2024',
   brewingLocation: 'Starbase Brewery, Alpha Nebula',
   backgroundColor: '#333333',
+  textColor: '#FFFFFF',
   // backgroundImage is not part of the form schema, handled separately
 };
 
@@ -46,8 +47,6 @@ export default function BrewLabelStudioPage() {
   const frontLabelRef = useRef<HTMLDivElement>(null);
   const backLabelRef = useRef<HTMLDivElement>(null);
 
-  // Watch form values and update labelProps for preview
-  // Using specific field values in dependency array for performance
   const watchedFormValues = form.watch();
 
   useEffect(() => {
@@ -62,7 +61,7 @@ export default function BrewLabelStudioPage() {
       brewingDate: watchedFormValues.brewingDate,
       brewingLocation: watchedFormValues.brewingLocation,
       backgroundColor: watchedFormValues.backgroundColor,
-      // backgroundImage is updated by handleImageUpload
+      textColor: watchedFormValues.textColor,
     }));
   }, [
     watchedFormValues.beerName,
@@ -74,6 +73,7 @@ export default function BrewLabelStudioPage() {
     watchedFormValues.brewingDate,
     watchedFormValues.brewingLocation,
     watchedFormValues.backgroundColor,
+    watchedFormValues.textColor,
   ]);
 
 
@@ -87,7 +87,6 @@ export default function BrewLabelStudioPage() {
       };
       reader.readAsDataURL(file);
     }
-    // Reset file input to allow re-uploading the same file if needed
     event.target.value = "";
   };
 
@@ -96,14 +95,6 @@ export default function BrewLabelStudioPage() {
     toast({ title: "Image Cleared", description: "Background image removed from preview." });
   };
   
-  const handleBackgroundColorChange = (color: string) => {
-    // This is handled by react-hook-form and useEffect for labelProps.
-    // This explicit handler could be used for additional logic if needed.
-    // For now, the form's onChange and the useEffect will update labelProps.backgroundColor
-    // form.setValue('backgroundColor', color, { shouldValidate: true }); // Ensure RHF is updated
-  };
-
-
   const handleDownloadLabel = async (elementRef: React.RefObject<HTMLDivElement>, fileName: string) => {
     const element = elementRef.current;
     if (!element) {
@@ -113,9 +104,9 @@ export default function BrewLabelStudioPage() {
 
     try {
       const canvas = await html2canvas(element, {
-        backgroundColor: null, // Use transparent background for PNG
-        scale: 2, // Higher scale for better resolution
-        useCORS: true, // If images are from external sources
+        backgroundColor: null, 
+        scale: 2, 
+        useCORS: true, 
         logging: false,
       });
       const dataUrl = canvas.toDataURL('image/png');
@@ -137,16 +128,17 @@ export default function BrewLabelStudioPage() {
       await handleDownloadLabel(frontLabelRef, 'etiquette-avant.png');
     }
     if (backLabelRef.current) {
-      // Add a small delay to prevent potential browser issues with rapid downloads
       setTimeout(async () => {
         await handleDownloadLabel(backLabelRef, 'etiquette-arriere.png');
       }, 500);
     }
   };
   
-  // Placeholder for AI Suggestions
   const handleAiSuggestions = (data: LabelFormData) => {
     console.log("Form data submitted for AI Suggestions:", data);
+    // This function is no longer triggered by a dedicated button,
+    // but kept here in case another trigger is desired.
+    // For now, it's effectively unused from the UI.
     toast({ title: "AI Feature Placeholder", description: "AI suggestions feature coming soon!" });
   };
 
@@ -166,7 +158,8 @@ export default function BrewLabelStudioPage() {
           onImageUpload={handleImageUpload}
           onClearImage={handleClearImage}
           onBackgroundColorChange={(color) => form.setValue('backgroundColor', color, { shouldValidate: true })}
-          onSubmitAction={handleAiSuggestions} // Or a more specific handler if AI button has a different goal than generic submit
+          onTextColorChange={(color) => form.setValue('textColor', color, { shouldValidate: true })}
+          onSubmitAction={form.handleSubmit(handleAiSuggestions)} // Generic submit for the form if needed
           onDownloadAction={handleDownloadAllLabels}
           currentBackgroundImage={labelProps.backgroundImage}
         />

@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { LabelFormSchema } from '@/types/label';
 import type * as z from 'zod';
-import { Wand2, Download, Trash2 } from 'lucide-react';
+import { Download, Trash2 } from 'lucide-react'; // Removed Wand2
 import type React from 'react';
 
 type LabelFormData = z.infer<typeof LabelFormSchema>;
@@ -20,8 +20,9 @@ interface LabelControlsProps {
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClearImage: () => void;
   onBackgroundColorChange: (color: string) => void;
-  onSubmitAction: (data: LabelFormData) => void; // For AI suggestions or other actions
-  onDownloadAction: () => void; // Specifically for download
+  onTextColorChange: (color: string) => void;
+  onSubmitAction: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  onDownloadAction: () => void;
   currentBackgroundImage: string | null;
 }
 
@@ -30,15 +31,15 @@ export function LabelControls({
   onImageUpload,
   onClearImage,
   onBackgroundColorChange,
+  onTextColorChange,
   onSubmitAction,
   onDownloadAction,
   currentBackgroundImage
 }: LabelControlsProps) {
-  const currentBgColor = form.watch('backgroundColor');
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmitAction)} className="space-y-6">
+      <form onSubmit={onSubmitAction} className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-xl font-semibold">Front Label Details</CardTitle>
@@ -194,7 +195,7 @@ export function LabelControls({
                   className="flex-grow"
                 />
                 {currentBackgroundImage && (
-                   <Button variant="ghost" size="icon" onClick={onClearImage} aria-label="Clear image">
+                   <Button variant="ghost" size="icon" onClick={onClearImage} aria-label="Clear image" type="button">
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 )}
@@ -238,14 +239,44 @@ export function LabelControls({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="textColor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Text Color</FormLabel>
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <Input
+                        type="color"
+                        className="w-12 h-10 p-1"
+                        value={field.value}
+                        onChange={(e) => {
+                           field.onChange(e.target.value);
+                           onTextColorChange(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                    <Input
+                      type="text"
+                      placeholder="#RRGGBB"
+                      className="flex-grow"
+                      value={field.value}
+                      onChange={(e) => {
+                        field.onChange(e.target.value);
+                        onTextColorChange(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
 
         <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
-          <Button type="button" variant="outline" onClick={() => console.log("AI Suggestions clicked. Form data:", form.getValues())}>
-            <Wand2 className="mr-2 h-4 w-4" />
-            Get AI Suggestions
-          </Button>
+          {/* AI Suggestions Button removed */}
           <Button type="button" onClick={onDownloadAction}>
             <Download className="mr-2 h-4 w-4" />
             Download Labels
