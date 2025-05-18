@@ -10,9 +10,9 @@ import { LabelFormSchema, type LabelProps } from '@/types/label';
 import { LabelControls } from '@/components/brewcrafter-label/LabelControls';
 import { LabelPreview } from '@/components/brewcrafter-label/LabelPreview';
 import { BackLabelPreview } from '@/components/brewcrafter-label/BackLabelPreview';
-import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button'; // Added for consistency if needed elsewhere
-import { Wand2, Download } from 'lucide-react'; // For buttons in LabelControls if they were here
+import { useToast } from '@/hooks/use-toast'; // Corrected import path
+import { Button } from '@/components/ui/button'; 
+import { Wand2, Download } from 'lucide-react'; 
 
 
 type LabelFormData = z.infer<typeof LabelFormSchema>;
