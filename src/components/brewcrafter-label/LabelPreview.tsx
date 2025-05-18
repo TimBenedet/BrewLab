@@ -2,12 +2,15 @@
 'use client';
 
 import type React from 'react';
-import { Geist_Sans } from 'next/font/google';
-import { Bebas_Neue } from 'next/font/google';
+// Removed Geist_Sans import from next/font/google
+import { Bebas_Neue } from 'next/font/google'; // Keep Bebas_Neue for the beer name
 import type { LabelProps } from '@/types/label';
 
-const geist = Geist_Sans({ subsets: ['latin'], variable: '--font-geist-sans' });
-const bebas = Bebas_Neue({ subsets: ['latin'], weight: ['400'], variable: '--font-bebas-neue' });
+// Bebas Neue should be instantiated in layout.tsx and referenced via CSS variable or Tailwind class
+// However, for specific component styling, direct instantiation here is also an option if layout.tsx variable isn't specific enough for --font-bebas-neue only.
+// For consistency with the requirements, we'll assume --font-bebas-neue is available globally.
+// If not, you'd instantiate it here:
+const bebas = Bebas_Neue({ subsets: ['latin'], weight: ['400'], variable: '--font-bebas-neue-preview' }); // Use a unique variable if instantiating locally
 
 interface LabelPreviewProps extends LabelProps {}
 
@@ -27,7 +30,8 @@ const LabelPreview = React.forwardRef<HTMLDivElement, LabelPreviewProps>((props,
   return (
     <div
       ref={ref}
-      className={`w-[300px] h-[450px] border border-border bg-card text-card-foreground rounded-lg shadow-lg overflow-hidden p-4 flex flex-col justify-between relative transition-all duration-300 ${geist.variable} font-sans`}
+      // The `font-sans` class will now correctly apply Geist Sans from layout.tsx
+      className={`w-[300px] h-[450px] border border-border bg-card text-card-foreground rounded-lg shadow-lg overflow-hidden p-4 flex flex-col justify-between relative transition-all duration-300 font-sans`}
       style={{
         backgroundColor: backgroundImage ? 'transparent' : backgroundColor || '#333333',
         color: backgroundImage ? '#FFFFFF' : 'hsl(var(--foreground))',
@@ -65,7 +69,8 @@ const LabelPreview = React.forwardRef<HTMLDivElement, LabelPreviewProps>((props,
           <div className="relative z-10 flex-grow flex items-center justify-center text-center">
             {beerName && (
               <h2 
-                className={`${bebas.variable} font-heading text-6xl md:text-7xl leading-tight break-words`}
+                // Apply the font-heading class from Tailwind, which should map to Bebas Neue
+                className={`font-heading text-6xl md:text-7xl leading-tight break-words`}
                 style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}
               >
                 {beerName}
