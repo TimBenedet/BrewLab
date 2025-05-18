@@ -1,7 +1,7 @@
 
 # BrewLab - Beer Recipe Manager & Viewer
 
-BrewLab is a web application designed for homebrewers and beer enthusiasts to visualize and manage their beer recipes. Its primary function is to parse and display recipes formatted in **BeerXML**, presenting them in a user-friendly and detailed interface. The application is built as a static site, making it easy to host on platforms like Vercel or GitHub Pages.
+BrewLab is a web application designed for homebrewers and beer enthusiasts to visualize and manage their beer recipes. Its primary function is to parse and display recipes formatted in **BeerXML**, presenting them in a user-friendly and detailed interface. It also includes a **BrewCrafter Label** tool to design simple beer labels. The application is built as a static site, making it easy to host on platforms like Vercel or GitHub Pages.
 
 This project was developed with the assistance of AI tools, including **Gemini**, and built using **Firebase Studio**. It's optimized for easy deployment on **Vercel**.
 
@@ -16,7 +16,12 @@ This project was developed with the assistance of AI tools, including **Gemini**
     *   Clear tables for Fermentables, Hops, Yeast, and Miscellaneous Ingredients.
     *   Two-tab layout for "Recipe Details" and "Recipe Steps".
 *   **Recipe Steps from Markdown**: For each recipe, an optional corresponding `.md` file can provide detailed brewing procedures, which are parsed and displayed in organized sections (Mashing, Boil, Fermentation, etc.).
-*   **Recipe Creation Form (Simulated Save)**: An intuitive form to build new beer recipes. Currently, saving a new recipe from the UI simulates the action by logging data to the console. To persist a new recipe, its XML and MD files need to be manually added to the `public/recipes/[recipe-slug]/` directory and the site rebuilt.
+*   **BrewCrafter XML**: An intuitive form to build new beer recipes from scratch and download them as BeerXML files.
+*   **BrewCrafter Label**: A tool to design simple front and back labels for your craft beer. Features include:
+    *   Input fields for beer name, IBU, alcohol, volume, description, ingredients, brewing date, and location.
+    *   Customization of background color, text color, and an optional background image.
+    *   Live preview of both front and back labels.
+    *   Ability to download the generated labels as PNG images.
 *   **Responsive Design**: Adapts to various screen sizes for a good user experience on desktops, tablets, and mobile devices.
 *   **Static Site Generation**: Optimized for static export (`output: 'export'` in Next.js config), making it fast and easy to deploy.
 
@@ -30,6 +35,7 @@ This project was developed with the assistance of AI tools, including **Gemini**
 *   **Icons**: [Lucide React](https://lucide.dev/)
 *   **XML Parsing**: `fast-xml-parser`
 *   **Markdown Rendering**: `react-markdown` with `remark-gfm`
+*   **Label Image Generation**: `html2canvas`
 
 ## Getting Started: Using This Project
 
