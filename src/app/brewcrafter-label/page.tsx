@@ -12,7 +12,7 @@ import { LabelPreview } from '@/components/brewcrafter-label/LabelPreview';
 import { BackLabelPreview } from '@/components/brewcrafter-label/BackLabelPreview';
 import { useToast } from '@/hooks/use-toast';
 import type { Button } from '@/components/ui/button'; // Type import for Button if needed for other props
-import type { Wand2, Download } from 'lucide-react'; // Type import for icons if needed
+import type { Download } from 'lucide-react'; // Type import for icons if needed
 
 
 type LabelFormData = z.infer<typeof LabelFormSchema>;
@@ -42,6 +42,7 @@ export default function BrewLabelStudioPage() {
   const [labelProps, setLabelProps] = useState<LabelProps>({
     ...defaultValues,
     backgroundImage: null,
+    textColor: defaultValues.textColor || '#FFFFFF', // Ensure textColor has a default
   });
 
   const frontLabelRef = useRef<HTMLDivElement>(null);
@@ -148,7 +149,7 @@ export default function BrewLabelStudioPage() {
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold font-heading text-primary">Brew Label Studio</h1>
         <p className="text-lg text-muted-foreground mt-2 max-w-xl mx-auto">
-          Design unique front and back labels for your craft beer. Experiment with text, colors, and background images.
+          Design simplest front and back labels for your craft beer. Experiment with text, colors, and background images.
         </p>
       </header>
 
