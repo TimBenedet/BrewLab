@@ -1,7 +1,7 @@
 
 'use client';
 
-import type React from 'react';
+import React from 'react'; // Ensure React is imported
 import type { LabelProps } from '@/types/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -27,7 +27,7 @@ const BackLabelPreview = React.forwardRef<HTMLDivElement, BackLabelPreviewProps>
       style={{
         backgroundColor: backgroundImage ? 'transparent' : backgroundColor || '#333333',
         color: backgroundImage ? '#FFFFFF' : 'hsl(var(--foreground))', // Ensure text is readable on dark bg or image
-        // If using a very light background image, this text color might need adjustment or a semi-transparent overlay
+        textShadow: backgroundImage ? '1px 1px 3px rgba(0,0,0,0.7)' : 'none',
       }}
     >
       {backgroundImage && (
@@ -54,12 +54,12 @@ const BackLabelPreview = React.forwardRef<HTMLDivElement, BackLabelPreviewProps>
             </div>
           )}
           {(brewingDate || brewingLocation) && (
-            <div className="mt-3">
-              {brewingDate && <p className="text-xs">{brewingDate}</p>}
-              {brewingLocation && <p className="text-xs mt-0.5">{brewingLocation}</p>}
+            <div className="mt-3 text-xs">
+              {brewingDate && <p>{brewingDate}</p>}
+              {brewingLocation && <p className={brewingDate ? 'mt-0.5' : ''}>{brewingLocation}</p>}
             </div>
           )}
-          {!hasContent && (
+          {!hasContent && !backgroundImage && (
             <div className="flex-grow flex items-center justify-center h-full">
               <p className="text-muted-foreground italic text-center">Back Label Content Here</p>
             </div>
