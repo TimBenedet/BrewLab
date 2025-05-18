@@ -1,7 +1,7 @@
 
 'use client';
 
-import type React from 'react';
+import React from 'react';
 // Removed Geist_Sans import from next/font/google
 import { Bebas_Neue } from 'next/font/google'; // Keep Bebas_Neue for the beer name
 import type { LabelProps } from '@/types/label';
