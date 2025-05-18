@@ -50,16 +50,47 @@ const BackLabelPreview = React.forwardRef<HTMLDivElement, BackLabelPreviewProps>
           )}
           {ingredients && (
             <div>
-              <h4 className="font-semibold text-sm mt-2 mb-0.5">Ingredients</h4>
+              <h4 className="font-semibold text-sm mb-0.5">Ingredients</h4>
               <p className="text-xs leading-relaxed">{ingredients}</p>
             </div>
           )}
-          {(brewingDate || brewingLocation) && (
-            <div className="mt-3 text-xs">
-              {brewingDate && <p>{brewingDate}</p>}
-              {brewingLocation && <p className={brewingDate ? 'mt-0.5' : ''}>{brewingLocation}</p>}
+
+          {/* Brewing Date */}
+          {brewingDate && (
+            <div>
+              {(() => {
+                const dateValue = props.brewingDate;
+                const prefix = "Brewed on:";
+                if (dateValue && dateValue.startsWith(prefix)) {
+                  return (
+                    <>
+                      <h4 className="font-semibold text-sm mb-0.5">{prefix}</h4>
+                      <p className="text-xs leading-relaxed">{dateValue.substring(prefix.length).trim()}</p>
+                    </>
+                  );
+                }
+                // Fallback if the string doesn't start with "Brewed on:" but still has a value
+                if (dateValue) { 
+                  return (
+                    <>
+                      <h4 className="font-semibold text-sm mb-0.5">Date:</h4>
+                      <p className="text-xs leading-relaxed">{dateValue}</p>
+                    </>
+                  );
+                }
+                return null;
+              })()}
             </div>
           )}
+
+          {/* Brewed by */}
+          {brewingLocation && (
+            <div> {/* space-y-3 from parent div will handle margin if brewingDate is not present */}
+              <h4 className="font-semibold text-sm mb-0.5">Brewed by:</h4>
+              <p className="text-xs leading-relaxed">{props.brewingLocation}</p>
+            </div>
+          )}
+
           {!hasContent && !backgroundImage && (
             <div className="flex-grow flex items-center justify-center h-full">
               <p className="italic text-center" style={{ color: 'hsl(var(--muted-foreground))' }}>Back Label Content Here</p>
