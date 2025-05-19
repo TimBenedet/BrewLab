@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -100,6 +100,22 @@ export default function BrewCrafterXmlPage() {
   // Notes
   const [recipeNotes, setRecipeNotes] = useState('');
   const [tasteNotes, setTasteNotes] = useState('');
+
+  // Auto-calculate ABV
+  useEffect(() => {
+    const originalGravity = parseFloat(og);
+    const finalGravity = parseFloat(fg);
+
+    if (!isNaN(originalGravity) && !isNaN(finalGravity) && originalGravity > finalGravity && finalGravity > 0) {
+      const calculatedAbv = (originalGravity - finalGravity) * 131.25;
+      setAbv(calculatedAbv.toFixed(2)); // Keep two decimal places
+    } else if (og === '' && fg === '') { // Clear ABV if OG and FG are cleared
+        setAbv('');
+    }
+    // If inputs are invalid but not both empty, ABV field retains its current value (user might be typing)
+    // Or you could setAbv('Invalid') or clear it: setAbv('')
+  }, [og, fg]);
+
 
   // Helper for dynamic lists
   const handleAddItem = <T extends { id: number }>(
@@ -341,7 +357,7 @@ export default function BrewCrafterXmlPage() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-justify w-full mb-2">
-            Click on Generate & Download BeerXML to downloard the .xml file. Put this file to the /public/recipes/your_beer_name/ directory will make your recipe visible in the My Recipes tab.
+            Click on <strong><span className="text-primary">Generate &amp; Download BeerXML</span></strong> to downloard the <strong><span className="text-primary">.xml</span></strong> file. Put this file to the <strong><span className="text-primary">/public/recipes/your_beer_name/</span></strong> directory will make your recipe visible in the My Recipes tab.
           </p>
           <p className="text-muted-foreground text-justify w-full mb-2">
             <strong>
@@ -351,7 +367,7 @@ export default function BrewCrafterXmlPage() {
             </strong>
           </p>
           <p className="text-muted-foreground text-justify w-full">
-            Example: a file named American-Stout.xml must be located in the /public/recipes/American-Stout/ directory on the github repository.
+            Example: a file named <strong><span className="text-primary">American-Stout</span></strong>.xml must be located in the <strong><span className="text-primary">/public/recipes/American-Stout/</span></strong> directory on the github repository.
           </p>
         </CardContent>
       </Card>
@@ -423,7 +439,7 @@ export default function BrewCrafterXmlPage() {
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
           <div><Label htmlFor="og">Original Gravity (OG)</Label><Input id="og" value={og} onChange={e => setOg(e.target.value)} placeholder="1.050" className="mt-1" /></div>
           <div><Label htmlFor="fg">Final Gravity (FG)</Label><Input id="fg" value={fg} onChange={e => setFg(e.target.value)} placeholder="1.010" className="mt-1" /></div>
-          <div><Label htmlFor="abv">Alcohol (% ABV)</Label><Input id="abv" value={abv} onChange={e => setAbv(e.target.value)} placeholder="5.0" className="mt-1" /></div>
+          <div><Label htmlFor="abv">Alcohol (% ABV)</Label><Input id="abv" value={abv} onChange={e => setAbv(e.target.value)} placeholder="Calculated: 5.0" className="mt-1" /></div>
           <div><Label htmlFor="ibu">Bitterness (IBU)</Label><Input id="ibu" value={ibu} onChange={e => setIbu(e.target.value)} placeholder="40" className="mt-1" /></div>
           <div><Label htmlFor="srm">Est. Color (SRM)</Label><Input id="srm" value={colorSrmEst} onChange={e => setColorSrmEst(e.target.value)} placeholder="10" className="mt-1" /></div>
         </CardContent>
@@ -666,5 +682,7 @@ export default function BrewCrafterXmlPage() {
     </div>
   );
 }
+
+    
 
     
