@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Filter, Lightbulb } from "lucide-react";
+import { Filter, Plus } from "lucide-react"; // Changed Lightbulb to Plus
 import Link from 'next/link';
 import { getAllRecipes } from '@/lib/recipes';
 import type { Recipe } from '@/types/recipe';
@@ -28,7 +28,7 @@ export default async function HomePage() {
             variant="outline"
             className="group text-sm shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border hover:border-primary"
           >
-            <Lightbulb className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" />
+            <Plus className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" /> {/* Changed Lightbulb to Plus */}
             New BeerXML recipe
           </Button>
         </Link>
@@ -55,7 +55,7 @@ export default async function HomePage() {
               No recipes saved.
             </h2>
             <p className="text-muted-foreground max-w-xs text-sm md:text-base">
-              Place your BeerXML files in the `public/recipes/[recipe-slug]/[recipe-slug].xml` folder and rebuild to see them here.
+              Create a recipe folder in `public/recipes/[recipe-slug]/` and add your `[recipe-slug].xml` file.
             </p>
           </CardContent>
         </Card>
