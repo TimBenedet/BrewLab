@@ -29,7 +29,7 @@ export default async function HomePage() {
             className="group text-sm shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border hover:border-primary"
           >
             <Lightbulb className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" />
-            BrewCrafter XML
+            New BeerXML recipe
           </Button>
         </Link>
         <Select>
