@@ -1,14 +1,13 @@
-
 # BrewCrafter - Beer Recipe Manager & Viewer
 
-BrewCrafter is a web application designed for homebrewers and beer enthusiasts to visualize and manage their beer recipes. Its primary function is to parse and display recipes formatted in **BeerXML**, presenting them in a user-friendly and detailed interface. It also includes a **BrewCrafter Label** tool to design simple beer labels. The application is built as a static site, making it easy to host on platforms like Vercel or GitHub Pages.
+BrewCrafter is a web application designed for homebrewers and beer enthusiasts to visualize and manage their beer recipes. Its primary function is to parse and display recipes formatted in **BeerXML**, presenting them in a user-friendly and detailed interface. It also includes a **BrewCrafter XML** tool to help build new beer recipes with automatic calculation of key stats, and a **Calculators** page with essential brewing tools. The application is built as a static site, making it easy to host on platforms like Vercel or GitHub Pages.
 
 This project was developed with the assistance of AI tools, including **Gemini**, and built using **Firebase Studio**. It's optimized for easy deployment on **Vercel**.
 
 ## Core Features
 
 *   **BeerXML Recipe Viewer**: Reads and parses BeerXML files to display comprehensive recipe details.
-*   **Recipe Listing & Filtering**: Displays all available recipes from your collection with client-side filtering by style.
+*   **Recipe Listing & Filtering**: Displays all available recipes from your collection with client-side filtering by style. The "New BeerXML recipe" creation tool is also accessible from this page.
 *   **Detailed Recipe View**:
     *   Comprehensive display of recipe metadata (name, style, author, batch size, boil time, efficiency).
     *   Target statistics (OG, FG, ABV, IBU, Color/SRM) with visual progress gauges.
@@ -17,11 +16,12 @@ This project was developed with the assistance of AI tools, including **Gemini**
     *   Two-tab layout for "Recipe Details" and "Recipe Steps".
 *   **Recipe Steps from Markdown**: For each recipe, an optional corresponding `.md` file can provide detailed brewing procedures, which are parsed and displayed in organized sections (Mashing, Boil, Fermentation, etc.).
 *   **BrewCrafter XML**: An intuitive form to build new beer recipes from scratch and download them as BeerXML files.
-*   **BrewCrafter Label**: A tool to design simple front and back labels for your craft beer. Features include:
-    *   Input fields for beer name, IBU, alcohol, volume, description, ingredients, brewing date, and location.
-    *   Customization of background color, text color, and an optional background image.
-    *   Live preview of both front and back labels.
-    *   Ability to download the generated labels as PNG images.
+    *   Features automatic calculation of target **ABV** (Alcohol By Volume) based on Original and Final Gravity.
+    *   Features automatic calculation of target **IBU** (International Bitterness Units - Tinseth) based on hop additions, boil volume, and OG.
+*   **Brewing Calculators**: A dedicated page with handy client-side calculators:
+    *   **ABV Calculator**: Calculates Alcohol By Volume from Original and Final Gravity.
+    *   **IBU Calculator (Tinseth)**: Estimates International Bitterness Units based on hop additions.
+    *   **SG Temperature Correction**: Corrects Specific Gravity readings for temperature (Celsius).
 *   **Responsive Design**: Adapts to various screen sizes for a good user experience on desktops, tablets, and mobile devices.
 *   **Static Site Generation**: Optimized for static export (`output: 'export'` in Next.js config), making it fast and easy to deploy.
 
@@ -33,9 +33,8 @@ This project was developed with the assistance of AI tools, including **Gemini**
 *   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 *   **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
 *   **Icons**: [Lucide React](https://lucide.dev/)
-*   **XML Parsing**: `fast-xml-parser`
+*   **XML Parsing/Building**: `fast-xml-parser`
 *   **Markdown Rendering**: `react-markdown` with `remark-gfm`
-*   **Label Image Generation**: `html2canvas`
 
 ## Getting Started: Using This Project
 
@@ -129,12 +128,11 @@ You can easily use and customize this project for your own beer recipes. Here's 
 
 ## Future Enhancements (Ideas)
 
-*   Client-side brewing calculators (IBU, ABV, carbonation).
-*   Brew day timer.
 *   User-specific equipment profiles (using `localStorage`).
 *   Personal notes on recipes (using `localStorage`).
 *   Recipe comparison tool.
 *   Advanced searching and sorting of recipes.
+*   More brewing calculators (e.g., carbonation, strike water temp).
 
 ---
 
