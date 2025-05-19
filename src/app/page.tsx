@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle, Filter } from "lucide-react";
+import { Filter, Lightbulb } from "lucide-react";
 import Link from 'next/link';
 import { getAllRecipes } from '@/lib/recipes';
 import type { Recipe } from '@/types/recipe';
@@ -23,6 +23,15 @@ export default async function HomePage() {
     <div className="space-y-6">
       {/* Top Actions Bar */}
       <div className="flex justify-end items-center space-x-3 pt-2">
+        <Link href="/brewcrafter-xml" passHref legacyBehavior>
+          <Button
+            variant="outline"
+            className="group text-sm shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border hover:border-primary"
+          >
+            <Lightbulb className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" />
+            BrewCrafter XML
+          </Button>
+        </Link>
         <Select>
           <SelectTrigger className="group w-auto md:w-[200px] text-sm shadow-sm hover:bg-primary hover:text-primary-foreground transition-colors duration-200 border hover:border-primary">
             <Filter className="mr-2 h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" />
@@ -36,7 +45,6 @@ export default async function HomePage() {
             ))}
           </SelectContent>
         </Select>
-        {/* "Create Recipe" button removed */}
       </div>
 
       {/* Main Content Area */}
@@ -47,7 +55,7 @@ export default async function HomePage() {
               No recipes saved.
             </h2>
             <p className="text-muted-foreground max-w-xs text-sm md:text-base">
-              Place your BeerXML files in the `public/recipes` folder and rebuild, or start by creating your first recipe!
+              Place your BeerXML files in the `public/recipes/[recipe-slug]/[recipe-slug].xml` folder and rebuild to see them here.
             </p>
           </CardContent>
         </Card>

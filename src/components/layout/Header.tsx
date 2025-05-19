@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Menu, Lightbulb, BookImage, Calculator, Beer } from 'lucide-react';
+import { BookOpen, Menu, Lightbulb, Calculator, Beer, BookImage } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -19,15 +19,15 @@ export function Header() {
   const [activePath, setActivePath] = useState<string | null>(null);
 
   useEffect(() => {
-    if (currentPathname !== null) {
+    // Ensures activePath is null during SSR and first client render, then updates.
+    if (typeof window !== 'undefined') {
       setActivePath(currentPathname);
     }
   }, [currentPathname]);
 
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
-    { href: '/brewcrafter-xml', label: 'BrewCrafter XML', icon: Lightbulb },
-    { href: '/brewcrafter-label', label: 'BrewCrafter Label', icon: BookImage },
+    // { href: '/brewcrafter-xml', label: 'BrewCrafter XML', icon: Lightbulb }, // Removed
     { href: '/calculators', label: 'Calculators', icon: Calculator },
   ];
 
@@ -41,7 +41,7 @@ export function Header() {
   const DesktopNav = () => (
     <nav className="flex justify-center items-center space-x-1 sm:space-x-2">
       {navLinks.map((link) => {
-        const isActive = activePath !== null && activePath === link.href;
+        const isActive = activePath === link.href;
         return (
           <Button
             key={link.href}
