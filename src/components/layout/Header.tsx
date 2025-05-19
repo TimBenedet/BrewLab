@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Menu, Lightbulb, Calculator, Beer, BookImage } from 'lucide-react';
+import { BookOpen, Menu, Calculator, Beer, BookImage } from 'lucide-react'; // Added BookImage
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -27,8 +27,8 @@ export function Header() {
 
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
-    // { href: '/brewcrafter-xml', label: 'BrewCrafter XML', icon: Lightbulb }, // Removed
     { href: '/calculators', label: 'Calculators', icon: Calculator },
+    { href: '/brewcrafter-label', label: 'BrewCrafter Label', icon: BookImage }, // Re-added
   ];
 
   const LogoLink = () => (
