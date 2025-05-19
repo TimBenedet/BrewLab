@@ -1,7 +1,7 @@
 
 'use client';
 
-import { BookOpen, Menu, Lightbulb, Palette, BookImage } from 'lucide-react'; // Added BookImage, Palette might be removed if not used elsewhere
+import { BookOpen, Menu, Lightbulb, BookImage, Palette, Beer } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
-import { Beer } from 'lucide-react';
 
 export function Header() {
   const currentPathname = usePathname();
@@ -28,13 +27,13 @@ export function Header() {
   const navLinks = [
     { href: '/', label: 'My Recipes', icon: BookOpen },
     { href: '/brewcrafter-xml', label: 'BrewCrafter XML', icon: Lightbulb },
-    { href: '/brewcrafter-label', label: 'BrewCrafter Label', icon: BookImage }, 
+    { href: '/brewcrafter-label', label: 'BrewCrafter Label', icon: BookImage },
   ];
 
   const LogoLink = () => (
     <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
       <Beer size={26} className="text-primary" />
-      <h1 className="text-xl font-semibold text-foreground">BrewLab</h1>
+      <h1 className="text-xl font-semibold text-foreground">BrewCrafter</h1>
     </Link>
   );
 
@@ -72,7 +71,7 @@ export function Header() {
   const DesktopSpacer = () => (
     <div aria-hidden="true" className="flex items-center gap-2 invisible pointer-events-none">
       <Beer size={26} className="text-primary" />
-      <h1 className="text-xl font-semibold text-foreground">BrewLab</h1>
+      <h1 className="text-xl font-semibold text-foreground">BrewCrafter</h1>
     </div>
   );
 

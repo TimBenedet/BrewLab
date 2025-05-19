@@ -1,7 +1,7 @@
 
-# BrewLab - Beer Recipe Manager & Viewer
+# BrewCrafter - Beer Recipe Manager & Viewer
 
-BrewLab is a web application designed for homebrewers and beer enthusiasts to visualize and manage their beer recipes. Its primary function is to parse and display recipes formatted in **BeerXML**, presenting them in a user-friendly and detailed interface. It also includes a **BrewCrafter Label** tool to design simple beer labels. The application is built as a static site, making it easy to host on platforms like Vercel or GitHub Pages.
+BrewCrafter is a web application designed for homebrewers and beer enthusiasts to visualize and manage their beer recipes. Its primary function is to parse and display recipes formatted in **BeerXML**, presenting them in a user-friendly and detailed interface. It also includes a **BrewCrafter Label** tool to design simple beer labels. The application is built as a static site, making it easy to host on platforms like Vercel or GitHub Pages.
 
 This project was developed with the assistance of AI tools, including **Gemini**, and built using **Firebase Studio**. It's optimized for easy deployment on **Vercel**.
 
@@ -58,7 +58,7 @@ You can easily use and customize this project for your own beer recipes. Here's 
 *   Open your terminal or command prompt and run:
     ```bash
     git clone [URL you copied]
-    cd [repository-name] # e.g., cd BrewLab
+    cd [repository-name] # e.g., cd BrewCrafter
     ```
 
 ### 4. Install Dependencies

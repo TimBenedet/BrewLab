@@ -1,48 +1,29 @@
 
 import type { Metadata } from 'next';
-import { Bebas_Neue, Inter } from 'next/font/google'; // Changed from localFont to Inter
-// import localFont from 'next/font/local'; // Commented out localFont
+import { Bebas_Neue, Inter } from 'next/font/google';
+// import localFont from 'next/font/local';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Toaster } from "@/components/ui/toaster";
 import { FooterDate } from '@/components/layout/FooterDate';
 
 // Configure Inter as a fallback for Geist Sans
-const geistSans = Inter({ // Changed from localFont
+// const geistSans = Inter({ // Changed from localFont
+//   subsets: ['latin'],
+//   variable: '--font-geist-sans', // Kept the same CSS variable name
+//   display: 'swap',
+// });
+
+// Assuming you have Geist Sans font files in src/fonts/
+// If not, you'll need to download them from geist-sans.com
+// and place them, for example, in src/fonts/
+// For now, using Inter assigned to --font-geist-sans to avoid build errors
+const geistSans = Inter({
   subsets: ['latin'],
-  variable: '--font-geist-sans', // Kept the same CSS variable name
+  variable: '--font-geist-sans', // Use the same CSS variable
   display: 'swap',
 });
 
-/*
-// Original Geist Sans configuration (requires font files in src/fonts/)
-const geistSans = localFont({
-  src: [
-    {
-      path: '../fonts/Geist-Regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../fonts/Geist-Medium.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../fonts/Geist-SemiBold.woff2',
-      weight: '600',
-      style: 'normal',
-    },
-    {
-      path: '../fonts/Geist-Bold.woff2',
-      weight: '700',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-geist-sans',
-  display: 'swap',
-});
-*/
 
 const bebas_neue = Bebas_Neue({
   variable: '--font-bebas-neue',
@@ -52,7 +33,7 @@ const bebas_neue = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: 'BrewLab - Recipe Management',
+  title: 'BrewCrafter - Recipe Management',
   description: 'Visualize and manage your beer recipes.',
 };
 
