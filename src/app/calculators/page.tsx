@@ -91,7 +91,7 @@ export default function CalculatorsPage() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+      <div className="grid grid-cols-1 gap-8 items-start max-w-2xl mx-auto">
         {/* ABV Calculator Card */}
         <Card className="shadow-md">
           <CardHeader>
