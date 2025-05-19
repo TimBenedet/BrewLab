@@ -108,13 +108,45 @@ export default function BrewCrafterXmlPage() {
 
     if (!isNaN(originalGravity) && !isNaN(finalGravity) && originalGravity > finalGravity && finalGravity > 0) {
       const calculatedAbv = (originalGravity - finalGravity) * 131.25;
-      setAbv(calculatedAbv.toFixed(2)); // Keep two decimal places
-    } else if (og === '' && fg === '') { // Clear ABV if OG and FG are cleared
+      setAbv(calculatedAbv.toFixed(2)); 
+    } else if (og === '' && fg === '') { 
         setAbv('');
     }
-    // If inputs are invalid but not both empty, ABV field retains its current value (user might be typing)
-    // Or you could setAbv('Invalid') or clear it: setAbv('')
   }, [og, fg]);
+
+  // Auto-calculate IBU (Tinseth)
+  useEffect(() => {
+    const boilVolume = parseFloat(boilSizeLiters);
+    const originalGravity = parseFloat(og);
+
+    if (isNaN(boilVolume) || boilVolume <= 0 || isNaN(originalGravity) || originalGravity <= 0 || hops.length === 0) {
+      // setIbu(''); // Optionally clear IBU if inputs are invalid, or keep the last valid calculation
+      return;
+    }
+
+    let totalIbus = 0;
+    hops.forEach(hop => {
+      const amountGrams = parseFloat(hop.amount);
+      const alphaPercent = parseFloat(hop.alphaPercent);
+      const timeMinutes = parseInt(hop.timeMinutes);
+
+      if (hop.use.toLowerCase() === 'boil' && !isNaN(amountGrams) && amountGrams > 0 && !isNaN(alphaPercent) && alphaPercent > 0 && !isNaN(timeMinutes) && timeMinutes > 0) {
+        const alphaAcidsDecimal = alphaPercent / 100;
+        
+        // Tinseth formula components
+        const bignessFactor = 1.65 * Math.pow(0.000125, (originalGravity - 1));
+        const boilTimeFactor = (1 - Math.exp(-0.04 * timeMinutes)) / 4.15;
+        const utilization = bignessFactor * boilTimeFactor;
+        
+        const mgAlphaAcidsPerLiter = (alphaAcidsDecimal * amountGrams * 1000) / boilVolume;
+        const ibusForThisHop = utilization * mgAlphaAcidsPerLiter;
+        
+        totalIbus += ibusForThisHop;
+      }
+    });
+
+    setIbu(totalIbus.toFixed(1)); 
+  }, [hops, boilSizeLiters, og]);
 
 
   // Helper for dynamic lists
@@ -439,8 +471,8 @@ export default function BrewCrafterXmlPage() {
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
           <div><Label htmlFor="og">Original Gravity (OG)</Label><Input id="og" value={og} onChange={e => setOg(e.target.value)} placeholder="1.050" className="mt-1" /></div>
           <div><Label htmlFor="fg">Final Gravity (FG)</Label><Input id="fg" value={fg} onChange={e => setFg(e.target.value)} placeholder="1.010" className="mt-1" /></div>
-          <div><Label htmlFor="abv">Alcohol (% ABV)</Label><Input id="abv" value={abv} onChange={e => setAbv(e.target.value)} placeholder="Calculated: 5.0" className="mt-1" /></div>
-          <div><Label htmlFor="ibu">Bitterness (IBU)</Label><Input id="ibu" value={ibu} onChange={e => setIbu(e.target.value)} placeholder="40" className="mt-1" /></div>
+          <div><Label htmlFor="abv">Alcohol (% ABV)</Label><Input id="abv" value={abv} onChange={e => setAbv(e.target.value)} placeholder="Calculated: 5.0" className="mt-1" readOnly /></div>
+          <div><Label htmlFor="ibu">Bitterness (IBU)</Label><Input id="ibu" value={ibu} onChange={e => setIbu(e.target.value)} placeholder="Calculated: 40" className="mt-1" readOnly /></div>
           <div><Label htmlFor="srm">Est. Color (SRM)</Label><Input id="srm" value={colorSrmEst} onChange={e => setColorSrmEst(e.target.value)} placeholder="10" className="mt-1" /></div>
         </CardContent>
       </Card>
@@ -682,7 +714,5 @@ export default function BrewCrafterXmlPage() {
     </div>
   );
 }
-
-    
 
     
